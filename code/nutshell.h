@@ -2,7 +2,6 @@
 
 enum token_type {
     WORD = 1,
-    DOT,
     DOTDOT,
     LESSTHAN,
     GREATERTHAN,
