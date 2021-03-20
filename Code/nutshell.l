@@ -10,7 +10,8 @@ cd                     return CD;
 unalias                return UNALIAS;
 alias                  return ALIAS; /* alias w/o arguments lists all the current aliases w/ argument adds new alias command to the shell */
 bye|Bye                return BYE;
-/*[..]                 return DOT */DOT; /* need to find a way to handle the current working directory (".")*/
+/* need to find a way to handle the current working directory (".")*/
+[..]                 return DOTDOT;
 [<]                    return LESSTHAN;
 [>]                    return GREATERTHAN;
 [|]                    return PIPE;
