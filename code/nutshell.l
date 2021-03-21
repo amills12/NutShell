@@ -1,5 +1,6 @@
 %{
-    #include "nutshell.h"   
+    #include "y.tab.h"
+    void yyerror(char *s);   
 %}
 
 %%
@@ -10,8 +11,8 @@ cd                     return CD;
 unalias                return UNALIAS;
 alias                  return ALIAS; /* alias w/o arguments lists all the current aliases w/ argument adds new alias command to the shell */
 bye|Bye                return BYE;
-/* need to find a way to handle the current working directory */
-[..]                   return DOTDOT;
+
+[..]                   return DOTDOT; /* need to find a way to handle the current working directory */
 [<]                    return LESSTHAN;
 [>]                    return GREATERTHAN;
 [|]                    return PIPE;
@@ -23,12 +24,5 @@ bye|Bye                return BYE;
 
 
 [ \t\r\n]              /* do nada */;
-[a-z]+                 printf("You Said A Word\n");/*return WORD;*/
-.                      printf("Unexpected character\n");
-
-%%
-
-int yywrap(void)
-{
-    return 1;
-}
+[a-z]+                 return WORD;/*return WORD;*/
+.                      {yyerror("Unexpected character\n");};
