@@ -1,23 +1,37 @@
 # Simple Makefile
 
-CC=/usr/bin/cc
+all: lex-config bison-config nutshell-out
 
-all:  flex-config bison-config nutshparser nutshscanner nutshell nutshell-out
-
-flex-config:
-	flex FLEX_FILE_NAME
+lex-config:
+	lex nutshell.l
 
 bison-config:
-	bison -d nutshparser.y
+	yacc -d nutshell.y
 
-nutshscanner:  lex.yy.c
-	$(CC) -c lex.yy.c -o nutshscanner.lex.o
+nutshell-out:
+	gcc lex.yy.c y.tab.c -o nutshell
 
-nutshparser:  nutshparser.tab.c 
-	$(CC) -c nutshparser.tab.c -o nutshparser.y.o
+clean:
+	rm y.tab.c y.tab.h lex.yy.c nutshell
 
-nutshell:  nutshell.c
-	$(CC) -g -c nutshell.c -o nutshell.o 
+# CC=/usr/bin/cc
 
-nutshell-out: 
-	$(CC) -o nutshell nutshell.o nutshscanner.lex.o nutshparser.y.o -ll -lm -lfl
+# all:  flex-config bison-config nutshparser nutshscanner nutshell nutshell-out
+
+# flex-config:
+# 	flex FLEX_FILE_NAME
+
+# bison-config:
+# 	bison -d nutshparser.y
+
+# nutshscanner:  lex.yy.c
+# 	$(CC) -c lex.yy.c -o nutshscanner.lex.o
+
+# nutshparser:  nutshparser.tab.c 
+# 	$(CC) -c nutshparser.tab.c -o nutshparser.y.o
+
+# nutshell:  nutshell.c
+# 	$(CC) -g -c nutshell.c -o nutshell.o 
+
+# nutshell-out: 
+# 	$(CC) -o nutshell nutshell.o nutshscanner.lex.o nutshparser.y.o -ll -lm -lfl
