@@ -39,7 +39,7 @@ inputs:
     | inputs input{printf("\n%s ", "%");};
 
 input:
-    C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSENTENV | C_HOME | C_HOME_PATH | C_UNALIAS | C_ALIAS | C_BYE;
+    C_META | C_CD | C_DOTDOT | C_WORD | C_SETENV | C_PRINTENV | C_UNSENTENV | C_HOME | C_HOME_PATH | C_UNALIAS | C_ALIAS | C_BYE;
     
 /* ===================================== START META CHARACTER CASE ======================================== */  
 C_META:
@@ -60,8 +60,8 @@ C_AMPERSAND:
 /* ===================================== END META CHARACTER CASE ========================================== */  
 
 /* ========================================= START CD CASE ================================================ */  
-C_CD:
-    C_DOTDOT;
+C_CD: /* need to word on "cd .. " implementation */
+    CD{printf("CD");}; 
     
 C_DOTDOT:    
     DOTDOT{printf("DOTDOT");}; /* not working atm: cd prints error and exits shell */
@@ -86,6 +86,6 @@ C_ALIAS:
 C_BYE:
     BYE
     {
-        printf("BYE");
+        printf("BYE\n");        
         exit(0);
     };
