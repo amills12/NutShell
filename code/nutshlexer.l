@@ -6,7 +6,7 @@
 %%
 setenv                 return SETENV;
 printenv               return PRINTENV;
-unsentenv              return UNSENTENV;
+unsentenv              return UNSETENV;
 cd                     return CD;
 unalias                return UNALIAS;
 alias                  return ALIAS; /* alias w/o arguments lists all the current aliases w/ argument adds new alias command to the shell */
@@ -23,5 +23,6 @@ bye|Bye                return BYE;
 
 
 [ \t\r\n]              /* do nada */;
-[a-z]+                 return WORD;/*return WORD;*/
-.                      {yyerror("Unexpected character\n");};
+[a-zA-Z]+              { yylval.str = strdup(yytext); return WORD; }; /*[a-zA-Z]               { yylval.str = yytext[0]; return VARIABLE; }; */
+[0-9]+                 { yylval.num = atoi(yytext); return NUMBER; }; 
+.                      { yyerror("Unexpected character\n"); };
