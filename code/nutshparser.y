@@ -1,6 +1,7 @@
 %{
     #include <stdio.h>    
     #include <stdlib.h>
+    #include <string.h>
 
     int yylex();
     int yywrap();
@@ -8,13 +9,7 @@
 
 %}
 
-%union 
-{
-    int num;
-    char *str;
-}
-
-%token WORD 
+//%token WORD 
 %token DOTDOT
 %token LESSTHAN
 %token GREATERTHAN
@@ -25,7 +20,7 @@
  
 %token SETENV
 %token PRINTENV
-%token UNSENTENV
+%token UNSETENV
 %token HOME
 %token HOME_PATH
 %token CD
@@ -33,13 +28,23 @@
 %token ALIAS /* alias w/o arguments lists all the current aliases w/ argument adds new alias command to the shell */
 %token BYE
 
+%union 
+{
+    int num;
+    char* str;
+}
+
+/* %token <str> VARIABLE */
+%token <str> WORD
+%token <num> NUMBER
+
 %%
 
 inputs:
     | inputs input{printf("\n%s ", "%");};
 
 input:
-    C_META | C_CD | C_DOTDOT | C_WORD | C_SETENV | C_PRINTENV | C_UNSENTENV | C_HOME | C_HOME_PATH | C_UNALIAS | C_ALIAS | C_BYE;
+    C_META | C_CD | C_DOTDOT | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_HOME | C_HOME_PATH | C_UNALIAS | C_ALIAS | C_BYE;
     
 /* ===================================== START META CHARACTER CASE ======================================== */  
 C_META:
@@ -68,13 +73,41 @@ C_DOTDOT:
 /* ========================================= END CD CASE ================================================== */   
 
 C_WORD:
-    WORD{printf("WORD");};
+    WORD{printf("WORD");
+    
+    };
 C_SETENV:
-    SETENV{printf("SETENV");};
+    SETENV WORD WORD{
+        printf("SETENV\n");
+        const char* variable = $2;
+        const char* word = $3;
+        printf("Environment Variable Set: %s == %s\n", variable, word);
+        setenv(variable, word, 1);
+    };
+    
 C_PRINTENV:
-    PRINTENV{printf("PRINTENV");};
-C_UNSENTENV:
-    UNSENTENV{printf("UNSENTENV");};
+    PRINTENV WORD{
+        const char* variable = $2;
+        printf("PRINTENV\n");
+        if(getenv(variable)==NULL){
+            printf("Environment Variable \"%s\" Does Not Exist\n",variable);
+        }
+        else{
+            printf("%s: %s\n",variable, getenv(variable));
+        }
+    };
+C_UNSETENV:
+    UNSETENV WORD{
+        printf("UNSENTENV\n");    
+        const char* variable = $2;
+        unsetenv(variable);
+        if(getenv(variable)==0){
+            printf("Successfully Unset Environment Variable\n");   
+        }
+        else{
+            printf("Environment Variable Does Not Exist\n");   
+        }
+    };
 C_HOME:
     HOME{printf("HOME");};
 C_HOME_PATH:
