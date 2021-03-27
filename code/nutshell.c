@@ -7,6 +7,7 @@ typedef struct yy_buffer_state * YY_BUFFER_STATE;
 extern int yyparse();
 extern YY_BUFFER_STATE yy_scan_string(char * str);
 extern void yy_delete_buffer(YY_BUFFER_STATE buffer);
+extern char **environ;
 
 void yyerror(char *s)
 {
@@ -16,6 +17,15 @@ void yyerror(char *s)
 int yywrap(void)
 {
     return 1;
+}
+
+void printenv()
+{
+    int id = 0;
+    while(environ[id] != NULL)
+    {
+        printf("%s\n", environ[id++]);
+    }
 }
 
 int main()

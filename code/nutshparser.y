@@ -89,12 +89,14 @@ C_PRINTENV:
     PRINTENV WORD{
         const char* variable = $2;
         printf("PRINTENV\n");
-        if(getenv(variable)==NULL){
-            printf("Environment Variable \"%s\" Does Not Exist\n",variable);
-        }
-        else{
-            printf("%s: %s\n",variable, getenv(variable));
-        }
+        printenv();
+        // Do they really want all the the environment variables? PS. ITS UGLY
+        // if(getenv(variable)==NULL){
+        //     printf("Environment Variable \"%s\" Does Not Exist\n",variable);
+        // }
+        // else{
+        //     printf("%s: %s\n",variable, getenv(variable));
+        // }
     };
 C_UNSETENV:
     UNSETENV WORD{

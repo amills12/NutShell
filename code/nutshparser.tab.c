@@ -76,10 +76,8 @@
     int yywrap();
     void yyerror(char *s);
 
-    extern char **environ;
 
-
-#line 83 "nutshparser.tab.c"
+#line 81 "nutshparser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -152,12 +150,12 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 34 "nutshparser.y"
+#line 32 "nutshparser.y"
 
     int num;
     char* str;
 
-#line 161 "nutshparser.tab.c"
+#line 159 "nutshparser.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -534,10 +532,10 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    45,    45,    46,    49,    49,    49,    49,    49,    49,
-      49,    49,    49,    49,    49,    49,    53,    53,    53,    53,
-      53,    53,    56,    58,    60,    62,    64,    66,    71,    74,
-      78,    82,    91,   103,   115,   117,   119,   121,   123
+       0,    43,    43,    44,    47,    47,    47,    47,    47,    47,
+      47,    47,    47,    47,    47,    47,    51,    51,    51,    51,
+      51,    51,    54,    56,    58,    60,    62,    64,    69,    72,
+      76,    80,    89,   101,   113,   115,   117,   119,   121
 };
 #endif
 
@@ -1355,69 +1353,69 @@ yyreduce:
   switch (yyn)
     {
   case 3:
-#line 46 "nutshparser.y"
+#line 44 "nutshparser.y"
                   {printf("\n%s ", "%");}
-#line 1361 "nutshparser.tab.c"
+#line 1359 "nutshparser.tab.c"
     break;
 
   case 22:
-#line 56 "nutshparser.y"
+#line 54 "nutshparser.y"
             {printf("LESSTHAN");}
-#line 1367 "nutshparser.tab.c"
+#line 1365 "nutshparser.tab.c"
     break;
 
   case 23:
-#line 58 "nutshparser.y"
+#line 56 "nutshparser.y"
                {printf("GREATERTHAN");}
-#line 1373 "nutshparser.tab.c"
+#line 1371 "nutshparser.tab.c"
     break;
 
   case 24:
-#line 60 "nutshparser.y"
+#line 58 "nutshparser.y"
         {printf("PIPE");}
-#line 1379 "nutshparser.tab.c"
+#line 1377 "nutshparser.tab.c"
     break;
 
   case 25:
-#line 62 "nutshparser.y"
+#line 60 "nutshparser.y"
                 {printf("DOUBLEQUOTES");}
-#line 1385 "nutshparser.tab.c"
+#line 1383 "nutshparser.tab.c"
     break;
 
   case 26:
-#line 64 "nutshparser.y"
+#line 62 "nutshparser.y"
              {printf("BACKSLASH");}
-#line 1391 "nutshparser.tab.c"
+#line 1389 "nutshparser.tab.c"
     break;
 
   case 27:
-#line 66 "nutshparser.y"
+#line 64 "nutshparser.y"
              {printf("AMPERSAND");}
-#line 1397 "nutshparser.tab.c"
+#line 1395 "nutshparser.tab.c"
     break;
 
   case 28:
-#line 71 "nutshparser.y"
+#line 69 "nutshparser.y"
       {printf("CD");}
-#line 1403 "nutshparser.tab.c"
+#line 1401 "nutshparser.tab.c"
     break;
 
   case 29:
-#line 74 "nutshparser.y"
+#line 72 "nutshparser.y"
           {printf("DOTDOT");}
-#line 1409 "nutshparser.tab.c"
+#line 1407 "nutshparser.tab.c"
     break;
 
   case 30:
-#line 78 "nutshparser.y"
+#line 76 "nutshparser.y"
         {printf("WORD");
     
     }
-#line 1417 "nutshparser.tab.c"
+#line 1415 "nutshparser.tab.c"
     break;
 
   case 31:
-#line 82 "nutshparser.y"
+#line 80 "nutshparser.y"
                     {
         printf("SETENV\n");
         const char* variable = (yyvsp[-1].str);
@@ -1425,27 +1423,27 @@ yyreduce:
         printf("Environment Variable Set: %s == %s\n", variable, word);
         setenv(variable, word, 1);
     }
-#line 1429 "nutshparser.tab.c"
+#line 1427 "nutshparser.tab.c"
     break;
 
   case 32:
-#line 91 "nutshparser.y"
+#line 89 "nutshparser.y"
                  {
         const char* variable = (yyvsp[0].str);
         printf("PRINTENV\n");
-        if(getenv(variable)==NULL){
-            printf("Environment Variable \"%s\" Does Not Exist\n",variable);
-        }
-        else{
-            printf(environ[1]);
-            //printf("%s: %s\n",variable, getenv(variable));
-        }
+        printenv();
+        // if(getenv(variable)==NULL){
+        //     printf("Environment Variable \"%s\" Does Not Exist\n",variable);
+        // }
+        // else{
+        //     printf("%s: %s\n",variable, getenv(variable));
+        // }
     }
-#line 1445 "nutshparser.tab.c"
+#line 1443 "nutshparser.tab.c"
     break;
 
   case 33:
-#line 103 "nutshparser.y"
+#line 101 "nutshparser.y"
                  {
         printf("UNSENTENV\n");    
         const char* variable = (yyvsp[0].str);
@@ -1457,44 +1455,44 @@ yyreduce:
             printf("Environment Variable Does Not Exist\n");   
         }
     }
-#line 1461 "nutshparser.tab.c"
+#line 1459 "nutshparser.tab.c"
     break;
 
   case 34:
-#line 115 "nutshparser.y"
+#line 113 "nutshparser.y"
         {printf("HOME");}
-#line 1467 "nutshparser.tab.c"
+#line 1465 "nutshparser.tab.c"
     break;
 
   case 35:
-#line 117 "nutshparser.y"
+#line 115 "nutshparser.y"
              {printf("HOME_PATH");}
-#line 1473 "nutshparser.tab.c"
+#line 1471 "nutshparser.tab.c"
     break;
 
   case 36:
-#line 119 "nutshparser.y"
+#line 117 "nutshparser.y"
            {printf("UNALIAS");}
-#line 1479 "nutshparser.tab.c"
+#line 1477 "nutshparser.tab.c"
     break;
 
   case 37:
-#line 121 "nutshparser.y"
+#line 119 "nutshparser.y"
          {printf("ALIAS");}
-#line 1485 "nutshparser.tab.c"
+#line 1483 "nutshparser.tab.c"
     break;
 
   case 38:
-#line 124 "nutshparser.y"
+#line 122 "nutshparser.y"
     {
         printf("BYE\n");        
         exit(0);
     }
-#line 1494 "nutshparser.tab.c"
+#line 1492 "nutshparser.tab.c"
     break;
 
 
-#line 1498 "nutshparser.tab.c"
+#line 1496 "nutshparser.tab.c"
 
       default: break;
     }
