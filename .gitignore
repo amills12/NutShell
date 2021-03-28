@@ -1,0 +1,5 @@
+# Ignores the generated files
+*.o
+*.tab.*
+*.yy.*
+nutshell

@@ -3,6 +3,9 @@
 #include <string.h>
 #include "nutshparser.tab.h"
 
+//1 for auto testing 0 for manual
+#define AUTO 1
+
 typedef struct yy_buffer_state * YY_BUFFER_STATE;
 extern int yyparse();
 extern YY_BUFFER_STATE yy_scan_string(char * str);
@@ -32,7 +35,8 @@ int main()
 {
     printf("Welcome to the NUTSHELL\n");
     printf("%s ", "%");
-    
+
+#if AUTO //If auto is 1 run this code
     char* testArr[] = { "Yeet", "alias beetle \"beetle juice\"", "bye" };
                     //    "\"nutshell/nutshell/nutshell/nutshell\"" /*This should print quote word quote*/,
                     //    "setenv beetle juice", "printenv beetle", "unsentenv beetle", "printenv beetle",
@@ -46,6 +50,8 @@ int main()
         yyparse();
         yy_delete_buffer(buffer);
     }
-    // return yyparse();
     return 0;
+#else
+    return yyparse();
+#endif
 }
