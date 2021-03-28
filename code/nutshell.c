@@ -33,11 +33,12 @@ int main()
     printf("Welcome to the NUTSHELL\n");
     printf("%s ", "%");
     
-    char* testArr[] = {"nutshell" /*This should print word*/,
-                       "setenv beetle juice", "printenv beetle", "unsentenv beetle", "printenv beetle",
-                       "unalias", "alias",
-                       "..", "<", ">", "|", "\"\"", "&", "~", "~/", "cd", "("/*this should throw an error*/,
-                       "bye", "Bye"};
+    char* testArr[] = { "Yeet", "bye" };
+                    //    "\"nutshell/nutshell/nutshell/nutshell\"" /*This should print quote word quote*/,
+                    //    "setenv beetle juice", "printenv beetle", "unsentenv beetle", "printenv beetle",
+                    //    "unalias", "alias",
+                    //    "..", "<", ">", "|", "\"\"", "&", "~", "~/", "cd", "("/*this should throw an error*/,
+                    //    "bye", "Bye"};
 
     for (int i = 0; i < sizeof(testArr); i++)
     {	

@@ -23,4 +23,4 @@ nutshell-out:
 	$(CC) -o nutshell nutshell.o nutshscanner.lex.o nutshparser.y.o -ll -lm -lfl
 
 clean:
-	rm nutshell nutshparser.tab.c nutshparser.tab.h lex.yy.c *.o
+	rm -f nutshell nutshparser.tab.c nutshparser.tab.h lex.yy.c *.o

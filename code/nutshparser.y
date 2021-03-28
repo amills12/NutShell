@@ -6,6 +6,7 @@
     int yylex();
     int yywrap();
     void yyerror(char *s);
+    void printenv();
 
 %}
 
@@ -14,7 +15,8 @@
 %token LESSTHAN
 %token GREATERTHAN
 %token PIPE
-%token DOUBLEQUOTES
+%token QUOTE
+%token STRING
 %token BACKSLASH
 %token AMPERSAND
  
@@ -48,7 +50,7 @@ input:
     
 /* ===================================== START META CHARACTER CASE ======================================== */  
 C_META:
-    C_LESSTHAN | C_GREATERTHAN | C_PIPE | C_DOUBLEQUOTES | C_BACKSLASH | C_AMPERSAND;
+    C_LESSTHAN | C_GREATERTHAN | C_PIPE | C_QUOTE | C_BACKSLASH | C_AMPERSAND;
 
 C_LESSTHAN:
     LESSTHAN{printf("LESSTHAN");};
@@ -56,8 +58,8 @@ C_GREATERTHAN:
     GREATERTHAN{printf("GREATERTHAN");};
 C_PIPE:
     PIPE{printf("PIPE");};
-C_DOUBLEQUOTES:
-    DOUBLEQUOTES{printf("DOUBLEQUOTES");};
+C_QUOTE:
+    QUOTE{printf("QUOTE");};
 C_BACKSLASH:
     BACKSLASH{printf("BACKSLASH");};
 C_AMPERSAND:
@@ -115,9 +117,16 @@ C_HOME:
 C_HOME_PATH:
     HOME_PATH{printf("HOME_PATH");};
 C_UNALIAS:
-    UNALIAS{printf("UNALIAS");};
+    UNALIAS WORD{
+        printf("UNALIAS");
+        };
 C_ALIAS:
-    ALIAS{printf("ALIAS");};
+    ALIAS WORD WORD{
+        printf("ALIAS\n");
+        const char *aliasName = $2;
+        const char *aliasedCommand = $3;
+        
+    };
 C_BYE:
     BYE
     {
