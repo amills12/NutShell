@@ -1,17 +1,9 @@
 %{
     #include "nutshparser.tab.h"
-    void yyerror(char *s);   
+    void yyerror(char *s);
 %}
 
-%x expect_string
-
-QUOTE    ["]    /* We have to use these because without it thinks we're making a string */
-NOTQUOTE [^"]
-
 %%
-{QUOTE}                     { BEGIN(expect_string); return HOME; }
-<expect_string>{NOTQUOTE}*   return STRING;
-<expect_string>{QUOTE}      { BEGIN(inital); return HOME; }
 setenv                 return SETENV;
 printenv               return PRINTENV;
 unsentenv              return UNSETENV;
@@ -30,6 +22,7 @@ bye|Bye                return BYE;
 "~/"                   return HOME_PATH;
 
 [ \t\r\n]              /* do nada */;
+\"([^'\n]|\'\')+\"     { yylval.str = strdup(yytext); return STRING; };
 [a-zA-Z\/.]+           { yylval.str = strdup(yytext); return WORD; };
 [0-9]+                 { yylval.num = atoi(yytext); return NUMBER; };
 .                      { yyerror("Unexpected character\n"); };

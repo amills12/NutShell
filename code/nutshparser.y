@@ -16,7 +16,6 @@
 %token GREATERTHAN
 %token PIPE
 %token QUOTE
-%token STRING
 %token BACKSLASH
 %token AMPERSAND
  
@@ -38,6 +37,7 @@
 
 /* %token <str> VARIABLE */
 %token <str> WORD
+%token <str> STRING
 %token <num> NUMBER
 
 %%
@@ -125,7 +125,13 @@ C_ALIAS:
         printf("ALIAS\n");
         const char *aliasName = $2;
         const char *aliasedCommand = $3;
-        
+    };
+    | ALIAS WORD STRING{
+        printf("ALIAS\n");
+        const char *aliasName = $2;
+        const char *aliasedCommand = $3;
+
+        printf("%s = %s", aliasName, aliasedCommand);
     };
 C_BYE:
     BYE
