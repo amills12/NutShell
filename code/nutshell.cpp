@@ -12,11 +12,11 @@
 #include <iterator>
 #include <string>
 #include "nutshell.h"
-using namespace std; 
+using namespace std;
 
 // Import from C
 typedef struct yy_buffer_state *YY_BUFFER_STATE;
-extern int yyparse(); 
+extern int yyparse();
 extern YY_BUFFER_STATE yy_scan_string(const char *str);
 extern void yy_delete_buffer(YY_BUFFER_STATE buffer);
 extern char **environ;
@@ -45,12 +45,12 @@ void printenv()
     }
 }
 
-void addAlias(const char* name, const char* command)
+void addAlias(const char *name, const char *command)
 {
     aliasMap.insert(pair<string, string>(name, command));
 }
 
-void removeAlias(const char* name)
+void removeAlias(const char *name)
 {
     aliasMap.erase(name);
 }
@@ -58,11 +58,14 @@ void removeAlias(const char* name)
 void printAlias()
 {
     // Make an iterator to print through all alias
-    map<string,string>::iterator itr;
+    map<string, string>::iterator itr;
 
-    for(itr = aliasMap.begin(); itr != aliasMap.end(); itr++)
+    for (itr = aliasMap.begin(); itr != aliasMap.end(); itr++)
     {
-        printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
+        if(next(itr) != aliasMap.end())
+            printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
+        else
+            printf("%s = %s", itr->first.c_str(), itr->second.c_str());
     }
 }
 
