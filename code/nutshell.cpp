@@ -76,7 +76,9 @@ int main()
     printf("%s ", "%");
 
 #if AUTO //If AUTO is 1 this code will run
-    char* testArr[] = { "alias beetle \"beetle juice\"", "alias ya yeet", "alias test \"test 3\"", "alias", "unalias beetle", "alias", "bye"};
+    char* testArr[] = { "alias beetle \"beetle juice\"", "alias ya yeet", "alias test \"test 3\"", "alias", "unalias beetle", "alias",
+                        "cd", "cd ..", "cd /NutShell/code", "cd ..", "cd ..", "bye"};
+                    //    "Yeet", "alias beetle \"beetle juice\"", "bye"
                     //    "\"nutshell/nutshell/nutshell/nutshell\"" /*This should print quote word quote*/,
                     //    "setenv beetle juice", "printenv beetle", "unsentenv beetle", "printenv beetle",
                     //    "..", "<", ">", "|", "\"\"", "&", "~", "~/", "cd", "("/*this should throw an error*/,
