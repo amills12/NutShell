@@ -45,7 +45,10 @@
 %%
 
 inputs:
-    | inputs input{printf("\n%s ", "%");};
+    | inputs input{
+        printf("\n");
+        nutshellTerminalPrint();
+      };
 
 input:
     C_META | C_CD | C_DOTDOT | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_HOME | C_HOME_PATH | C_UNALIAS | C_ALIAS | C_BYE;
@@ -71,23 +74,24 @@ C_AMPERSAND:
 /* ========================================= START CD CASE ================================================ */  
 C_CD: /* need to word on "cd .. " implementation */
     CD{
-        printf("CD\n");
-        printf("Current Working Directory Is: %s\n", getcwd(NULL,0));
-        chdir(getenv("HOME"));
-        printf("Switching To: %s\n", getcwd(NULL,0));        
+        printf("CD -- ");
+        printf("Current Working Directory Is: %s ", getcwd(NULL,0));
+        chdir(getenv("HOME"));    
+        printf("-- Switching To: %s", getcwd(NULL,0));             
     };
     | CD DOTDOT{ 
-        printf("CD DOTDOT\n"); 
-        printf("Current Working Directory Is: %s\n", getcwd(NULL,0));
+        printf("CD DOTDOT -- "); 
+        printf("Current Working Directory Is: %s ", getcwd(NULL,0));
         chdir("..");
-        printf("Switching To: %s\n", getcwd(NULL,0));
+        printf("-- Switching To: %s", getcwd(NULL,0));
     };
     | CD WORD{
-        printf("CD WORD\n"); 
+        
+        printf("CD WORD -- "); 
         const char* dir = $2;
-        printf("Current Working Directory Is: %s\n", getcwd(NULL,0));
+        printf("Current Working Directory Is: %s ", getcwd(NULL,0));
         chdir(dir);
-        printf("Switching To: %s\n", getcwd(NULL,0));
+        printf("-- Switching To: %s", getcwd(NULL,0));
     };      
 C_DOTDOT:    
     DOTDOT{printf("DOTDOT");}; /* not working atm: cd prints error and exits shell */
@@ -99,10 +103,10 @@ C_WORD:
     };
 C_SETENV:
     SETENV WORD WORD{
-        printf("SETENV\n");
+        printf("SETENV -- ");
         const char* variable = $2;
         const char* word = $3;
-        printf("Environment Variable Set: %s == %s\n", variable, word);
+        printf("Environment Variable Set: %s == %s", variable, word);
         setenv(variable, word, 1);
     };    
 C_PRINTENV:
@@ -119,14 +123,14 @@ C_PRINTENV:
     };
 C_UNSETENV:
     UNSETENV WORD{
-        printf("UNSENTENV\n");    
+        printf("UNSENTENV -- ");    
         const char* variable = $2;
         unsetenv(variable);
         if(getenv(variable)==0){
-            printf("Successfully Unset Environment Variable\n");   
+            printf("Successfully Unset Environment Variable");   
         }
         else{
-            printf("Environment Variable Does Not Exist\n");   
+            printf("Environment Variable Does Not Exist");   
         }
     };
 C_HOME:
@@ -135,18 +139,18 @@ C_HOME_PATH:
     HOME_PATH{printf("HOME_PATH");};
 C_UNALIAS:
     UNALIAS WORD{
-        printf("UNALIAS\n");
+        printf("UNALIAS -- ");
         const char *aliasName = $2;
         printf("Deleting: %s", aliasName);
         removeAlias(aliasName);
         };
 C_ALIAS:
     ALIAS{
-        printf("ALIAS\n");
+        printf("ALIAS PRINT -- Printing...\n");
         printAlias();
     };
     | ALIAS WORD WORD{
-        printf("ALIAS\n");
+        printf("ALIAS ADD -- ");
         const char *aliasName = $2;
         const char *aliasedCommand = $3;
 
@@ -154,7 +158,7 @@ C_ALIAS:
         addAlias(aliasName, aliasedCommand);
     };
     | ALIAS WORD STRING{
-        printf("ALIAS\n");
+        printf("ALIAS ADD -- ");
         const char *aliasName = $2;
         const char *aliasedCommand = $3;
 
@@ -165,5 +169,5 @@ C_BYE:
     BYE
     {
         printf("BYE\n");        
-        exit(0);
+         exit(0);
     };

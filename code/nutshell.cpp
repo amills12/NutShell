@@ -5,6 +5,7 @@
 // C header files
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "nutshparser.tab.h"
 
 // C++ header files
@@ -68,12 +69,32 @@ void printAlias()
             printf("%s = %s", itr->first.c_str(), itr->second.c_str());
     }
 }
+void black() {printf("\033[0;30m");}
+void red() {printf("\033[0;31m");}
+void green() {printf("\033[0;32m");}
+void yellow() {printf("\033[0;33m");}
+void blue() {printf("\033[0;34m");}
+void purple() {printf("\033[0;35m");}
+void cyan() {printf("\033[0;36m");}
+void white() {printf("\033[0;37m");}
+
+void nutshellTerminalPrint(){
+    purple();
+    printf("Nutshell@localhost:");
+    yellow();
+    printf("%s", getcwd(NULL,0));
+    cyan();
+    printf("%s ","$"); 
+    white();
+}
 
 // Main Program execution
 int main()
 {
-    printf("Welcome to the NUTSHELL\n");
-    printf("%s ", "%");
+    red();
+    printf("**** Welcome to the NUTSHELL ****\n");
+    white();
+    nutshellTerminalPrint();
 
 #if AUTO //If AUTO is 1 this code will run
     char* testArr[] = { "alias beetle \"beetle juice\"", "alias ya yeet", "alias test \"test 3\"", "alias", "unalias beetle", "alias",
