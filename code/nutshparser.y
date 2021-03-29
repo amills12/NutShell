@@ -1,14 +1,15 @@
 %{
+    #pragma GCC diagnostic ignored "-Wwrite-strings"
     #include <stdio.h>    
     #include <stdlib.h>
     #include <string.h>
     #include <unistd.h>
+    #include "nutshell.h"
 
     int yylex();
+    int yyparse();
     int yywrap();
     void yyerror(char *s);
-    void printenv();
-
 %}
 
 //%token WORD
@@ -134,20 +135,31 @@ C_HOME_PATH:
     HOME_PATH{printf("HOME_PATH");};
 C_UNALIAS:
     UNALIAS WORD{
-        printf("UNALIAS");
+        printf("UNALIAS\n");
+        const char *aliasName = $2;
+        printf("Deleting: %s", aliasName);
+        removeAlias(aliasName);
         };
 C_ALIAS:
-    ALIAS WORD WORD{
+    ALIAS{
+        printf("ALIAS\n");
+        printAlias();
+    };
+    | ALIAS WORD WORD{
         printf("ALIAS\n");
         const char *aliasName = $2;
         const char *aliasedCommand = $3;
+
+        printf("Added: %s = %s", aliasName, aliasedCommand);
+        addAlias(aliasName, aliasedCommand);
     };
     | ALIAS WORD STRING{
         printf("ALIAS\n");
         const char *aliasName = $2;
         const char *aliasedCommand = $3;
 
-        printf("%s = %s", aliasName, aliasedCommand);
+        printf("Added: %s = %s", aliasName, aliasedCommand);
+        addAlias(aliasName, aliasedCommand);
     };
 C_BYE:
     BYE
