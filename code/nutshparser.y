@@ -2,6 +2,7 @@
     #include <stdio.h>    
     #include <stdlib.h>
     #include <string.h>
+    #include <unistd.h>
 
     int yylex();
     int yywrap();
@@ -10,7 +11,8 @@
 
 %}
 
-//%token WORD 
+//%token WORD
+%token CD 
 %token DOTDOT
 %token LESSTHAN
 %token GREATERTHAN
@@ -24,7 +26,6 @@
 %token UNSETENV
 %token HOME
 %token HOME_PATH
-%token CD
 %token UNALIAS
 %token ALIAS /* alias w/o arguments lists all the current aliases w/ argument adds new alias command to the shell */
 %token BYE
@@ -68,8 +69,25 @@ C_AMPERSAND:
 
 /* ========================================= START CD CASE ================================================ */  
 C_CD: /* need to word on "cd .. " implementation */
-    CD{printf("CD");}; 
-    
+    CD{
+        printf("CD\n");
+        printf("Current Working Directory Is: %s\n", getcwd(NULL,0));
+        chdir(getenv("HOME"));
+        printf("Switching To: %s\n", getcwd(NULL,0));        
+    };
+    | CD DOTDOT{ 
+        printf("CD DOTDOT\n"); 
+        printf("Current Working Directory Is: %s\n", getcwd(NULL,0));
+        chdir("..");
+        printf("Switching To: %s\n", getcwd(NULL,0));
+    };
+    | CD WORD{
+        printf("CD WORD\n"); 
+        const char* dir = $2;
+        printf("Current Working Directory Is: %s\n", getcwd(NULL,0));
+        chdir(dir);
+        printf("Switching To: %s\n", getcwd(NULL,0));
+    };      
 C_DOTDOT:    
     DOTDOT{printf("DOTDOT");}; /* not working atm: cd prints error and exits shell */
 /* ========================================= END CD CASE ================================================== */   
@@ -85,11 +103,9 @@ C_SETENV:
         const char* word = $3;
         printf("Environment Variable Set: %s == %s\n", variable, word);
         setenv(variable, word, 1);
-    };
-    
+    };    
 C_PRINTENV:
-    PRINTENV WORD{
-        const char* variable = $2;
+    PRINTENV{
         printf("PRINTENV\n");
         printenv();
         // Do they really want all the the environment variables? PS. ITS UGLY

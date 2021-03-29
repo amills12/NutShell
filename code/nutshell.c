@@ -36,7 +36,8 @@ int main()
     printf("%s ", "%");
 
 #if AUTO //If AUTO is 1 this code will run
-    char* testArr[] = { "Yeet", "alias beetle \"beetle juice\"", "bye" };
+    char* testArr[] = {"cd", "cd ..", "cd /NutShell/code", "bye"};
+                    //"Yeet", "alias beetle \"beetle juice\"", "bye"
                     //    "\"nutshell/nutshell/nutshell/nutshell\"" /*This should print quote word quote*/,
                     //    "setenv beetle juice", "printenv beetle", "unsentenv beetle", "printenv beetle",
                     //    "unalias", "alias",
