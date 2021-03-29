@@ -1,3 +1,4 @@
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,8 +7,8 @@
 #define AUTO 1 //1 for auto testing, 0 for manual.
 
 typedef struct yy_buffer_state *YY_BUFFER_STATE;
-extern int yyparse();
-extern YY_BUFFER_STATE yy_scan_string(char *str);
+extern int yyparse(); 
+extern YY_BUFFER_STATE yy_scan_string(const char *str);
 extern void yy_delete_buffer(YY_BUFFER_STATE buffer);
 extern char **environ;
 
@@ -36,10 +37,9 @@ int main()
     printf("%s ", "%");
 
 #if AUTO //If AUTO is 1 this code will run
-    char* testArr[] = { "Yeet", "alias beetle \"beetle juice\"", "bye" };
+    char* testArr[] = { "Yeet", "alias beetle \"beetle juice\"", "bye"};
                     //    "\"nutshell/nutshell/nutshell/nutshell\"" /*This should print quote word quote*/,
                     //    "setenv beetle juice", "printenv beetle", "unsentenv beetle", "printenv beetle",
-                    //    "unalias", "alias",
                     //    "..", "<", ">", "|", "\"\"", "&", "~", "~/", "cd", "("/*this should throw an error*/,
                     //    "bye", "Bye"};
 

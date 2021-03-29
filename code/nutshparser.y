@@ -1,9 +1,11 @@
 %{
+    #pragma GCC diagnostic ignored "-Wwrite-strings"
     #include <stdio.h>    
     #include <stdlib.h>
     #include <string.h>
 
     int yylex();
+    int yyparse();
     int yywrap();
     void yyerror(char *s);
     void printenv();

@@ -1,7 +1,10 @@
 %{
+    #pragma GCC diagnostic ignored "-Wwrite-strings"
     #include "nutshparser.tab.h"
     void yyerror(char *s);
 %}
+
+%option noyywrap
 
 %%
 setenv                 return SETENV;
