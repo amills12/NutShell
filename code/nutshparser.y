@@ -2,19 +2,22 @@
     #include <stdio.h>    
     #include <stdlib.h>
     #include <string.h>
+    #include <unistd.h>
 
     int yylex();
     int yywrap();
     void yyerror(char *s);
+    void printenv();
 
 %}
 
-//%token WORD 
+//%token WORD
+%token CD 
 %token DOTDOT
 %token LESSTHAN
 %token GREATERTHAN
 %token PIPE
-%token DOUBLEQUOTES
+%token QUOTE
 %token BACKSLASH
 %token AMPERSAND
  
@@ -23,7 +26,6 @@
 %token UNSETENV
 %token HOME
 %token HOME_PATH
-%token CD
 %token UNALIAS
 %token ALIAS /* alias w/o arguments lists all the current aliases w/ argument adds new alias command to the shell */
 %token BYE
@@ -36,6 +38,7 @@
 
 /* %token <str> VARIABLE */
 %token <str> WORD
+%token <str> STRING
 %token <num> NUMBER
 
 %%
@@ -48,7 +51,7 @@ input:
     
 /* ===================================== START META CHARACTER CASE ======================================== */  
 C_META:
-    C_LESSTHAN | C_GREATERTHAN | C_PIPE | C_DOUBLEQUOTES | C_BACKSLASH | C_AMPERSAND;
+    C_LESSTHAN | C_GREATERTHAN | C_PIPE | C_QUOTE | C_BACKSLASH | C_AMPERSAND;
 
 C_LESSTHAN:
     LESSTHAN{printf("LESSTHAN");};
@@ -56,8 +59,8 @@ C_GREATERTHAN:
     GREATERTHAN{printf("GREATERTHAN");};
 C_PIPE:
     PIPE{printf("PIPE");};
-C_DOUBLEQUOTES:
-    DOUBLEQUOTES{printf("DOUBLEQUOTES");};
+C_QUOTE:
+    QUOTE{printf("QUOTE");};
 C_BACKSLASH:
     BACKSLASH{printf("BACKSLASH");};
 C_AMPERSAND:
@@ -66,8 +69,25 @@ C_AMPERSAND:
 
 /* ========================================= START CD CASE ================================================ */  
 C_CD: /* need to word on "cd .. " implementation */
-    CD{printf("CD");}; 
-    
+    CD{
+        printf("CD\n");
+        printf("Current Working Directory Is: %s\n", getcwd(NULL,0));
+        chdir(getenv("HOME"));
+        printf("Switching To: %s\n", getcwd(NULL,0));        
+    };
+    | CD DOTDOT{ 
+        printf("CD DOTDOT\n"); 
+        printf("Current Working Directory Is: %s\n", getcwd(NULL,0));
+        chdir("..");
+        printf("Switching To: %s\n", getcwd(NULL,0));
+    };
+    | CD WORD{
+        printf("CD WORD\n"); 
+        const char* dir = $2;
+        printf("Current Working Directory Is: %s\n", getcwd(NULL,0));
+        chdir(dir);
+        printf("Switching To: %s\n", getcwd(NULL,0));
+    };      
 C_DOTDOT:    
     DOTDOT{printf("DOTDOT");}; /* not working atm: cd prints error and exits shell */
 /* ========================================= END CD CASE ================================================== */   
@@ -83,11 +103,9 @@ C_SETENV:
         const char* word = $3;
         printf("Environment Variable Set: %s == %s\n", variable, word);
         setenv(variable, word, 1);
-    };
-    
+    };    
 C_PRINTENV:
-    PRINTENV WORD{
-        const char* variable = $2;
+    PRINTENV{
         printf("PRINTENV\n");
         printenv();
         // Do they really want all the the environment variables? PS. ITS UGLY
@@ -115,9 +133,22 @@ C_HOME:
 C_HOME_PATH:
     HOME_PATH{printf("HOME_PATH");};
 C_UNALIAS:
-    UNALIAS{printf("UNALIAS");};
+    UNALIAS WORD{
+        printf("UNALIAS");
+        };
 C_ALIAS:
-    ALIAS{printf("ALIAS");};
+    ALIAS WORD WORD{
+        printf("ALIAS\n");
+        const char *aliasName = $2;
+        const char *aliasedCommand = $3;
+    };
+    | ALIAS WORD STRING{
+        printf("ALIAS\n");
+        const char *aliasName = $2;
+        const char *aliasedCommand = $3;
+
+        printf("%s = %s", aliasName, aliasedCommand);
+    };
 C_BYE:
     BYE
     {
