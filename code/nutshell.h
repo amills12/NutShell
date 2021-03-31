@@ -4,4 +4,15 @@
 void printenv();
 void addAlias(const char* name, const char* command);
 void removeAlias(const char* name);
+//Colors
 void printAlias();
+void black();
+void red();
+void green();
+void yellow();
+void blue();
+void purple();
+void cyan();
+void white();
+//Terminal color theme
+void nutshellTerminalPrint();
