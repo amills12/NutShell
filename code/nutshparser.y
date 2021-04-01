@@ -52,7 +52,7 @@ inputs:
       };
 
 input:
-    C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_HOME | C_HOME_PATH | C_UNALIAS | C_ALIAS | C_BYE;
+    C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_BYE;
     
 /* ===================================== START META CHARACTER CASE ======================================== */  
 C_META:
@@ -124,10 +124,6 @@ C_UNSETENV:
             printf("Environment Variable Does Not Exist");   
         }
     };
-C_HOME:
-    HOME EOFNL{printf("HOME");};
-C_HOME_PATH:
-    HOME_PATH EOFNL{printf("HOME_PATH");};
 C_UNALIAS:
     UNALIAS WORD EOFNL{
         printf("UNALIAS -- ");
