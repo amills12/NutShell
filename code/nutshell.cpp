@@ -97,7 +97,7 @@ int main()
     nutshellTerminalPrint();
 
 #if AUTO //If AUTO is 1 this code will run
-    char* testArr[] = { "alias beetle \"beetle juice\"", "alias ya yeet", "alias test \"test 3\"", "alias", "unalias beetle", "alias",
+    string testArr[] = { "alias beetle \"beetle juice\"", "alias ya yeet", "alias test \"test 3\"", "alias", "unalias beetle", "alias",
                         "cd", "cd ..", "cd /NutShell/code", "cd ..", "cd ..", "bye"};
                     //    "Yeet", "alias beetle \"beetle juice\"", "bye"
                     //    "\"nutshell/nutshell/nutshell/nutshell\"" /*This should print quote word quote*/,
@@ -107,7 +107,8 @@ int main()
 
     for (int i = 0; i < sizeof(testArr); i++)
     {
-        YY_BUFFER_STATE buffer = yy_scan_string(testArr[i]);
+        string tempStr = testArr[i] + "\n";
+        YY_BUFFER_STATE buffer = yy_scan_string(tempStr.c_str());
         yyparse();
         yy_delete_buffer(buffer);
     }

@@ -21,6 +21,7 @@
 %token QUOTE
 %token BACKSLASH
 %token AMPERSAND
+%token EOFNL
  
 %token SETENV
 %token PRINTENV
@@ -51,7 +52,7 @@ inputs:
       };
 
 input:
-    C_META | C_CD | C_DOTDOT | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_HOME | C_HOME_PATH | C_UNALIAS | C_ALIAS | C_BYE;
+    C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_BYE;
     
 /* ===================================== START META CHARACTER CASE ======================================== */  
 C_META:
@@ -73,19 +74,19 @@ C_AMPERSAND:
 
 /* ========================================= START CD CASE ================================================ */  
 C_CD: /* need to word on "cd .. " implementation */
-    CD{
+    CD EOFNL{
         printf("CD -- ");
         printf("Current Working Directory Is: %s ", getcwd(NULL,0));
         chdir(getenv("HOME"));    
         printf("-- Switching To: %s", getcwd(NULL,0));             
     };
-    | CD DOTDOT{ 
+    | CD DOTDOT EOFNL{ 
         printf("CD DOTDOT -- "); 
         printf("Current Working Directory Is: %s ", getcwd(NULL,0));
         chdir("..");
         printf("-- Switching To: %s", getcwd(NULL,0));
     };
-    | CD WORD{
+    | CD WORD EOFNL{
         
         printf("CD WORD -- "); 
         const char* dir = $2;
@@ -93,16 +94,12 @@ C_CD: /* need to word on "cd .. " implementation */
         chdir(dir);
         printf("-- Switching To: %s", getcwd(NULL,0));
     };      
-C_DOTDOT:    
-    DOTDOT{printf("DOTDOT");}; /* not working atm: cd prints error and exits shell */
 /* ========================================= END CD CASE ================================================== */   
 
 C_WORD:
-    WORD{printf("WORD");
-    
-    };
+    WORD EOFNL{printf("WORD");};
 C_SETENV:
-    SETENV WORD WORD{
+    SETENV WORD WORD EOFNL{
         printf("SETENV -- ");
         const char* variable = $2;
         const char* word = $3;
@@ -110,19 +107,13 @@ C_SETENV:
         setenv(variable, word, 1);
     };    
 C_PRINTENV:
-    PRINTENV{
+    PRINTENV EOFNL{
         printf("PRINTENV\n");
         printenv();
         // Do they really want all the the environment variables? PS. ITS UGLY
-        // if(getenv(variable)==NULL){
-        //     printf("Environment Variable \"%s\" Does Not Exist\n",variable);
-        // }
-        // else{
-        //     printf("%s: %s\n",variable, getenv(variable));
-        // }
     };
 C_UNSETENV:
-    UNSETENV WORD{
+    UNSETENV WORD EOFNL{
         printf("UNSENTENV -- ");    
         const char* variable = $2;
         unsetenv(variable);
@@ -133,23 +124,19 @@ C_UNSETENV:
             printf("Environment Variable Does Not Exist");   
         }
     };
-C_HOME:
-    HOME{printf("HOME");};
-C_HOME_PATH:
-    HOME_PATH{printf("HOME_PATH");};
 C_UNALIAS:
-    UNALIAS WORD{
+    UNALIAS WORD EOFNL{
         printf("UNALIAS -- ");
         const char *aliasName = $2;
         printf("Deleting: %s", aliasName);
         removeAlias(aliasName);
         };
 C_ALIAS:
-    ALIAS{
+    ALIAS EOFNL{
         printf("ALIAS PRINT -- Printing...\n");
         printAlias();
     };
-    | ALIAS WORD WORD{
+    | ALIAS WORD WORD EOFNL{
         printf("ALIAS ADD -- ");
         const char *aliasName = $2;
         const char *aliasedCommand = $3;
@@ -157,7 +144,7 @@ C_ALIAS:
         printf("Added: %s = %s", aliasName, aliasedCommand);
         addAlias(aliasName, aliasedCommand);
     };
-    | ALIAS WORD STRING{
+    | ALIAS WORD STRING EOFNL{
         printf("ALIAS ADD -- ");
         const char *aliasName = $2;
         const char *aliasedCommand = $3;
@@ -166,7 +153,7 @@ C_ALIAS:
         addAlias(aliasName, aliasedCommand);
     };
 C_BYE:
-    BYE
+    BYE EOFNL
     {
         printf("BYE\n");        
          exit(0);
