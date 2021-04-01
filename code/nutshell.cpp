@@ -56,6 +56,31 @@ void removeAlias(const char *name)
     aliasMap.erase(name);
 }
 
+bool isAlias(const char *name)
+{
+    auto itr = aliasMap.find(name);
+    if (itr == aliasMap.end()){
+        printf("ALIAS NOT FOUND: "); 
+        return false;
+    }
+    else{
+        printf("ALIAS WAS FOUND: "); 
+        return true;
+    }
+}
+
+void findAliasCommand(const char *name)
+{
+    string aliasCommand(name);
+    aliasCommand = aliasMap.find(name)->second;
+    printf("ALIAS COMMAND: %s", aliasCommand.c_str());
+    aliasCommand.erase(0,1);
+    aliasCommand.erase(aliasCommand.length()-1);
+    aliasCommand += "\n";
+    YY_BUFFER_STATE buffer = yy_scan_string(aliasCommand.c_str());    
+    yyparse();
+}
+
 void printAlias()
 {
     // Make an iterator to print through all alias
@@ -97,8 +122,8 @@ int main()
     nutshellTerminalPrint();
 
 #if AUTO //If AUTO is 1 this code will run
-    string testArr[] = { "alias beetle \"beetle juice\"", "alias ya yeet", "alias test \"test 3\"", "alias", "unalias beetle", "alias",
-                        "cd", "cd ..", "cd /NutShell/code", "cd ..", "cd ..", "bye"};
+    string testArr[] = { "alias beetle \"beetle juice\"", "alias ya yeet", "alias test \"cd ..\"", "alias", "unalias beetle", "alias",
+                        "beetle","test", "cd", "cd ..", "cd /NutShell/code", "cd ..", "cd ..", "bye"};
                     //    "Yeet", "alias beetle \"beetle juice\"", "bye"
                     //    "\"nutshell/nutshell/nutshell/nutshell\"" /*This should print quote word quote*/,
                     //    "setenv beetle juice", "printenv beetle", "unsentenv beetle", "printenv beetle",

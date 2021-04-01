@@ -52,7 +52,7 @@ inputs:
       };
 
 input:
-    C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_BYE;
+    C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_EOLN |C_BYE;
     
 /* ===================================== START META CHARACTER CASE ======================================== */  
 C_META:
@@ -97,7 +97,17 @@ C_CD: /* need to word on "cd .. " implementation */
 /* ========================================= END CD CASE ================================================== */   
 
 C_WORD:
-    WORD EOFNL{printf("WORD");};
+    WORD EOFNL{
+        printf("WORD -- ");
+        const char* possibleAlias = $1;        
+        if (isAlias(possibleAlias) == true){
+            findAliasCommand(possibleAlias);
+        }
+        else{
+             printf("%s", possibleAlias);
+        }
+    };
+    
 C_SETENV:
     SETENV WORD WORD EOFNL{
         printf("SETENV -- ");
@@ -140,7 +150,6 @@ C_ALIAS:
         printf("ALIAS ADD -- ");
         const char *aliasName = $2;
         const char *aliasedCommand = $3;
-
         printf("Added: %s = %s", aliasName, aliasedCommand);
         addAlias(aliasName, aliasedCommand);
     };
@@ -152,6 +161,9 @@ C_ALIAS:
         printf("Added: %s = %s", aliasName, aliasedCommand);
         addAlias(aliasName, aliasedCommand);
     };
+C_EOLN:
+    EOFNL{/*do nada*/};
+
 C_BYE:
     BYE EOFNL
     {
