@@ -15,13 +15,14 @@ unalias                return UNALIAS;
 alias                  return ALIAS;
 bye|Bye                return BYE;
 ".."                   return DOTDOT; /* need to find a way to handle the current working directory */
-[<]                    return LESSTHAN;
+"<"                    return LESSTHAN;
 [>]                    return GREATERTHAN;
 [|]                    return PIPE;
 ["]                    return QUOTE;
 [\\]                   return BACKSLASH;
 [&]                    return AMPERSAND;               
 [~]                    return HOME;
+\n                     return EOFNL;
 "~/"                   return HOME_PATH;
 
 [ \t\r\n]              /* do nada */;
