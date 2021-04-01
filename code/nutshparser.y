@@ -4,6 +4,7 @@
     #include <stdlib.h>
     #include <string.h>
     #include <unistd.h>
+    #include <sys/wait.h>
     #include "nutshell.h"
 
     int yylex();
@@ -80,6 +81,12 @@ C_CD: /* need to word on "cd .. " implementation */
         chdir(getenv("HOME"));    
         printf("-- Switching To: %s", getcwd(NULL,0));             
     };
+    | CD HOME EOFNL{ 
+        printf("CD HOME -- "); 
+        printf("Current Working Directory Is: %s ", getcwd(NULL,0));
+        chdir(getenv("HOME"));    
+        printf("-- Switching To: %s", getcwd(NULL,0)); 
+    };
     | CD DOTDOT EOFNL{ 
         printf("CD DOTDOT -- "); 
         printf("Current Working Directory Is: %s ", getcwd(NULL,0));
@@ -97,7 +104,13 @@ C_CD: /* need to word on "cd .. " implementation */
 /* ========================================= END CD CASE ================================================== */   
 
 C_WORD:
-    WORD EOFNL{printf("WORD");};
+    WORD EOFNL{
+        const char* command = $1;
+        if (strcmp(command, "ls") == 0)
+            executeCommand(command);
+        else
+            printf("WORD");
+    };
 C_SETENV:
     SETENV WORD WORD EOFNL{
         printf("SETENV -- ");

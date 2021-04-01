@@ -4,6 +4,7 @@
 void printenv();
 void addAlias(const char* name, const char* command);
 void removeAlias(const char* name);
+void executeCommand(const char *command);
 //Colors
 void printAlias();
 void black();

@@ -1,11 +1,13 @@
 #pragma GCC diagnostic ignored "-Wwrite-strings" // This supresses const char warning
 
-#define AUTO 1 //1 for auto testing, 0 for manual.
+#define AUTO 0 //1 for auto testing, 0 for manual.
 
 // C header files
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/wait.h>
+
 #include "nutshparser.tab.h"
 
 // C++ header files
@@ -54,6 +56,21 @@ void addAlias(const char *name, const char *command)
 void removeAlias(const char *name)
 {
     aliasMap.erase(name);
+}
+
+void executeCommand(const char *command)
+{
+    // execl or exce
+    pid_t p;
+    p = fork();
+    if(p < 0) {
+        perror("Fork Failed");
+    }
+    else if (p == 0) {
+        execl("/bin/ls", command, NULL);
+    }
+    else
+        wait(0);
 }
 
 void printAlias()
