@@ -1,6 +1,6 @@
 #pragma GCC diagnostic ignored "-Wwrite-strings" // This supresses const char warning
 
-#define AUTO 1 //1 for auto testing, 0 for manual.
+#define AUTO 0 //1 for auto testing, 0 for manual.
 
 // C header files
 #include <stdio.h>
@@ -26,12 +26,6 @@ extern char **environ;
 
 // Global Variables
 map<string, string> aliasMap;
-
-// Lex Functions
-void yyerror(char *s)
-{
-    fprintf(stderr, "An Error Has Occured: %s", s);
-}
 
 // Bison Helper Functions
 void printenv()
@@ -91,6 +85,7 @@ void findAliasCommand(const char *name)
     aliasCommand += "\n";
     YY_BUFFER_STATE buffer = yy_scan_string(aliasCommand.c_str());    
     yyparse();
+    // yy_delete_buffer(buffer);
 }
 
 void printAlias()
@@ -131,7 +126,6 @@ int main()
     red();
     printf("**** Welcome to the NUTSHELL ****\n");
     white();
-    nutshellTerminalPrint();
 
 #if AUTO //If AUTO is 1 this code will run
     string testArr[] = { "alias beetle \"beetle juice\"", "alias ya yeet", "alias test \"cd ..\"", "alias", "unalias beetle", "alias",
@@ -144,13 +138,18 @@ int main()
 
     for (int i = 0; i < sizeof(testArr); i++)
     {
+        nutshellTerminalPrint();
         string tempStr = testArr[i] + "\n";
         YY_BUFFER_STATE buffer = yy_scan_string(tempStr.c_str());
         yyparse();
         yy_delete_buffer(buffer);
     }
-    return 0;
 #else //If AUTO is 0 this code will run
-    return yyparse();
+    while(1)
+    {
+        nutshellTerminalPrint();
+        yyparse();
+    }
 #endif
+    return 0;
 }
