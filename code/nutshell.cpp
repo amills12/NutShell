@@ -33,11 +33,6 @@ void yyerror(char *s)
     fprintf(stderr, "An Error Has Occured: %s", s);
 }
 
-int yywrap(void)
-{
-    return 1;
-}
-
 // Bison Helper Functions
 void printenv()
 {

@@ -9,7 +9,6 @@
 
     int yylex();
     int yyparse();
-    int yywrap();
     void yyerror(char *s);
 %}
 
@@ -47,10 +46,7 @@
 %%
 
 inputs:
-    | inputs input{
-        printf("\n");
-        nutshellTerminalPrint();
-      };
+    | inputs input
 
 input:
     C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_BYE;
@@ -169,5 +165,5 @@ C_BYE:
     BYE EOFNL
     {
         printf("BYE\n");        
-         exit(0);
+        exit(0);
     };
