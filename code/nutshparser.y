@@ -10,6 +10,7 @@
     int yylex();
     int yyparse();
     void yyerror(char *s);
+
 %}
 
 //%token WORD
@@ -46,27 +47,29 @@
 %%
 
 inputs:
-    | inputs input
+    | inputs input{
+        nutshellTerminalPrint();
+      };
 
 input:
-    C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_BYE;
+    C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_EOLN |C_BYE;
     
 /* ===================================== START META CHARACTER CASE ======================================== */  
 C_META:
     C_LESSTHAN | C_GREATERTHAN | C_PIPE | C_QUOTE | C_BACKSLASH | C_AMPERSAND;
 
 C_LESSTHAN:
-    LESSTHAN{printf("LESSTHAN");};
+    LESSTHAN{printf("LESSTHAN"); printf("\n");};
 C_GREATERTHAN:
-    GREATERTHAN{printf("GREATERTHAN");};
+    GREATERTHAN{printf("GREATERTHAN"); printf("\n");};
 C_PIPE:
-    PIPE{printf("PIPE");};
+    PIPE{printf("PIPE"); printf("\n");};
 C_QUOTE:
-    QUOTE{printf("QUOTE");};
+    QUOTE{printf("QUOTE"); printf("\n");};
 C_BACKSLASH:
-    BACKSLASH{printf("BACKSLASH");};
+    BACKSLASH{printf("BACKSLASH"); printf("\n");};
 C_AMPERSAND:
-    AMPERSAND{printf("AMPERSAND");};
+    AMPERSAND{printf("AMPERSAND"); printf("\n");};
 /* ===================================== END META CHARACTER CASE ========================================== */  
 
 /* ========================================= START CD CASE ================================================ */  
@@ -75,7 +78,8 @@ C_CD: /* need to word on "cd .. " implementation */
         printf("CD -- ");
         printf("Current Working Directory Is: %s ", getcwd(NULL,0));
         chdir(getenv("HOME"));    
-        printf("-- Switching To: %s", getcwd(NULL,0));             
+        printf("-- Switching To: %s", getcwd(NULL,0));
+        printf("\n");             
     };
     | CD HOME EOFNL{ 
         printf("CD HOME -- "); 
@@ -88,6 +92,7 @@ C_CD: /* need to word on "cd .. " implementation */
         printf("Current Working Directory Is: %s ", getcwd(NULL,0));
         chdir("..");
         printf("-- Switching To: %s", getcwd(NULL,0));
+        printf("\n");
     };
     | CD WORD EOFNL{
         
@@ -96,17 +101,26 @@ C_CD: /* need to word on "cd .. " implementation */
         printf("Current Working Directory Is: %s ", getcwd(NULL,0));
         chdir(dir);
         printf("-- Switching To: %s", getcwd(NULL,0));
+        printf("\n");
     };      
 /* ========================================= END CD CASE ================================================== */   
 
 C_WORD:
     WORD EOFNL{
+        printf("WORD -- ");
         const char* command = $1;
-        if (strcmp(command, "ls") == 0)
+        if (isAlias(command) == true){
+            findAliasCommand(command);
+        }
+        else if (strcmp(command, "ls") == 0){
             executeCommand(command);
-        else
-            printf("WORD");
+        }
+        else{
+            printf("%s", command);
+        }
+        printf("\n");
     };
+    
 C_SETENV:
     SETENV WORD WORD EOFNL{
         printf("SETENV -- ");
@@ -114,11 +128,13 @@ C_SETENV:
         const char* word = $3;
         printf("Environment Variable Set: %s == %s", variable, word);
         setenv(variable, word, 1);
+        printf("\n");
     };    
 C_PRINTENV:
     PRINTENV EOFNL{
         printf("PRINTENV\n");
         printenv();
+        printf("\n");
         // Do they really want all the the environment variables? PS. ITS UGLY
     };
 C_UNSETENV:
@@ -132,6 +148,7 @@ C_UNSETENV:
         else{
             printf("Environment Variable Does Not Exist");   
         }
+        printf("\n");
     };
 C_UNALIAS:
     UNALIAS WORD EOFNL{
@@ -139,19 +156,21 @@ C_UNALIAS:
         const char *aliasName = $2;
         printf("Deleting: %s", aliasName);
         removeAlias(aliasName);
+        printf("\n");
         };
 C_ALIAS:
     ALIAS EOFNL{
         printf("ALIAS PRINT -- Printing...\n");
         printAlias();
+        printf("\n");
     };
     | ALIAS WORD WORD EOFNL{
         printf("ALIAS ADD -- ");
         const char *aliasName = $2;
         const char *aliasedCommand = $3;
-
         printf("Added: %s = %s", aliasName, aliasedCommand);
         addAlias(aliasName, aliasedCommand);
+        printf("\n");
     };
     | ALIAS WORD STRING EOFNL{
         printf("ALIAS ADD -- ");
@@ -160,7 +179,11 @@ C_ALIAS:
 
         printf("Added: %s = %s", aliasName, aliasedCommand);
         addAlias(aliasName, aliasedCommand);
+        printf("\n");
     };
+C_EOLN:
+    EOFNL{/*do nada*/};
+
 C_BYE:
     BYE EOFNL
     {
