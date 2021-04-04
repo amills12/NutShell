@@ -30,7 +30,7 @@
 %token HOME
 %token HOME_PATH
 %token UNALIAS
-%token ALIAS /* alias w/o arguments lists all the current aliases w/ argument adds new alias command to the shell */
+%token ALIAS
 %token BYE
 
 %union 
@@ -42,7 +42,6 @@
 /* %token <str> VARIABLE */
 %token <str> WORD
 %token <str> STRING
-%token <num> NUMBER
 
 %%
 
