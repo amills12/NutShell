@@ -1,11 +1,13 @@
 #pragma GCC diagnostic ignored "-Wwrite-strings" // This supresses const char warning
 
-#define AUTO 1 //1 for auto testing, 0 for manual.
+#define AUTO 0 //1 for auto testing, 0 for manual.
 
 // C header files
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/wait.h>
+
 #include "nutshparser.tab.h"
 
 // C++ header files
@@ -19,22 +21,10 @@ using namespace std;
 typedef struct yy_buffer_state *YY_BUFFER_STATE;
 extern int yyparse();
 extern YY_BUFFER_STATE yy_scan_string(const char *str);
-extern void yy_delete_buffer(YY_BUFFER_STATE buffer);
 extern char **environ;
 
 // Global Variables
 map<string, string> aliasMap;
-
-// Lex Functions
-void yyerror(char *s)
-{
-    fprintf(stderr, "An Error Has Occured: %s", s);
-}
-
-int yywrap(void)
-{
-    return 1;
-}
 
 // Bison Helper Functions
 void printenv()
@@ -54,6 +44,48 @@ void addAlias(const char *name, const char *command)
 void removeAlias(const char *name)
 {
     aliasMap.erase(name);
+}
+
+void executeCommand(const char *command)
+{
+    // execl or exce
+    pid_t p;
+    p = fork();
+    if(p < 0) {
+        perror("Fork Failed");
+    }
+    else if (p == 0) {
+        execl("/bin/ls", command, NULL);
+    }
+    else
+        wait(0);
+}
+
+bool isAlias(const char *name)
+{
+    auto itr = aliasMap.find(name);
+    if (itr == aliasMap.end()){
+        printf("ALIAS NOT FOUND: "); 
+        return false;
+    }
+    else{
+        printf("ALIAS WAS FOUND: "); 
+        return true;
+    }
+}
+
+void findAliasCommand(const char *name)
+{
+    string aliasCommand(name);
+    aliasCommand = aliasMap.find(name)->second;
+    printf("ALIAS COMMAND: %s", aliasCommand.c_str());
+    aliasCommand.erase(0,1);
+    aliasCommand.erase(aliasCommand.length()-1);
+    aliasCommand += "\n";
+    yy_scan_string(aliasCommand.c_str());    
+    yyparse();
+    yylex_destroy();
+   
 }
 
 void printAlias()
@@ -94,11 +126,10 @@ int main()
     red();
     printf("**** Welcome to the NUTSHELL ****\n");
     white();
-    nutshellTerminalPrint();
 
 #if AUTO //If AUTO is 1 this code will run
-    string testArr[] = { "alias beetle \"beetle juice\"", "alias ya yeet", "alias test \"test 3\"", "alias", "unalias beetle", "alias",
-                        "cd", "cd ..", "cd /NutShell/code", "cd ..", "cd ..", "bye"};
+    string testArr[] = { "alias beetle \"beetle juice\"", "alias ya yeet", "alias test \"cd ..\"", "alias", "unalias beetle", "alias",
+                        "beetle","test", "cd", "cd ..", "cd /NutShell/code", "cd ..", "cd ..", "bye"};
                     //    "Yeet", "alias beetle \"beetle juice\"", "bye"
                     //    "\"nutshell/nutshell/nutshell/nutshell\"" /*This should print quote word quote*/,
                     //    "setenv beetle juice", "printenv beetle", "unsentenv beetle", "printenv beetle",
@@ -107,13 +138,18 @@ int main()
 
     for (int i = 0; i < sizeof(testArr); i++)
     {
+        nutshellTerminalPrint();
         string tempStr = testArr[i] + "\n";
-        YY_BUFFER_STATE buffer = yy_scan_string(tempStr.c_str());
+        yy_scan_string(tempStr.c_str());
         yyparse();
-        yy_delete_buffer(buffer);
+        yylex_destroy();
     }
-    return 0;
 #else //If AUTO is 0 this code will run
-    return yyparse();
+    while(1)
+    {
+        nutshellTerminalPrint();
+        yyparse();
+    }
 #endif
+    return 0;
 }
