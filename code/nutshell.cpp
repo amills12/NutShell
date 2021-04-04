@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <glob.h>
 #include <sys/wait.h>
 
 #include "nutshparser.tab.h"
@@ -85,7 +86,17 @@ void findAliasCommand(const char *name)
     yy_scan_string(aliasCommand.c_str());    
     yyparse();
     yylex_destroy();
-   
+}
+
+void wildCarding(const char *name)
+{
+        glob_t globbuf = {0};
+        glob(name, GLOB_DOOFFS, NULL, &globbuf);
+        for (size_t i = 0; i != globbuf.gl_pathc; ++i)
+        {
+            printf("Found: %s\n", globbuf.gl_pathv[i]);
+        }
+        globfree(&globbuf);
 }
 
 void printAlias()

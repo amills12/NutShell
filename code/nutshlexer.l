@@ -25,7 +25,9 @@ bye|Bye                return BYE;
 \n                     return EOFNL;
 "~/"                   return HOME_PATH;
 
+
 [ \t\r\n]              /* do nada */;
+[*.a-zA-Z]+            { yylval.str = strdup(yytext); return WILDCARD; };
 \"([^'\n]|\'\')+\"     { yylval.str = strdup(yytext); return STRING; };
 [a-zA-Z\/.]+           { yylval.str = strdup(yytext); return WORD; };
 [0-9]+                 { yylval.num = atoi(yytext); return NUMBER; };

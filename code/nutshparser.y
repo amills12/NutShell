@@ -3,6 +3,7 @@
     #include <stdio.h>    
     #include <stdlib.h>
     #include <string.h>
+    
     #include <unistd.h>
     #include <sys/wait.h>
     #include "nutshell.h"
@@ -23,7 +24,6 @@
 %token BACKSLASH
 %token AMPERSAND
 %token EOFNL
- 
 %token SETENV
 %token PRINTENV
 %token UNSETENV
@@ -42,6 +42,7 @@
 /* %token <str> VARIABLE */
 %token <str> WORD
 %token <str> STRING
+%token <str> WILDCARD 
 %token <num> NUMBER
 
 %%
@@ -50,7 +51,7 @@ inputs:
     | inputs input
 
 input:
-    C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_EOLN |C_BYE;
+    C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_EOLN | C_WILDCARD | C_BYE;
     
 /* ===================================== START META CHARACTER CASE ======================================== */  
 C_META:
@@ -221,6 +222,12 @@ C_ALIAS:
         addAlias(aliasName, aliasedCommand);
         printf("\n");
         return 1;
+    };
+C_WILDCARD:
+    WILDCARD EOFNL{
+    const char *fileExt = $1;   
+    wildCarding(fileExt);
+    return 1;
     };
 C_EOLN:
     EOFNL{/*do nada*/};

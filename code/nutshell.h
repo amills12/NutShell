@@ -20,4 +20,6 @@ void white();
 //Terminal color theme
 void nutshellTerminalPrint();
 
+void wildCarding(const char *name);
+
 int yylex_destroy ( void );
