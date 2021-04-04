@@ -223,7 +223,10 @@ C_ALIAS:
         return 1;
     };
 C_EOLN:
-    EOFNL{/*do nada*/};
+    EOFNL{
+        return 1;
+        /*do nada*/
+    };
 
 C_BYE:
     BYE EOFNL
@@ -237,5 +240,6 @@ C_BYE:
 int yyerror(char *s)
 {
     printf("An Error has Occured: %s\n", s);
+    yylex_destroy();
     return 0;
 }

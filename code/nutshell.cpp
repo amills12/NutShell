@@ -101,6 +101,7 @@ void printAlias()
             printf("%s = %s", itr->first.c_str(), itr->second.c_str());
     }
 }
+
 void black() {printf("\033[0;30m");}
 void red() {printf("\033[0;31m");}
 void green() {printf("\033[0;32m");}
