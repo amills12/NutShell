@@ -5,27 +5,31 @@
 %}
 
 %option noyywrap
+%x string_cond
 
+NOTEQUOTE [^"]
 %%
-setenv                 return SETENV;
-printenv               return PRINTENV;
-unsentenv              return UNSETENV;
-cd                     return CD;
-unalias                return UNALIAS;
-alias                  return ALIAS;
-bye|Bye                return BYE;
+<string_cond>{NOTEQUOTE}+ { yylval.str = strdup(yytext); return STRING; };
+<string_cond>[\"]         {BEGIN(INITIAL);};
+
+setenv|SETENV          return SETENV;
+printenv|PRINTENV      return PRINTENV;
+unsentenv|UNSETENV     return UNSETENV;
+cd|CD                  return CD;
+unalias|UNALIAS        return UNALIAS;
+alias|ALIAS            return ALIAS;
+bye|Bye|BYE            return BYE;
 ".."                   return DOTDOT; /* need to find a way to handle the current working directory */
 "<"                    return LESSTHAN;
 [>]                    return GREATERTHAN;
 [|]                    return PIPE;
-["]                    return QUOTE;
+[\"]                   { BEGIN(string_cond); };
 [\\]                   return BACKSLASH;
 [&]                    return AMPERSAND;               
 [~]                    return HOME;
 \n                     return EOFNL;
 "~/"                   return HOME_PATH;
 
-[ \t\r\n]              /* do nada */;
-\"([^'\n]|\'\')+\"     { yylval.str = strdup(yytext); return STRING; };
+[ \t\r]              /* do nada */;
 [a-zA-Z\/.0-9]+        { yylval.str = strdup(yytext); return WORD; };
-.                      { yyerror("Unexpected character\n"); };
+.                      { yyerror("Unexpected character"); };

@@ -83,8 +83,6 @@ void findAliasCommand(const char *name)
     string aliasCommand(name);
     aliasCommand = aliasMap.find(name)->second;
     printf("ALIAS COMMAND: %s", aliasCommand.c_str());
-    aliasCommand.erase(0, 1);
-    aliasCommand.erase(aliasCommand.length() - 1);
     aliasCommand += "\n";
     yy_scan_string(aliasCommand.c_str());
     yyparse();

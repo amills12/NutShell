@@ -49,7 +49,7 @@ inputs:
     | inputs input
 
 input:
-    C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_EOLN |C_BYE;
+    C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_EOLN |C_BYE | C_STRING;
     
 /* ===================================== START META CHARACTER CASE ======================================== */  
 C_META:
@@ -225,6 +225,14 @@ C_EOLN:
     EOFNL{
         return 1;
         /*do nada*/
+    };
+
+C_STRING:
+    STRING EOFNL
+    {
+        printf("STRING");
+        printf("\n");
+        return 1;
     };
 
 C_BYE:
