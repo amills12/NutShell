@@ -19,3 +19,5 @@ void cyan();
 void white();
 //Terminal color theme
 void nutshellTerminalPrint();
+
+int yylex_destroy ( void );

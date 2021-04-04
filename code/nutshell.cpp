@@ -83,8 +83,9 @@ void findAliasCommand(const char *name)
     aliasCommand.erase(0,1);
     aliasCommand.erase(aliasCommand.length()-1);
     aliasCommand += "\n";
-    YY_BUFFER_STATE buffer = yy_scan_string(aliasCommand.c_str());    
+    yy_scan_string(aliasCommand.c_str());    
     yyparse();
+    yylex_destroy();
     // yy_delete_buffer(buffer);
 }
 
