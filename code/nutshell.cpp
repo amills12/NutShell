@@ -1,6 +1,6 @@
 #pragma GCC diagnostic ignored "-Wwrite-strings" // This supresses const char warning
 
-#define AUTO 1 //1 for auto testing, 0 for manual.
+#define AUTO 0 //1 for auto testing, 0 for manual.
 
 // C header files
 #include <stdio.h>

@@ -6,11 +6,16 @@
 
 %option noyywrap
 %x string_cond
+%x env_cond
 
 NOTEQUOTE [^"]
+WORD      [a-zA-Z\/.0-9]
 %%
-<string_cond>{NOTEQUOTE}+ { yylval.str = strdup(yytext); return STRING; };
-<string_cond>[\"]         {BEGIN(INITIAL);};
+<string_cond>{NOTEQUOTE}+   { yylval.str = strdup(yytext); return STRING; };
+<string_cond>[\"]           { BEGIN(INITIAL); };
+
+<env_cond>{WORD}+           { yylval.str = strdup(yytext); return ENVEXP; };
+<env_cond>"}"               { BEGIN(INITIAL); };
 
 setenv|SETENV          return SETENV;
 printenv|PRINTENV      return PRINTENV;
@@ -24,12 +29,13 @@ bye|Bye|BYE            return BYE;
 [>]                    return GREATERTHAN;
 [|]                    return PIPE;
 [\"]                   { BEGIN(string_cond); };
+"${"                   { BEGIN(env_cond); };
 [\\]                   return BACKSLASH;
 [&]                    return AMPERSAND;               
 [~]                    return HOME;
 \n                     return EOFNL;
 "~/"                   return HOME_PATH;
 
-[ \t\r]              /* do nada */;
-[a-zA-Z\/.0-9]+        { yylval.str = strdup(yytext); return WORD; };
+[ \t\r]                /* do nada */;
+{WORD}+                { yylval.str = strdup(yytext); return WORD; };
 .                      { yyerror("Unexpected character"); };

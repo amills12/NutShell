@@ -19,9 +19,9 @@
 %token LESSTHAN
 %token GREATERTHAN
 %token PIPE
-%token QUOTE
 %token BACKSLASH
 %token AMPERSAND
+%token ENVEXP
 %token EOFNL
  
 %token SETENV
@@ -49,11 +49,11 @@ inputs:
     | inputs input
 
 input:
-    C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_EOLN |C_BYE | C_STRING;
+    C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_EOLN | C_STRING | C_ENVEXP |C_BYE;
     
 /* ===================================== START META CHARACTER CASE ======================================== */  
 C_META:
-    C_LESSTHAN | C_GREATERTHAN | C_PIPE | C_QUOTE | C_BACKSLASH | C_AMPERSAND;
+    C_LESSTHAN | C_GREATERTHAN | C_PIPE | C_BACKSLASH | C_AMPERSAND;
 
 C_LESSTHAN:
     LESSTHAN
@@ -73,13 +73,6 @@ C_PIPE:
     PIPE
     {
         printf("PIPE");
-        printf("\n");
-        return 1;
-    };
-C_QUOTE:
-    QUOTE
-    {
-        printf("QUOTE");
         printf("\n");
         return 1;
     };
@@ -224,7 +217,6 @@ C_ALIAS:
 C_EOLN:
     EOFNL{
         return 1;
-        /*do nada*/
     };
 
 C_STRING:
@@ -234,6 +226,13 @@ C_STRING:
         printf("\n");
         return 1;
     };
+
+C_ENVEXP:
+    ENVEXP
+    {
+        printf("ENV EXPANSION");
+        printf("\n");
+    }
 
 C_BYE:
     BYE EOFNL
