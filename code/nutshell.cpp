@@ -21,7 +21,6 @@ using namespace std;
 typedef struct yy_buffer_state *YY_BUFFER_STATE;
 extern int yyparse();
 extern YY_BUFFER_STATE yy_scan_string(const char *str);
-extern void yy_delete_buffer(YY_BUFFER_STATE buffer);
 extern char **environ;
 
 // Global Variables
@@ -86,7 +85,7 @@ void findAliasCommand(const char *name)
     yy_scan_string(aliasCommand.c_str());    
     yyparse();
     yylex_destroy();
-    // yy_delete_buffer(buffer);
+   
 }
 
 void printAlias()
@@ -141,9 +140,9 @@ int main()
     {
         nutshellTerminalPrint();
         string tempStr = testArr[i] + "\n";
-        YY_BUFFER_STATE buffer = yy_scan_string(tempStr.c_str());
+        yy_scan_string(tempStr.c_str());
         yyparse();
-        yy_delete_buffer(buffer);
+        yylex_destroy();
     }
 #else //If AUTO is 0 this code will run
     while(1)
