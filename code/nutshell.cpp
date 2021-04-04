@@ -1,6 +1,6 @@
 #pragma GCC diagnostic ignored "-Wwrite-strings" // This supresses const char warning
 
-#define AUTO 0 //1 for auto testing, 0 for manual.
+#define AUTO 1 //1 for auto testing, 0 for manual.
 
 // C header files
 #include <stdio.h>
@@ -132,7 +132,7 @@ int main()
 
 #if AUTO //If AUTO is 1 this code will run
     string testArr[] = { "alias beetle \"beetle juice\"", "alias ya yeet", "alias test \"cd ..\"", "alias", "unalias beetle", "alias",
-                        "beetle","test", "cd", "cd ..", "cd /NutShell/code", "cd ..", "cd ..", "bye"};
+                        "beetle","test", "cd", "cd ..", "cd /NutShell/code", "cd ..", "cd ..", "cd ${HOME}", "cd ${YEET}", "bye"};
                     //    "Yeet", "alias beetle \"beetle juice\"", "bye"
                     //    "\"nutshell/nutshell/nutshell/nutshell\"" /*This should print quote word quote*/,
                     //    "setenv beetle juice", "printenv beetle", "unsentenv beetle", "printenv beetle",

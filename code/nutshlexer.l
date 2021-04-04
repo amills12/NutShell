@@ -14,7 +14,16 @@ WORD      [a-zA-Z\/.0-9]
 <string_cond>{NOTEQUOTE}+   { yylval.str = strdup(yytext); return STRING; };
 <string_cond>[\"]           { BEGIN(INITIAL); };
 
-<env_cond>{WORD}+           { yylval.str = strdup(yytext); return ENVEXP; };
+<env_cond>{WORD}+           { 
+                                if(getenv(strdup(yytext))){
+                                    yylval.str = getenv(strdup(yytext));
+                                    return WORD; 
+                                }
+                                else{
+                                    yyerror("incorrect environment variable");
+                                    return ERROR;
+                                }
+                            };
 <env_cond>"}"               { BEGIN(INITIAL); };
 
 setenv|SETENV          return SETENV;
@@ -38,4 +47,4 @@ bye|Bye|BYE            return BYE;
 
 [ \t\r]                /* do nada */;
 {WORD}+                { yylval.str = strdup(yytext); return WORD; };
-.                      { yyerror("Unexpected character"); };
+.                      { yyerror("Unexpected character"); return ERROR; };

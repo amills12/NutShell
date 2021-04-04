@@ -11,6 +11,9 @@
     int yyparse();
     int yyerror(char *s);
 
+    typedef struct yy_buffer_state *YY_BUFFER_STATE;
+    extern int yyparse();
+    extern YY_BUFFER_STATE yy_scan_string(const char *str);
 %}
 
 //%token WORD
@@ -21,8 +24,8 @@
 %token PIPE
 %token BACKSLASH
 %token AMPERSAND
-%token ENVEXP
 %token EOFNL
+%token ERROR
  
 %token SETENV
 %token PRINTENV
@@ -49,7 +52,7 @@ inputs:
     | inputs input
 
 input:
-    C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_EOLN | C_STRING | C_ENVEXP |C_BYE;
+    C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_EOLN | C_STRING | C_ERROR |C_BYE;
     
 /* ===================================== START META CHARACTER CASE ======================================== */  
 C_META:
@@ -127,7 +130,8 @@ C_CD: /* need to word on "cd .. " implementation */
         printf("-- Switching To: %s", getcwd(NULL,0));
         printf("\n");
         return 1;
-    };      
+    };
+    | CD ERROR{ return 0;};
 /* ========================================= END CD CASE ================================================== */   
 
 C_WORD:
@@ -227,12 +231,8 @@ C_STRING:
         return 1;
     };
 
-C_ENVEXP:
-    ENVEXP
-    {
-        printf("ENV EXPANSION");
-        printf("\n");
-    }
+C_ERROR:
+    ERROR { return 0; };
 
 C_BYE:
     BYE EOFNL
