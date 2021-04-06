@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <glob.h>
 #include <sys/wait.h>
 
 #include "nutshparser.tab.h"
@@ -89,6 +90,17 @@ void findAliasCommand(const char *name)
     yylex_destroy();
 }
 
+void wildCarding(const char *name)
+{
+        glob_t globbuf = {0};
+        glob(name, GLOB_DOOFFS, NULL, &globbuf);
+        for (size_t i = 0; i != globbuf.gl_pathc; ++i)
+        {
+            printf("Found: %s\n", globbuf.gl_pathv[i]);
+        }
+        globfree(&globbuf);
+}
+
 void printAlias()
 {
     // Make an iterator to print through all alias
@@ -132,12 +144,12 @@ int main()
 
 #if AUTO //If AUTO is 1 this code will run
     string testArr[] = { "alias beetle \"beetle juice\"", "alias ya yeet", "alias test \"cd ..\"", "alias", "unalias beetle", "alias",
-                        "beetle","test", "cd", "cd ..", "cd /NutShell/code", "cd ..", "cd ..", "cd ${HOME}", "cd ${YEET}", "bye"};
-                    //    "Yeet", "alias beetle \"beetle juice\"", "bye"
-                    //    "\"nutshell/nutshell/nutshell/nutshell\"" /*This should print quote word quote*/,
-                    //    "setenv beetle juice", "printenv beetle", "unsentenv beetle", "printenv beetle",
-                    //    "..", "<", ">", "|", "\"\"", "&", "~", "~/", "cd", "("/*this should throw an error*/,
-                    //    "bye", "Bye"};
+                        "beetle","test", "cd", "cd ..","ls", "*.c", "*.h", "cd /NutShell/code", "cd ..", "cd ..",
+                       "Yeet", "alias beetle \"beetle juice\"",
+                       "\"nutshell/nutshell/nutshell/nutshell\"" /*This should print quote word quote*/,
+                       "setenv beetle juice", "printenv", "unsetenv beetle", "printenv beetle",
+                       "..", "<", ">", "|", "&", "~", "~/", "cd", "("/*this should throw an error*/,
+                       "ls", "bye"};
 
     for (int i = 0; i < sizeof(testArr); i++)
     {

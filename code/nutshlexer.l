@@ -28,7 +28,7 @@ WORD      [a-zA-Z\/.0-9]
 
 setenv|SETENV          return SETENV;
 printenv|PRINTENV      return PRINTENV;
-unsentenv|UNSETENV     return UNSETENV;
+unsetenv|UNSETENV     return UNSETENV;
 cd|CD                  return CD;
 unalias|UNALIAS        return UNALIAS;
 alias|ALIAS            return ALIAS;
