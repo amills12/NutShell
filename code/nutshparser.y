@@ -148,6 +148,7 @@ C_WORD:
         }
         else if (strcmp(command, "ls") == 0){
             executeCommand(command);
+             printf("\n");
         }
         else{
             printf("%s", command);

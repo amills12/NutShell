@@ -27,8 +27,8 @@ bye|Bye                return BYE;
 
 
 [ \t\r\n]              /* do nada */;
-[*.a-zA-Z]+            { yylval.str = strdup(yytext); return WILDCARD; };
 \"([^'\n]|\'\')+\"     { yylval.str = strdup(yytext); return STRING; };
 [a-zA-Z\/.]+           { yylval.str = strdup(yytext); return WORD; };
+[*.a-zA-Z]+            { yylval.str = strdup(yytext); return WILDCARD; };
 [0-9]+                 { yylval.num = atoi(yytext); return NUMBER; };
 .                      { yyerror("Unexpected character\n"); };
