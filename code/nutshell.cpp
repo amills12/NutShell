@@ -1,6 +1,6 @@
 #pragma GCC diagnostic ignored "-Wwrite-strings" // This supresses const char warning
 
-#define AUTO 0 //1 for auto testing, 0 for manual.
+#define AUTO 1 //1 for auto testing, 0 for manual.
 
 // C header files
 #include <stdio.h>
@@ -51,10 +51,12 @@ void executeCommand(const char *command)
     // execl or exce
     pid_t p;
     p = fork();
-    if(p < 0) {
+    if (p < 0)
+    {
         perror("Fork Failed");
     }
-    else if (p == 0) {
+    else if (p == 0)
+    {
         execl("/bin/ls", command, NULL);
     }
     else
@@ -64,12 +66,14 @@ void executeCommand(const char *command)
 bool isAlias(const char *name)
 {
     auto itr = aliasMap.find(name);
-    if (itr == aliasMap.end()){
-        printf("ALIAS NOT FOUND: "); 
+    if (itr == aliasMap.end())
+    {
+        printf("ALIAS NOT FOUND: ");
         return false;
     }
-    else{
-        printf("ALIAS WAS FOUND: "); 
+    else
+    {
+        printf("ALIAS WAS FOUND: ");
         return true;
     }
 }
@@ -79,13 +83,10 @@ void findAliasCommand(const char *name)
     string aliasCommand(name);
     aliasCommand = aliasMap.find(name)->second;
     printf("ALIAS COMMAND: %s", aliasCommand.c_str());
-    aliasCommand.erase(0,1);
-    aliasCommand.erase(aliasCommand.length()-1);
     aliasCommand += "\n";
-    yy_scan_string(aliasCommand.c_str());    
+    yy_scan_string(aliasCommand.c_str());
     yyparse();
     yylex_destroy();
-   
 }
 
 void printAlias()
@@ -95,29 +96,30 @@ void printAlias()
 
     for (itr = aliasMap.begin(); itr != aliasMap.end(); itr++)
     {
-        if(next(itr) != aliasMap.end())
+        if (next(itr) != aliasMap.end())
             printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
         else
             printf("%s = %s", itr->first.c_str(), itr->second.c_str());
     }
 }
 
-void black() {printf("\033[0;30m");}
-void red() {printf("\033[0;31m");}
-void green() {printf("\033[0;32m");}
-void yellow() {printf("\033[0;33m");}
-void blue() {printf("\033[0;34m");}
-void purple() {printf("\033[0;35m");}
-void cyan() {printf("\033[0;36m");}
-void white() {printf("\033[0;37m");}
+void black() { printf("\033[0;30m"); }
+void red() { printf("\033[0;31m"); }
+void green() { printf("\033[0;32m"); }
+void yellow() { printf("\033[0;33m"); }
+void blue() { printf("\033[0;34m"); }
+void purple() { printf("\033[0;35m"); }
+void cyan() { printf("\033[0;36m"); }
+void white() { printf("\033[0;37m"); }
 
-void nutshellTerminalPrint(){
+void nutshellTerminalPrint()
+{
     purple();
     printf("Nutshell@localhost:");
     yellow();
-    printf("%s", getcwd(NULL,0));
+    printf("%s", getcwd(NULL, 0));
     cyan();
-    printf("%s ","$"); 
+    printf("%s ", "$");
     white();
 }
 
@@ -130,7 +132,7 @@ int main()
 
 #if AUTO //If AUTO is 1 this code will run
     string testArr[] = { "alias beetle \"beetle juice\"", "alias ya yeet", "alias test \"cd ..\"", "alias", "unalias beetle", "alias",
-                        "beetle","test", "cd", "cd ..", "cd /NutShell/code", "cd ..", "cd ..", "bye"};
+                        "beetle","test", "cd", "cd ..", "cd /NutShell/code", "cd ..", "cd ..", "cd ${HOME}", "cd ${YEET}", "bye"};
                     //    "Yeet", "alias beetle \"beetle juice\"", "bye"
                     //    "\"nutshell/nutshell/nutshell/nutshell\"" /*This should print quote word quote*/,
                     //    "setenv beetle juice", "printenv beetle", "unsentenv beetle", "printenv beetle",
@@ -146,7 +148,7 @@ int main()
         yylex_destroy();
     }
 #else //If AUTO is 0 this code will run
-    while(1)
+    while (1)
     {
         nutshellTerminalPrint();
         yyparse();
