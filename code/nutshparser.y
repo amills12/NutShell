@@ -143,12 +143,21 @@ C_WORD:
         if (isAlias(command) == true){
             findAliasCommand(command);
         }
-        else if (strcmp(command, "ls") == 0){
+        else {
             executeCommand(command);
             printf("\n");
         }
-        else{
-            printf("%s", command);
+        return 1;
+    };
+
+    WORD WORD EOFNL{
+        printf("WORD -- ");
+        const char* command = $1;
+        if (isAlias(command) == true){
+            findAliasCommand(command);
+        }
+        else {
+            executeCommand(command);
             printf("\n");
         }
         return 1;
@@ -168,7 +177,6 @@ C_PRINTENV:
     PRINTENV EOFNL{
         printf("PRINTENV\n");
         printenv();
-        printf("\n");
         return 1;
         // Do they really want all the the environment variables? PS. ITS UGLY
     };
@@ -223,9 +231,9 @@ C_ALIAS:
     };
 C_WILDCARD:
     WILDCARD EOFNL{
-    const char *fileExt = $1;   
-    wildCarding(fileExt);
-    return 1;
+        const char *fileExt = $1;   
+        wildCarding(fileExt);
+        return 1;
     };
 C_EOLN:
     EOFNL{

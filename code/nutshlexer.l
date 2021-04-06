@@ -33,7 +33,7 @@ cd|CD                  return CD;
 unalias|UNALIAS        return UNALIAS;
 alias|ALIAS            return ALIAS;
 bye|Bye|BYE            return BYE;
-".."                   return DOTDOT; /* need to find a way to handle the current working directory */
+".."                   return DOTDOT;
 "<"                    return LESSTHAN;
 [>]                    return GREATERTHAN;
 [|]                    return PIPE;

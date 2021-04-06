@@ -1,6 +1,6 @@
 #pragma GCC diagnostic ignored "-Wwrite-strings" // This supresses const char warning
 
-#define AUTO 1 //1 for auto testing, 0 for manual.
+#define AUTO 0 //1 for auto testing, 0 for manual.
 
 // C header files
 #include <stdio.h>
@@ -49,6 +49,9 @@ void removeAlias(const char *name)
 
 void executeCommand(const char *command)
 {
+    string com(command);
+    com = "/bin/" + com;
+    
     // execl or exce
     pid_t p;
     p = fork();
@@ -58,7 +61,7 @@ void executeCommand(const char *command)
     }
     else if (p == 0)
     {
-        execl("/bin/ls", command, NULL);
+        execl(com.c_str(), command, NULL);
     }
     else
         wait(0);
