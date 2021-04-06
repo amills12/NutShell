@@ -9,7 +9,7 @@
 %%
 setenv                 return SETENV;
 printenv               return PRINTENV;
-unsentenv              return UNSETENV;
+unsetenv              return UNSETENV;
 cd                     return CD;
 unalias                return UNALIAS;
 alias                  return ALIAS;
@@ -24,7 +24,6 @@ bye|Bye                return BYE;
 [~]                    return HOME;
 \n                     return EOFNL;
 "~/"                   return HOME_PATH;
-
 
 [ \t\r\n]              /* do nada */;
 \"([^'\n]|\'\')+\"     { yylval.str = strdup(yytext); return STRING; };

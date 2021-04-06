@@ -140,12 +140,12 @@ int main()
 
 #if AUTO //If AUTO is 1 this code will run
     string testArr[] = { "alias beetle \"beetle juice\"", "alias ya yeet", "alias test \"cd ..\"", "alias", "unalias beetle", "alias",
-                        "beetle","test", "cd", "cd ..", "cd /NutShell/code", "cd ..", "cd ..", "bye"};
-                    //    "Yeet", "alias beetle \"beetle juice\"", "bye"
-                    //    "\"nutshell/nutshell/nutshell/nutshell\"" /*This should print quote word quote*/,
-                    //    "setenv beetle juice", "printenv beetle", "unsentenv beetle", "printenv beetle",
-                    //    "..", "<", ">", "|", "\"\"", "&", "~", "~/", "cd", "("/*this should throw an error*/,
-                    //    "bye", "Bye"};
+                        "beetle","test", "cd", "cd ..","ls", "*.c", "*.h", "cd /NutShell/code", "cd ..", "cd ..",
+                       "Yeet", "alias beetle \"beetle juice\"",
+                       "\"nutshell/nutshell/nutshell/nutshell\"" /*This should print quote word quote*/,
+                       "setenv beetle juice", "printenv", "unsetenv beetle", "printenv beetle",
+                       "..", "<", ">", "|", "\"\"", "&", "~", "~/", "cd", "("/*this should throw an error*/,
+                       "ls", "bye", "Bye"};
 
     for (int i = 0; i < sizeof(testArr); i++)
     {
