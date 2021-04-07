@@ -58,7 +58,7 @@ input:
     
 /* ===================================== START META CHARACTER CASE ======================================== */  
 C_META:
-    C_LESSTHAN | C_GREATERTHAN | C_PIPE | C_BACKSLASH | C_AMPERSAND;
+    C_LESSTHAN | C_GREATERTHAN | C_BACKSLASH | C_AMPERSAND;
 
 C_LESSTHAN:
     LESSTHAN
@@ -74,13 +74,13 @@ C_GREATERTHAN:
         printf("\n");
         return 1;
     };
-C_PIPE:
+/* C_PIPE:
     PIPE
     {
         printf("PIPE");
         printf("\n");
         return 1;
-    };
+    }; */
 C_BACKSLASH:
     BACKSLASH
     {
@@ -137,7 +137,7 @@ C_CD: /* need to word on "cd .. " implementation */
 /* ========================================= END CD CASE ================================================== */   
 
 C_WORD:
-    WORD EOFNL{
+    /* WORD EOFNL{
         printf("WORD -- ");
         const char* command = $1;
         if (isAlias(command) == true){
@@ -147,20 +147,42 @@ C_WORD:
             executeCommand(command);
             printf("\n");
         }
+        return 1;
+    }; */
+    /* | WORD WORD EOFNL{
+        printf("WORD -- ");
+        const char* command = $1;
+        if (isAlias(command) == true){
+            findAliasCommand(command);
+        }
+        else {
+            executeCommand(command);
+            printf("\n");
+        }
+        return 1;
+    }; */
+    WORD args EOFNL{
+        const char* word = $1;
+        printf("COMMAND : %s", word);
+        printf("\n");
         return 1;
     };
 
-    WORD WORD EOFNL{
-        printf("WORD -- ");
-        const char* command = $1;
-        if (isAlias(command) == true){
-            findAliasCommand(command);
-        }
-        else {
-            executeCommand(command);
-            printf("\n");
-        }
-        return 1;
+args: 
+    | args arg
+
+arg:
+    WORD{
+        const char* word = $1;
+        printf("ARG %s, ", word);
+    };
+    | STRING{
+        const char* word = $1;
+        printf("STRING ARG %s, ", word);
+    };
+    | PIPE WORD{
+        const char* word = $2;
+        printf("PIPE COMMAND: %s ", word);
     };
     
 C_SETENV:
