@@ -39,12 +39,34 @@ void printenv()
 
 void addAlias(const char *name, const char *command)
 {
-    aliasMap.insert(pair<string, string>(name, command));
+    string nameCheck(name);
+    string commandCheck(command);
+
+    auto itr = aliasMap.find(name);
+    if (itr == aliasMap.end() && nameCheck != commandCheck){
+        aliasMap.insert(pair<string, string>(name, command));
+        //printf("Alias Added"); 
+    }
+    else
+    {
+        printf("Add alias failed.\n"); 
+    }
+    
 }
 
 void removeAlias(const char *name)
 {
-    aliasMap.erase(name);
+    auto itr = aliasMap.find(name);
+    if (itr == aliasMap.end())
+    {
+        printf("Alias Does Not Exist\n"); 
+    }
+    else
+    {
+        aliasMap.erase(name);
+        
+    }
+    
 }
 
 void executeCommand(const char *command)
@@ -66,11 +88,11 @@ bool isAlias(const char *name)
 {
     auto itr = aliasMap.find(name);
     if (itr == aliasMap.end()){
-        printf("ALIAS NOT FOUND: "); 
+        //printf("ALIAS NOT FOUND: "); 
         return false;
     }
     else{
-        printf("ALIAS WAS FOUND: "); 
+        //printf("ALIAS WAS FOUND: "); 
         return true;
     }
 }
@@ -79,9 +101,13 @@ void findAliasCommand(const char *name)
 {
     string aliasCommand(name);
     aliasCommand = aliasMap.find(name)->second;
-    printf("ALIAS COMMAND: %s", aliasCommand.c_str());
+    //printf("ALIAS COMMAND: %s", aliasCommand.c_str());
+
+    if (aliasCommand.substr(0,1) == "\"")
     aliasCommand.erase(0,1);
+    if (aliasCommand.substr(aliasCommand.length()-1,1) == "\"")
     aliasCommand.erase(aliasCommand.length()-1);
+
     aliasCommand += "\n";
     yy_scan_string(aliasCommand.c_str());    
     yyparse();
@@ -94,7 +120,7 @@ void wildCarding(const char *name)
         glob(name, GLOB_DOOFFS, NULL, &globbuf);
         for (size_t i = 0; i != globbuf.gl_pathc; ++i)
         {
-            printf("Found: %s\n", globbuf.gl_pathv[i]);
+            printf("%s\n", globbuf.gl_pathv[i]);
         }
         globfree(&globbuf);
 }
@@ -109,7 +135,7 @@ void printAlias()
         if(next(itr) != aliasMap.end())
             printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
         else
-            printf("%s = %s", itr->first.c_str(), itr->second.c_str());
+            printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
     }
 }
 void black() {printf("\033[0;30m");}

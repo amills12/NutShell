@@ -9,7 +9,7 @@
 %%
 setenv                 return SETENV;
 printenv               return PRINTENV;
-unsetenv              return UNSETENV;
+unsetenv               return UNSETENV;
 cd                     return CD;
 unalias                return UNALIAS;
 alias                  return ALIAS;
