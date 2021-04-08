@@ -47,12 +47,11 @@ void removeAlias(const char *name)
     aliasMap.erase(name);
 }
 
-void executeCommand(const char *command)
+void executeCommand(char *command, char ** args)
 {
     string com(command);
     com = "/bin/" + com;
-    
-    // execl or exce
+
     pid_t p;
     p = fork();
     if (p < 0)
@@ -61,7 +60,7 @@ void executeCommand(const char *command)
     }
     else if (p == 0)
     {
-        execl(com.c_str(), command, NULL);
+        execv(com.c_str(), args);
     }
     else
         wait(0);

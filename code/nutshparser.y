@@ -15,6 +15,11 @@
     typedef struct yy_buffer_state *YY_BUFFER_STATE;
     extern int yyparse();
     extern YY_BUFFER_STATE yy_scan_string(const char *str);
+
+    // Global Variables
+    char * cmdTable[100][100];
+    int i = 0;
+    int j = 0;
 %}
 
 //%token WORD
@@ -32,7 +37,6 @@
 %token PRINTENV
 %token UNSETENV
 %token HOME
-%token HOME_PATH
 %token UNALIAS
 %token ALIAS
 %token BYE
@@ -163,8 +167,25 @@ C_WORD:
     }; */
     WORD args EOFNL{
         const char* word = $1;
-        printf("COMMAND : %s", word);
-        printf("\n");
+
+        // Construct arg tables
+        char ** args;
+        args =(char **)malloc(100*sizeof(char*));
+        args[0] = $1;
+
+        for (int temp = 1; temp <= j; temp++)
+        {
+            args[temp] = cmdTable[i][temp-1];
+        }
+
+        executeCommand($1, args);
+        // printf("COMMAND : %s ", word);
+        // printf("\n");
+        i = i + 1;
+        // printf("%i\n", i);
+        j = 0;
+
+        free(args);
         return 1;
     };
 
@@ -173,8 +194,11 @@ args:
 
 arg:
     WORD{
-        const char* word = $1;
-        printf("ARG %s, ", word);
+        // printf("ARG %s, ", word);
+
+        // Add args to string
+        cmdTable[i][j] = $1;
+        j++;
     };
     | STRING{
         const char* word = $1;
@@ -288,3 +312,4 @@ int yyerror(char *s)
     yylex_destroy();
     return 0;
 }
+
