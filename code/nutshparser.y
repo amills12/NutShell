@@ -12,6 +12,9 @@
     int yyparse();
     int yyerror(char *s);
 
+    typedef struct yy_buffer_state *YY_BUFFER_STATE;
+    extern int yyparse();
+    extern YY_BUFFER_STATE yy_scan_string(const char *str);
 %}
 
 //%token WORD
@@ -20,17 +23,18 @@
 %token LESSTHAN
 %token GREATERTHAN
 %token PIPE
-%token QUOTE
 %token BACKSLASH
 %token AMPERSAND
 %token EOFNL
+%token ERROR
+ 
 %token SETENV
 %token PRINTENV
 %token UNSETENV
 %token HOME
 %token HOME_PATH
 %token UNALIAS
-%token ALIAS /* alias w/o arguments lists all the current aliases w/ argument adds new alias command to the shell */
+%token ALIAS
 %token BYE
 
 %union 
@@ -43,7 +47,6 @@
 %token <str> WORD
 %token <str> STRING
 %token <str> WILDCARD 
-%token <num> NUMBER
 
 %%
 
@@ -51,11 +54,11 @@ inputs:
     | inputs input
 
 input:
-    C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_EOLN | C_WILDCARD | C_BYE;
+    C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_EOLN | C_STRING | C_ERROR | C_WILDCARD |C_BYE;
     
 /* ===================================== START META CHARACTER CASE ======================================== */  
 C_META:
-    C_LESSTHAN | C_GREATERTHAN | C_PIPE | C_QUOTE | C_BACKSLASH | C_AMPERSAND;
+    C_LESSTHAN | C_GREATERTHAN | C_PIPE | C_BACKSLASH | C_AMPERSAND;
 
 C_LESSTHAN:
     LESSTHAN
@@ -75,13 +78,6 @@ C_PIPE:
     PIPE
     {
         printf("PIPE");
-        printf("\n");
-        return 1;
-    };
-C_QUOTE:
-    QUOTE
-    {
-        printf("QUOTE");
         printf("\n");
         return 1;
     };
@@ -136,7 +132,8 @@ C_CD: /* need to word on "cd .. " implementation */
         // printf("-- Switching To: %s", getcwd(NULL,0));
         // printf("\n");
         return 1;
-    };      
+    };
+    | CD ERROR{ return 0;};
 /* ========================================= END CD CASE ================================================== */   
 
 C_WORD:
@@ -230,7 +227,20 @@ C_WILDCARD:
     return 1;
     };
 C_EOLN:
-    EOFNL{/*do nada*/};
+    EOFNL{
+        return 1;
+    };
+
+C_STRING:
+    STRING EOFNL
+    {
+        printf("STRING");
+        printf("\n");
+        return 1;
+    };
+
+C_ERROR:
+    ERROR { return 0; };
 
 C_BYE:
     BYE EOFNL
@@ -244,5 +254,6 @@ C_BYE:
 int yyerror(char *s)
 {
     printf("An Error has Occured: %s\n", s);
+    yylex_destroy();
     return 0;
 }

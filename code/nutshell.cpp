@@ -74,10 +74,12 @@ void executeCommand(const char *command)
     // execl or exce
     pid_t p;
     p = fork();
-    if(p < 0) {
+    if (p < 0)
+    {
         perror("Fork Failed");
     }
-    else if (p == 0) {
+    else if (p == 0)
+    {
         execl("/bin/ls", command, NULL);
     }
     else
@@ -101,15 +103,9 @@ void findAliasCommand(const char *name)
 {
     string aliasCommand(name);
     aliasCommand = aliasMap.find(name)->second;
-    //printf("ALIAS COMMAND: %s", aliasCommand.c_str());
-
-    if (aliasCommand.substr(0,1) == "\"")
-    aliasCommand.erase(0,1);
-    if (aliasCommand.substr(aliasCommand.length()-1,1) == "\"")
-    aliasCommand.erase(aliasCommand.length()-1);
-
+    // printf("ALIAS COMMAND: %s", aliasCommand.c_str());
     aliasCommand += "\n";
-    yy_scan_string(aliasCommand.c_str());    
+    yy_scan_string(aliasCommand.c_str());
     yyparse();
     yylex_destroy();
 }
@@ -132,28 +128,30 @@ void printAlias()
 
     for (itr = aliasMap.begin(); itr != aliasMap.end(); itr++)
     {
-        if(next(itr) != aliasMap.end())
+        if (next(itr) != aliasMap.end())
             printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
         else
             printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
     }
 }
-void black() {printf("\033[0;30m");}
-void red() {printf("\033[0;31m");}
-void green() {printf("\033[0;32m");}
-void yellow() {printf("\033[0;33m");}
-void blue() {printf("\033[0;34m");}
-void purple() {printf("\033[0;35m");}
-void cyan() {printf("\033[0;36m");}
-void white() {printf("\033[0;37m");}
 
-void nutshellTerminalPrint(){
+void black() { printf("\033[0;30m"); }
+void red() { printf("\033[0;31m"); }
+void green() { printf("\033[0;32m"); }
+void yellow() { printf("\033[0;33m"); }
+void blue() { printf("\033[0;34m"); }
+void purple() { printf("\033[0;35m"); }
+void cyan() { printf("\033[0;36m"); }
+void white() { printf("\033[0;37m"); }
+
+void nutshellTerminalPrint()
+{
     purple();
     printf("Nutshell@localhost:");
     yellow();
-    printf("%s", getcwd(NULL,0));
+    printf("%s", getcwd(NULL, 0));
     cyan();
-    printf("%s ","$"); 
+    printf("%s ", "$");
     white();
 }
 
@@ -179,8 +177,8 @@ int main()
                        "Yeet", "alias beetle \"beetle juice\"",
                        "\"nutshell/nutshell/nutshell/nutshell\"" /*This should print quote word quote*/,
                        "setenv beetle juice", "printenv", "unsetenv beetle", "printenv beetle",
-                       "..", "<", ">", "|", "\"\"", "&", "~", "~/", "cd", "("/*this should throw an error*/,
-                       "ls", "bye", "Bye"};
+                       "..", "<", ">", "|", "&", "~", "~/", "cd", "("/*this should throw an error*/,
+                       "ls", "bye"};
 
     for (int i = 0; i < sizeof(testArr); i++)
     {
@@ -191,7 +189,7 @@ int main()
         yylex_destroy();
     }
 #else //If AUTO is 0 this code will run
-    while(1)
+    while (1)
     {
         nutshellTerminalPrint();
         yyparse();
