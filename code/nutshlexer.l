@@ -46,4 +46,5 @@ bye|Bye|BYE            return BYE;
 
 [ \t\r]                /* do nada */;
 {WORD}+                { yylval.str = strdup(yytext); return WORD; };
+[*.a-zA-Z]+            { yylval.str = strdup(yytext); return WILDCARD; };
 .                      { yyerror("Unexpected character"); return ERROR; };
