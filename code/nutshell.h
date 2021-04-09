@@ -21,5 +21,6 @@ void white();
 void nutshellTerminalPrint();
 
 void wildCarding(const char *name);
+void tildeExpansion(const char *name);
 
 int yylex_destroy ( void );

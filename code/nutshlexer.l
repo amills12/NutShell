@@ -44,6 +44,7 @@ bye|Bye|BYE            return BYE;
 [~]                    return HOME;
 \n                     return EOFNL;
 "~/"                   return HOME_PATH;
+[~a-zA-Z]+             return TILDE_EXPANSION;
 
 [ \t\r]                /* do nada */;
 {WORD}+                { yylval.str = strdup(yytext); return WORD; };

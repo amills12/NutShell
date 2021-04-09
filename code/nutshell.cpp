@@ -121,6 +121,17 @@ void wildCarding(const char *name)
         globfree(&globbuf);
 }
 
+void tildeExpansion(const char *name)
+{
+        glob_t globbuf = {0};
+        glob(name, GLOB_TILDE, NULL, &globbuf);
+        for (size_t i = 0; i != globbuf.gl_pathc; ++i)
+        {
+            printf("%s", globbuf.gl_pathv[i]);
+        }
+        globfree(&globbuf);
+}
+
 void printAlias()
 {
     // Make an iterator to print through all alias

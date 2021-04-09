@@ -3,6 +3,7 @@
     #include <stdio.h>    
     #include <stdlib.h>
     #include <string.h>
+    #include <pwd.h>
     
     #include <unistd.h>
     #include <sys/wait.h>
@@ -15,6 +16,7 @@
     typedef struct yy_buffer_state *YY_BUFFER_STATE;
     extern int yyparse();
     extern YY_BUFFER_STATE yy_scan_string(const char *str);
+
 %}
 
 //%token WORD
@@ -27,12 +29,11 @@
 %token AMPERSAND
 %token EOFNL
 %token ERROR
- 
+%token HOME
+%token HOME_PATH
 %token SETENV
 %token PRINTENV
 %token UNSETENV
-%token HOME
-%token HOME_PATH
 %token UNALIAS
 %token ALIAS
 %token BYE
@@ -47,6 +48,7 @@
 %token <str> WORD
 %token <str> STRING
 %token <str> WILDCARD 
+%token <str> TILDE_EXPANSION
 
 %%
 
@@ -54,7 +56,7 @@ inputs:
     | inputs input
 
 input:
-    C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_EOLN | C_STRING | C_ERROR | C_WILDCARD |C_BYE;
+    C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_EOLN | C_STRING | C_HOME | C_ERROR | C_WILDCARD |C_BYE;
     
 /* ===================================== START META CHARACTER CASE ======================================== */  
 C_META:
@@ -238,6 +240,20 @@ C_STRING:
         printf("\n");
         return 1;
     };
+C_HOME:
+    HOME{  
+        tildeExpansion("~");
+        return 1;
+    }
+    | HOME_PATH{
+        tildeExpansion("~/");
+        return 1;
+    }
+    | TILDE_EXPANSION EOFNL{
+        const char *tildeExp = $1;   
+        tildeExpansion(tildeExp);
+        return 1;
+    }
 
 C_ERROR:
     ERROR { return 0; };
