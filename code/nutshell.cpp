@@ -69,9 +69,11 @@ void removeAlias(const char *name)
     
 }
 
-void executeCommand(const char *command)
+void executeCommand(char *command, char ** args)
 {
-    // execl or exce
+    string com(command);
+    com = "/bin/" + com;
+
     pid_t p;
     p = fork();
     if (p < 0)
@@ -80,7 +82,7 @@ void executeCommand(const char *command)
     }
     else if (p == 0)
     {
-        execl("/bin/ls", command, NULL);
+        execv(com.c_str(), args);
     }
     else
         wait(0);
@@ -103,7 +105,7 @@ void findAliasCommand(const char *name)
 {
     string aliasCommand(name);
     aliasCommand = aliasMap.find(name)->second;
-    // printf("ALIAS COMMAND: %s", aliasCommand.c_str());
+    printf("ALIAS COMMAND: %s", aliasCommand.c_str());
     aliasCommand += "\n";
     yy_scan_string(aliasCommand.c_str());
     yyparse();

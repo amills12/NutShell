@@ -16,6 +16,10 @@
     extern int yyparse();
     extern YY_BUFFER_STATE yy_scan_string(const char *str);
 
+    // Global Variables
+    char * cmdTable[100][100];
+    int i = 0;
+    int j = 0;
 %}
 
 //%token WORD
@@ -59,7 +63,7 @@ input:
     
 /* ===================================== START META CHARACTER CASE ======================================== */  
 C_META:
-    C_LESSTHAN | C_GREATERTHAN | C_PIPE | C_BACKSLASH | C_AMPERSAND;
+    C_LESSTHAN | C_GREATERTHAN | C_BACKSLASH | C_AMPERSAND;
 
 C_LESSTHAN:
     LESSTHAN
@@ -75,13 +79,13 @@ C_GREATERTHAN:
         printf("\n");
         return 1;
     };
-C_PIPE:
+/* C_PIPE:
     PIPE
     {
         printf("PIPE");
         printf("\n");
         return 1;
-    };
+    }; */
 C_BACKSLASH:
     BACKSLASH
     {
@@ -138,21 +142,54 @@ C_CD: /* need to word on "cd .. " implementation */
 /* ========================================= END CD CASE ================================================== */   
 
 C_WORD:
-    WORD EOFNL{
-        // printf("WORD -- ");
-        const char* command = $1;
-        if (isAlias(command) == true){
-            findAliasCommand(command);
-        }
-        else if (strcmp(command, "ls") == 0){
-            executeCommand(command);
-            // printf("\n");
-        }
-        else{
-            printf("%s", command);
+    WORD args EOFNL{
+        const char* word = $1;
+
+        if (isAlias(word) == true){
+            findAliasCommand(word);
             printf("\n");
         }
+        else {
+            // Construct arg tables 
+            char ** args;
+            args =(char **)malloc(100*sizeof(char*));
+            args[0] = $1;
+
+            for (int temp = 1; temp <= j; temp++)
+            {
+                args[temp] = cmdTable[i][temp-1];
+            }
+
+            executeCommand($1, args);
+            // printf("COMMAND : %s ", word);
+            // printf("\n");
+            i = i + 1;
+            // printf("%i\n", i);
+            j = 0;
+
+            free(args);
+        }
         return 1;
+    };
+
+args: 
+    | args arg
+
+arg:
+    WORD{
+        // printf("ARG %s, ", word);
+
+        // Add args to string
+        cmdTable[i][j] = $1;
+        j++;
+    };
+    | STRING{
+        const char* word = $1;
+        printf("STRING ARG %s, ", word);
+    };
+    | PIPE WORD{
+        const char* word = $2;
+        printf("PIPE COMMAND: %s ", word);
     };
     
 C_SETENV:
@@ -223,9 +260,9 @@ C_ALIAS:
     };
 C_WILDCARD:
     WILDCARD EOFNL{
-    const char *fileExt = $1;   
-    wildCarding(fileExt);
-    return 1;
+        const char *fileExt = $1;   
+        wildCarding(fileExt);
+        return 1;
     };
 C_EOLN:
     EOFNL{
@@ -272,3 +309,4 @@ int yyerror(char *s)
     yylex_destroy();
     return 0;
 }
+
