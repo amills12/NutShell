@@ -32,11 +32,11 @@
 %token AMPERSAND
 %token EOFNL
 %token ERROR
- 
+%token HOME
+%token HOME_PATH
 %token SETENV
 %token PRINTENV
 %token UNSETENV
-%token HOME
 %token UNALIAS
 %token ALIAS
 %token BYE
@@ -51,6 +51,7 @@
 %token <str> WORD
 %token <str> STRING
 %token <str> WILDCARD 
+%token <str> TILDE_EXPANSION
 
 %%
 
@@ -58,7 +59,7 @@ inputs:
     | inputs input
 
 input:
-    C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_EOLN | C_STRING | C_ERROR | C_WILDCARD |C_BYE;
+    C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_EOLN | C_STRING | C_HOME | C_ERROR | C_WILDCARD |C_BYE;
     
 /* ===================================== START META CHARACTER CASE ======================================== */  
 C_META:
@@ -141,51 +142,33 @@ C_CD: /* need to word on "cd .. " implementation */
 /* ========================================= END CD CASE ================================================== */   
 
 C_WORD:
-    /* WORD EOFNL{
-        printf("WORD -- ");
-        const char* command = $1;
-        if (isAlias(command) == true){
-            findAliasCommand(command);
-        }
-        else {
-            executeCommand(command);
-            // printf("\n");
-        }
-        return 1;
-    }; */
-    /* | WORD WORD EOFNL{
-        printf("WORD -- ");
-        const char* command = $1;
-        if (isAlias(command) == true){
-            findAliasCommand(command);
-        }
-        else {
-            executeCommand(command);
-            printf("\n");
-        }
-        return 1;
-    }; */
     WORD args EOFNL{
         const char* word = $1;
 
-        // Construct arg tables
-        char ** args;
-        args =(char **)malloc(100*sizeof(char*));
-        args[0] = $1;
-
-        for (int temp = 1; temp <= j; temp++)
-        {
-            args[temp] = cmdTable[i][temp-1];
+        if (isAlias(word) == true){
+            findAliasCommand(word);
+            printf("\n");
         }
+        else {
+            // Construct arg tables 
+            char ** args;
+            args =(char **)malloc(100*sizeof(char*));
+            args[0] = $1;
 
-        executeCommand($1, args);
-        // printf("COMMAND : %s ", word);
-        // printf("\n");
-        i = i + 1;
-        // printf("%i\n", i);
-        j = 0;
+            for (int temp = 1; temp <= j; temp++)
+            {
+                args[temp] = cmdTable[i][temp-1];
+            }
 
-        free(args);
+            executeCommand($1, args);
+            // printf("COMMAND : %s ", word);
+            // printf("\n");
+            i = i + 1;
+            // printf("%i\n", i);
+            j = 0;
+
+            free(args);
+        }
         return 1;
     };
 
@@ -293,6 +276,20 @@ C_STRING:
         printf("\n");
         return 1;
     };
+C_HOME:
+    HOME EOFNL{  
+        tildeExpansion("~");
+        return 1;
+    }
+    | HOME_PATH EOFNL{
+        tildeExpansion("~/");
+        return 1;
+    }
+    | TILDE_EXPANSION EOFNL{
+        const char *tildeExp = $1;   
+        tildeExpansion(tildeExp);
+        return 1;
+    }
 
 C_ERROR:
     ERROR { return 0; };
