@@ -69,9 +69,11 @@ void removeAlias(const char *name)
     
 }
 
-void executeCommand(const char *command)
+void executeCommand(char *command, char ** args)
 {
-    // execl or exce
+    string com(command);
+    com = "/bin/" + com;
+
     pid_t p;
     p = fork();
     if (p < 0)
@@ -80,7 +82,7 @@ void executeCommand(const char *command)
     }
     else if (p == 0)
     {
-        execl("/bin/ls", command, NULL);
+        execv(com.c_str(), args);
     }
     else
         wait(0);
