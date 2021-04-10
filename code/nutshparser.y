@@ -241,11 +241,11 @@ C_STRING:
         return 1;
     };
 C_HOME:
-    HOME{  
+    HOME EOFNL{  
         tildeExpansion("~");
         return 1;
     }
-    | HOME_PATH{
+    | HOME_PATH EOFNL{
         tildeExpansion("~/");
         return 1;
     }
