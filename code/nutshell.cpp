@@ -71,8 +71,9 @@ void removeAlias(const char *name)
 
 void executeCommand(char *command, char ** args)
 {
-    string com(command);
-    com = "/bin/" + com;
+    string comString(command);
+    string comPath = "/bin/" + comString;
+    int status = 0;
 
     pid_t p;
     p = fork();
@@ -82,7 +83,11 @@ void executeCommand(char *command, char ** args)
     }
     else if (p == 0)
     {
-        execv(com.c_str(), args);
+        execv(comPath.c_str(), args);
+
+        // If it's not an acctual command print and exit
+        printf("could not find command: %s\n", comString.c_str());
+        exit(0);
     }
     else
         wait(0);
