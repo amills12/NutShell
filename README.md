@@ -69,9 +69,9 @@ Installation should be simple. You install VMWare, set up Reptilian, Install VSC
 #### 1. Install VMWare Workstation Pro 15.5 or later
 
 #### 2. Download [Reptilian VM Image](www.cise.ufl.edu/research/reptilian/downloads/Reptilian-latest.ova)
-  - Double-click on the Reptilian VM image file, then click “Import”.
-  - Optionally, as a sound card (right-click on VM → Settings → Add → Sound Card → Finish).
-  - To connect to the VM, you will need its IPv4 address. To get it, start the VM, open
+  1) Double-click on the Reptilian VM image file, then click “Import”.
+  2) Optionally, as a sound card (right-click on VM → Settings → Add → Sound Card → Finish).
+  3) To connect to the VM, you will need its IPv4 address. To get it, start the VM, open
   the start menu, and go to Settings → System → About Tablet → IP Address. With it,
   you can connect to the VM through SSH via WSL (replace with your IP address):
   
@@ -79,7 +79,7 @@ Installation should be simple. You install VMWare, set up Reptilian, Install VSC
   finn@BMO:~$ ssh reptilian@192.168.11.130 Password is 'reptilian'
   ```
   
-  - Build a fresh Kernel in the /usr/rep/src directory and clone the kernel repository
+  4) Build a fresh Kernel in the /usr/rep/src directory and clone the kernel repository
   ```sh
   reptilian@localhost$ cd /usr/rep/src
   
