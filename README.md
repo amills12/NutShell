@@ -101,15 +101,15 @@ Installation should be simple. You install VMWare, set up Reptilian, Install VSC
 
 #### 1. Clone the repo
 ```sh
-git clone https://github.com/amills12/NutShell.git
+reptilian@localhost$ git clone https://github.com/amills12/NutShell.git
 ```
 #### 2. Run Make to compile the project
 ```
-make
+reptilian@localhost$ make
 ```
 #### 3. Use the following command to run the shell
 ```sh
-./nutshell        
+reptilian@localhost$ ./nutshell        
 ```
 
 <!-- USAGE EXAMPLES -->
