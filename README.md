@@ -66,9 +66,9 @@ using Lex and Yacc running under Unix.
 Installation should be simple. You install VMWare, set up Reptilian, Install VSCode and the necessary libraries, clone the repo, run Make to compile and ./nutshell to use the shell. 
 
 ### Prerequisites
-1. Install VMWare Workstation Pro 15.5 or later
+#### 1. Install VMWare Workstation Pro 15.5 or later
 
-2. Download [Reptilian VM Image](www.cise.ufl.edu/research/reptilian/downloads/Reptilian-latest.ova)
+#### 2. Download [Reptilian VM Image](www.cise.ufl.edu/research/reptilian/downloads/Reptilian-latest.ova)
   - Double-click on the Reptilian VM image file, then click “Import”.
   - Optionally, as a sound card (right-click on VM → Settings → Add → Sound Card → Finish).
   - To connect to the VM, you will need its IPv4 address. To get it, start the VM, open
@@ -91,7 +91,7 @@ Installation should be simple. You install VMWare, set up Reptilian, Install VSC
   
   reptilian@localhost$ sudo make install; sudo make modules_install
   ```
-3. Install VSCode and the necessary plug-ins
+#### 3. Install VSCode and the necessary plug-ins
   1) Remote SSH
   2) Remote SSH: Editing Configuration Files
   3) Remote WSL
@@ -99,15 +99,15 @@ Installation should be simple. You install VMWare, set up Reptilian, Install VSC
 
 ### Installation
 
-1. Clone the repo
+#### 1. Clone the repo
 ```sh
 git clone https://github.com/amills12/NutShell.git
 ```
-2. Run Make to compile the project
+#### 2. Run Make to compile the project
 ```
 make
 ```
-3. Use the following command to run the shell
+#### 3. Use the following command to run the shell
 ```sh
 ./nutshell        
 ```
