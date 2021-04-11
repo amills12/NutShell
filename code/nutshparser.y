@@ -8,9 +8,11 @@
     #include <sys/wait.h>
     #include "nutshell.h"
 
+    // Funciton Headers
     int yylex();
     int yyparse();
     int yyerror(char *s);
+    char ** generateCArgs(std::vector<std::string> arguments, const char* name);
 
     typedef struct yy_buffer_state *YY_BUFFER_STATE;
     extern int yyparse();
@@ -120,7 +122,6 @@ C_CD: /* need to word on "cd .. " implementation */
         return 1;
     };
     | CD WORD EOFNL{
-        
         // printf("CD WORD -- "); 
         const char* dir = $2;
         // printf("Current Working Directory Is: %s ", getcwd(NULL,0));
@@ -142,21 +143,7 @@ C_COMMAND:
         else {
             for (int i = 0; i < cmdTable.size(); i++)
             {
-                // Create a an array of arguments using what we have
-                char ** args;
-
-                // Allocating Space for new args array
-                args = (char **)malloc(100*sizeof(char*));
-                args[0] = (char *)malloc(100*sizeof(char*));
-
-                // Copy over command name
-                strcpy(args[0], cmdTable[i].commandName.c_str());
-
-                for (int temp = 1; temp <= cmdTable[i].args.size(); temp++)
-                {
-                    args[temp] = (char *)malloc(100*sizeof(char*));
-                    strcpy(args[temp],cmdTable[i].args[temp-1].c_str());
-                }
+                char ** args = generateCArgs(cmdTable[i].args, cmdTable[i].commandName.c_str());
 
                 // Call execute command
                 executeCommand(args[0], args);
@@ -307,5 +294,26 @@ int yyerror(char *s)
     printf("An Error has Occured: %s\n", s);
     yylex_destroy();
     return 0;
+}
+
+char** generateCArgs(std::vector<std::string> arguments, const char * name)
+{
+    // Create a an array of arguments using what we have
+    char ** args;
+    
+    // Allocating Space for new args array
+    args = (char **)malloc(100*sizeof(char*));
+    args[0] = (char *)malloc(100*sizeof(char*));
+
+    // Copy over command name
+    strcpy(args[0], name);
+
+    for (int temp = 1; temp <= arguments.size(); temp++)
+    {
+        args[temp] = (char *)malloc(100*sizeof(char*));
+        strcpy(args[temp],arguments[temp-1].c_str());
+    }
+
+    return args;
 }
 
