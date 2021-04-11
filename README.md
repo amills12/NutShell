@@ -47,7 +47,7 @@ environment variables, aliases, pathname searching, wild-carding and tilde expan
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-command interpreter for a Korn shell-like command language in C/C++
+Command interpreter for a Korn shell-like command language in C/C++
 using Lex and Yacc running under Unix.
 
 ### Built With
@@ -103,11 +103,11 @@ Installation should be simple. You install VMWare, set up Reptilian, Install VSC
 ```sh
 git clone https://github.com/amills12/NutShell.git
 ```
-2. Run Make
+2. Run Make to compile the project
 ```
 make
 ```
-3. In the Default Settings dialog box, click these tabs to install Android SDK platform packages and developer tools.
+3. Use the following command to run the shell
 ```sh
 ./nutshell        
 ```
@@ -152,7 +152,7 @@ Joseph - JosephMorales007@Yahoo.com
 [![LinkedIn][linkedin-shield]][linkedin-url-joseph]
 
 Alex -  Millsalexander97@gmail.com
-
+[![LinkedIn][linkedin-shield]][linkedin-url-alex]
 
 
 
