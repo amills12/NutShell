@@ -23,6 +23,7 @@ void removeAlias(const char *name);
 bool isAlias(const char *name);
 void findAliasCommand(const char *name);
 void executeCommand(char *command, char **args);
+void executePipedCommand(char *command, char **args, int pipeFlag);
 
 // Colors 
 void printAlias();
@@ -40,4 +41,4 @@ void nutshellTerminalPrint();
 void wildCarding(const char *name);
 void tildeExpansion(const char *name);
 
-int yylex_destroy ( void );
+int yylex_destroy( void );

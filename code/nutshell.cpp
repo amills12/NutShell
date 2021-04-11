@@ -14,7 +14,7 @@
 // C++ header files
 #include <map>
 #include <iterator>
-#include <string>
+#include <fstream>
 #include "nutshell.h"
 using namespace std;
 
@@ -72,7 +72,9 @@ void executeCommand(char *command, char ** args)
 {
     string comString(command);
     string comPath = "/bin/" + comString;
-    int status = 0;
+
+    printf("COMMAND STRING %s : %s\n", comString.c_str(), comPath.c_str());
+
 
     pid_t p;
     p = fork();
@@ -82,6 +84,53 @@ void executeCommand(char *command, char ** args)
     }
     else if (p == 0)
     {
+        execv(comPath.c_str(), args);
+
+        // If it's not an actual command print and exit
+        printf("Could not find command: %s\n", comString.c_str());
+        exit(0);
+    }
+    else
+        wait(0);
+}
+
+void executePipedCommand(char *command, char **args, int pipeFlag)
+{
+    string comString(command);
+    string comPath = "/bin/" + comString;
+
+    printf("COMMAND STRING %s\n", comString.c_str());
+
+    pid_t p;
+    p = fork();
+    if (p < 0)
+    {
+        perror("Fork Failed");
+    }
+    else if (p == 0)
+    {
+        if (pipeFlag == 0)
+        {
+            // Open a file and write standard output
+            FILE *f = fopen("pipe", "w");
+            dup2(fileno(f), 1);
+            fclose(f);
+        }
+        else if(pipeFlag == 2)
+        {
+            //Last command of the pipe only reads
+            FILE *f = fopen("pipe", "r");
+            dup2(fileno(f), 0);
+            fclose(f);
+        }
+        else
+        {
+            // Pipe is inbetween
+            FILE *f = fopen("pipe", "rw");
+            dup2(fileno(f), 1);
+            dup2(fileno(f), 0);
+            fclose(f);
+        }
         execv(comPath.c_str(), args);
 
         // If it's not an actual command print and exit

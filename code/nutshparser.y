@@ -134,31 +134,59 @@ C_CD: /* need to word on "cd .. " implementation */
 /* ========================================= END CD CASE ================================================== */   
 
 C_COMMAND:
-    subcommand pipedcommands EOFNL{
+    subcommand piped EOFNL{
 
         if (isAlias(cmdTable[0].commandName.c_str()) == true){
             findAliasCommand(cmdTable[0].commandName.c_str());
             printf("\n");
         }
         else {
-            for (int i = 0; i < cmdTable.size(); i++)
+            if(cmdTable.size() == 1)
             {
-                char ** args = generateCArgs(cmdTable[i].args, cmdTable[i].commandName.c_str());
+                char ** args = generateCArgs(cmdTable[0].args, cmdTable[0].commandName.c_str());
 
                 // Call execute command
                 executeCommand(args[0], args);
 
                 // Free Dynamic memory
                 free(args);
-            }
-            cmdTable.clear();
-        }
+                cmdTable.clear();
 
+            }
+            else if(cmdTable.size() > 1)
+            {
+                //We can assume that these are piped commands
+                for (int i = 0; i < cmdTable.size(); i++)
+                {
+                    char ** args = generateCArgs(cmdTable[i].args, cmdTable[i].commandName.c_str());
+                    int argFlag;
+
+                    if(i == 0) 
+                        argFlag = 0;
+                    else if(i == cmdTable.size() - 1)
+                        argFlag = 2;
+                    else
+                        argFlag = 1;
+
+                    // Call execute command
+                    executePipedCommand(args[0], args, argFlag);
+
+                    // Free Dynamic memory
+                    free(args);
+                }
+                
+                //Delete the pipe
+                remove("pipe");
+            }
+            else
+            {
+                yyerror("Table Size Incorrect");
+            }
+        }
+        cmdTable.clear();
         return 1;
     };
 
-arguments: 
-    | arguments argument
 
 subcommand:
     | WORD arguments {
@@ -169,8 +197,8 @@ subcommand:
         tmpArgs.clear();
     }
 
-pipedcommands:
-    | PIPE subcommand
+arguments: 
+    | arguments argument
 
 argument:
     WORD {
@@ -181,7 +209,13 @@ argument:
         // Add args but with strings
         tmpArgs.push_back($1);
     };
+
+piped:
+    | piped pipedcommands
     
+pipedcommands:
+    PIPE subcommand 
+
 C_SETENV:
     SETENV WORD WORD EOFNL{
         // printf("SETENV -- ");
@@ -302,7 +336,7 @@ char** generateCArgs(std::vector<std::string> arguments, const char * name)
     char ** args;
     
     // Allocating Space for new args array
-    args = (char **)malloc((arguments.size() + strlen(name) + 1)*sizeof(char*));
+    args = (char **)malloc((arguments.size() + strlen(name) + 1) * sizeof(char*));
     args[0] = (char *)malloc(strlen(name) + 1 *sizeof(char*));
 
     // Copy over command name
@@ -310,7 +344,7 @@ char** generateCArgs(std::vector<std::string> arguments, const char * name)
 
     for (int temp = 1; temp <= arguments.size(); temp++)
     {
-        args[temp] = (char *)malloc((strlen(arguments[temp-1].c_str())+1)*sizeof(char*));
+        args[temp] = (char *)malloc((strlen(arguments[temp-1].c_str()) + 1) * sizeof(char*));
         strcpy(args[temp],arguments[temp-1].c_str());
     }
 
