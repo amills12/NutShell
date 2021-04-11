@@ -133,7 +133,7 @@ C_CD: /* need to word on "cd .. " implementation */
 /* ========================================= END CD CASE ================================================== */   
 
 C_COMMAND:
-    subcmd pipedcmd EOFNL{
+    subcommand pipedcommands EOFNL{
 
         if (isAlias(cmdTable[0].commandName.c_str()) == true){
             findAliasCommand(cmdTable[0].commandName.c_str());
@@ -170,11 +170,11 @@ C_COMMAND:
         return 1;
     };
 
-args: 
-    | args arg
+arguments: 
+    | arguments argument
 
-subcmd:
-    | WORD args {
+subcommand:
+    | WORD arguments {
         CommandType tmpCmdType;
         tmpCmdType.commandName = $1;
         tmpCmdType.args = tmpArgs;
@@ -182,22 +182,17 @@ subcmd:
         tmpArgs.clear();
     }
 
-pipedcmd:
-    | PIPE subcmd
+pipedcommands:
+    | PIPE subcommand
 
-arg:
+argument:
     WORD {
         // Add args to command table
         tmpArgs.push_back($1);
-        // cmdTable[i][j] = $1;
-        // j++;
-
-        // printf("ARG: %s ", word);
     };
     | STRING {
+        // Add args but with strings
         tmpArgs.push_back($1);
-        // cmdTable[i][j] = $1;
-        // j++;
     };
     
 C_SETENV:
@@ -272,10 +267,6 @@ C_WILDCARD:
         wildCarding(fileExt);
         return 1;
     };
-/* C_EOLN:
-    EOFNL{
-        return 1;
-    }; */
 
 C_STRING:
     STRING EOFNL
