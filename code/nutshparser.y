@@ -16,11 +16,6 @@
     extern int yyparse();
     extern YY_BUFFER_STATE yy_scan_string(const char *str);
 
-    // Global Variables
-    // char * cmdTable[100][100];
-    // int i = 0;
-    // int j = 0;
-
     std::vector<CommandType> cmdTable;
     std::vector<std::string> tmpArgs;
 %}

@@ -26,7 +26,6 @@ extern char **environ;
 
 // Global Variables
 map<string, string> aliasMap;
-
 // Bison Helper Functions
 void printenv()
 {
@@ -86,7 +85,7 @@ void executeCommand(char *command, char ** args)
         execv(comPath.c_str(), args);
 
         // If it's not an actual command print and exit
-        printf("could not find command: %s\n", comString.c_str());
+        printf("Could not find command: %s\n", comString.c_str());
         exit(0);
     }
     else
@@ -112,6 +111,7 @@ void findAliasCommand(const char *name)
     aliasCommand = aliasMap.find(name)->second;
     printf("ALIAS COMMAND: %s", aliasCommand.c_str());
     aliasCommand += "\n";
+    cmdTable.clear();
     yy_scan_string(aliasCommand.c_str());
     yyparse();
     yylex_destroy();
