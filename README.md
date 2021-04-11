@@ -115,33 +115,33 @@ make
 <!-- USAGE EXAMPLES -->
 ## Features
 1. Environment Variables
-  - Setenv variable word: This command sets the value of the variable variable to be word.
+  - **Setenv variable word:** This command sets the value of the variable variable to be word.
   
-  - unsetenv variable: This command will remove the binding of ​variable​. If the variable is
+  - **unsetenv variable:** This command will remove the binding of ​variable​. If the variable is
 unbound, the command is ignored.
 
-  - printenv: This command prints out the values of all the environment variables, in the format
+  - **printenv:** This command prints out the values of all the environment variables, in the format
 variable=value, one entry per line.
   
 2. Change Directory
-  - CD : This command changes the directory to Home.
+  - CD:**  This command changes the directory to Home.
   
-  - CD WORD: This command changes the directory to word.
+  - CD WORD:**  This command changes the directory to word.
   
 3. Aliases
-  - Alias Name Command: Adds a new alias to the shell.
+  - Alias Name Command:**  Adds a new alias to the shell.
   
-  - Unalias Name:  Remove the alias for name.
+  - Unalias Name:**   Remove the alias for name.
   
-  - Alias: lists all available aliases.
+  - Alias:**  lists all available aliases.
   
 4. Wildcard Matching
-  - *.Word : The word isreplaced with alphabetically sorted filenames that match the pattern
+  - ***.Word :**  The word isreplaced with alphabetically sorted filenames that match the pattern
 
-  - Word.*: The word isreplaced with alphabetically sorted filenames that match the pattern
+  - **Word.*:**  The word isreplaced with alphabetically sorted filenames that match the pattern
 
 5. Command line arguments
-  - [linux arg list](https://ss64.com/bash/)
+  - **[linux arg list]**(https://ss64.com/bash/)
  
 6. Pipes
 
@@ -163,9 +163,6 @@ Project Link: [https://github.com/amills12/NutShell](https://github.com/amills12
 <!-- ACKNOWLEDGEMENTS -->
 ## Acknowledgements
 * [University of Florida](https://www.ufl.edu/)
-* [CoolProp](http://www.coolprop.org/)
-
-
 
 
 
