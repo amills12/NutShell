@@ -69,10 +69,10 @@ Installation should be simple. You install VMWare, set up Reptilian, Install VSC
 ### Prerequisites
 1. Download and install VMWare'
 2. Download [Reptilian VM Image](www.cise.ufl.edu/research/reptilian/downloads/Reptilian-latest.ova)
-  1) Install VMWare Workstation Pro 15.5 or later
-  2) Double-click on the Reptilian VM image file, then click “Import”.
-  3) Optionally, as a sound card (right-click on VM → Settings → Add → Sound Card → Finish).
-  4) To connect to the VM, you will need its IPv4 address. To get it, start the VM, open
+  - 1) Install VMWare Workstation Pro 15.5 or later
+  - 2) Double-click on the Reptilian VM image file, then click “Import”.
+  - 3) Optionally, as a sound card (right-click on VM → Settings → Add → Sound Card → Finish).
+  - 4) To connect to the VM, you will need its IPv4 address. To get it, start the VM, open
   the start menu, and go to Settings → System → About Tablet → IP Address. With it,
   you can connect to the VM through SSH via WSL (replace with your IP address):
   ```sh
@@ -81,9 +81,13 @@ Installation should be simple. You install VMWare, set up Reptilian, Install VSC
   5) Build a fresh Kernel in the /usr/rep/src directory and clone the kernel repository
   ```sh
   reptilian@localhost$ cd /usr/rep/src
+  
   reptilian@localhost$ git clone https://github.com/uf-cise-os/reptilian-kernel.git
+  
   reptilian@localhost$ cd reptilian-kernel
+  
   reptilian@localhost$ make
+  
   reptilian@localhost$ sudo make install; sudo make modules_install
   ```
 6. Install VSCode and the necessary plug-ins
@@ -107,38 +111,8 @@ make
 ./nutshell        
 ```
 
-
-### Code Format
-For code formatting use [this](https://github.com/ribot/android-guidelines/blob/master/project_and_code_guidelines.md) as a guide. When refactoring old code update to new guides convention
-
 <!-- USAGE EXAMPLES -->
-## Usage
-
-1. Select Type 
- <img src="READMEIMG/SelectType.png" alt="Logo" width="206" height="366">
- 
-2. Select two properties from the drop-down menu.
- <img src="READMEIMG/SelectInput.png" alt="Logo" width="206" height="366">
- 
- 3. Select Units for each property.
-  <img src="READMEIMG/SelectUnit.png" alt="Logo" width="206" height="366">
-  
- 4. Input Values
-  <img src="READMEIMG/TypeInput.png" alt="Logo" width="206" height="366">
-  
- 5. Select Checkbox to calculate Properties
-
-
-
-<!-- ROADMAP -->
-## Roadmap
-
-1. Graphing Utility
-2. Favorites
-
-
-<!-- LICENSE -->
-## License
+## Features
 
 
 
