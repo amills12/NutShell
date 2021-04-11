@@ -45,8 +45,6 @@ environment variables, aliases, pathname searching, wild-carding and tilde expan
 <!-- ABOUT THE PROJECT --> 
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
-
 Command interpreter for a Korn shell-like command language in C/C++
 using Lex and Yacc running under Unix.
 
