@@ -13,7 +13,7 @@
   </a>
    <h3 align="center">NUTSHELL</h3>
   <p align="center">
-  This project is a command interpreter for a Korn shell-like command language in C
+This project is a command interpreter for a Korn shell-like command language in C/C++
 using Lex and Yacc running under Unix. This shell can parse command lines and execute the
 appropriate command(s). The core of the shell consists of simple commands, pipes, I/O redirection,
 environment variables, aliases, pathname searching, wild-carding and tilde expansion.
