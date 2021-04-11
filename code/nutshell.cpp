@@ -85,7 +85,7 @@ void executeCommand(char *command, char ** args)
     {
         execv(comPath.c_str(), args);
 
-        // If it's not an acctual command print and exit
+        // If it's not an actual command print and exit
         printf("could not find command: %s\n", comString.c_str());
         exit(0);
     }

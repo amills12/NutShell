@@ -17,9 +17,12 @@
     extern YY_BUFFER_STATE yy_scan_string(const char *str);
 
     // Global Variables
-    char * cmdTable[100][100];
-    int i = 0;
-    int j = 0;
+    // char * cmdTable[100][100];
+    // int i = 0;
+    // int j = 0;
+
+    std::vector<CommandType> cmdTable;
+    std::vector<std::string> tmpArgs;
 %}
 
 //%token WORD
@@ -52,14 +55,14 @@
 %token <str> STRING
 %token <str> WILDCARD 
 %token <str> TILDE_EXPANSION
-
+/* %define parse.error verbose */
 %%
 
 inputs:
     | inputs input
 
 input:
-    C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_EOLN | C_STRING | C_HOME | C_ERROR | C_WILDCARD |C_BYE;
+    C_META | C_CD | C_COMMAND | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_STRING | C_HOME | C_ERROR | C_WILDCARD |C_BYE;
     
 /* ===================================== START META CHARACTER CASE ======================================== */  
 C_META:
@@ -79,13 +82,6 @@ C_GREATERTHAN:
         printf("\n");
         return 1;
     };
-/* C_PIPE:
-    PIPE
-    {
-        printf("PIPE");
-        printf("\n");
-        return 1;
-    }; */
 C_BACKSLASH:
     BACKSLASH
     {
@@ -141,55 +137,102 @@ C_CD: /* need to word on "cd .. " implementation */
     | CD ERROR{ return 0;};
 /* ========================================= END CD CASE ================================================== */   
 
-C_WORD:
-    WORD args EOFNL{
-        const char* word = $1;
-
-        if (isAlias(word) == true){
-            findAliasCommand(word);
-            printf("\n");
-        }
-        else {
-            // Construct arg tables 
+C_COMMAND:
+    subcmd pipedcmd EOFNL{
+        for (int i = 0; i < cmdTable.size(); i++)
+        {
             char ** args;
-            args =(char **)malloc(100*sizeof(char*));
-            args[0] = $1;
+            args = (char **)malloc(100*sizeof(char*));
+            args[0] = (char *)malloc(100*sizeof(char*));
+            strcpy(args[0], cmdTable[i].commandName.c_str());
 
-            for (int temp = 1; temp <= j; temp++)
+            for (int temp = 1; temp <= cmdTable[i].args.size(); temp++)
             {
-                args[temp] = cmdTable[i][temp-1];
+                args[temp] = (char *)malloc(100*sizeof(char*));
+                strcpy(args[temp],cmdTable[i].args[temp-1].c_str());
             }
 
-            executeCommand($1, args);
-            // printf("COMMAND : %s ", word);
-            // printf("\n");
-            i = i + 1;
-            // printf("%i\n", i);
-            j = 0;
+            args[cmdTable[i].args.size() + 1] = NULL;
 
-            free(args);
+            printf("ARGS LIST\n");
+
+
+            for (int i = 0; i < cmdTable[i].args.size(); i++)
+            {
+                printf("%s\n", args[i]);
+            }
+            std::string tempFile = "/bin/" + cmdTable[i].commandName;
+
+            pid_t p;
+            p = fork();
+            if (p < 0)
+            {
+                perror("Fork Failed");
+            }
+            else if (p == 0)
+            {
+                execv(tempFile.c_str(), args);
+
+                // If it's not an actual command print and exit
+                printf("could not find command: %s\n", tempFile.c_str());
+                exit(0);
+            }
+            else {
+                wait(0);
+            }
+
+            free(args);   
         }
+
+        cmdTable.clear();
+        // const char* word = $1;
+        // printf("FINAL COMMAND: %s\n", word);
+
+        // if (isAlias(word) == true){
+        //     findAliasCommand(word);
+        //     printf("\n");
+        // }
+        // else {
+            // Construct arg tables 
+
+        //     // printf("COMMAND : %s ", word);
+        //     // printf("\n");
+        //     i = i + 1;
+        //     // printf("%i\n", i);
+        //     j = 0;
+
+        // }
         return 1;
     };
 
 args: 
     | args arg
 
-arg:
-    WORD{
-        // printf("ARG %s, ", word);
+subcmd:
+    | WORD args {
+        CommandType tmpCmdType;
+        tmpCmdType.commandName = $1;
+        tmpCmdType.args = tmpArgs;
+        cmdTable.push_back(tmpCmdType);
+        tmpArgs.clear();
+    }
 
-        // Add args to string
-        cmdTable[i][j] = $1;
-        j++;
+pipedcmd:
+    | PIPE subcmd
+
+arg:
+    WORD {
+        // Add args to command table
+        tmpArgs.push_back($1);
+        // cmdTable[i][j] = $1;
+        // j++;
+
+        // printf("ARG: %s ", word);
     };
-    | STRING{
-        const char* word = $1;
-        printf("STRING ARG %s, ", word);
-    };
-    | PIPE WORD{
-        const char* word = $2;
-        printf("PIPE COMMAND: %s ", word);
+    | STRING {
+        tmpArgs.push_back($1);
+        // cmdTable[i][j] = $1;
+        // j++;
     };
     
 C_SETENV:
@@ -264,10 +307,10 @@ C_WILDCARD:
         wildCarding(fileExt);
         return 1;
     };
-C_EOLN:
+/* C_EOLN:
     EOFNL{
         return 1;
-    };
+    }; */
 
 C_STRING:
     STRING EOFNL

@@ -2,6 +2,19 @@
 #pragma once
 
 #include <string>
+#include <vector>
+
+//Global Variables
+class CommandType {
+    public:
+        std::string commandName;
+        std::vector<std::string> args;
+        std::string outfile;
+        std::string infile;
+};
+
+extern std::vector<CommandType> cmdTable;
+extern std::vector<std::string> tmpArgs;
 
 // Global Functions
 void printenv();
@@ -9,7 +22,7 @@ void addAlias(const char *name, const char *command);
 void removeAlias(const char *name);
 bool isAlias(const char *name);
 void findAliasCommand(const char *name);
-void executeCommand(char *command, char **args);
+void executeCommand(const char *command, char **args);
 
 // Colors 
 void printAlias();
@@ -24,7 +37,6 @@ void white();
 
 // Terminal color theme
 void nutshellTerminalPrint();
-
 void wildCarding(const char *name);
 void tildeExpansion(const char *name);
 
