@@ -139,69 +139,39 @@ C_CD: /* need to word on "cd .. " implementation */
 
 C_COMMAND:
     subcmd pipedcmd EOFNL{
-        for (int i = 0; i < cmdTable.size(); i++)
-        {
-            char ** args;
-            args = (char **)malloc(100*sizeof(char*));
-            args[0] = (char *)malloc(100*sizeof(char*));
-            strcpy(args[0], cmdTable[i].commandName.c_str());
 
-            for (int temp = 1; temp <= cmdTable[i].args.size(); temp++)
+        if (isAlias(cmdTable[0].commandName.c_str()) == true){
+            findAliasCommand(cmdTable[0].commandName.c_str());
+            printf("\n");
+        }
+        else {
+            for (int i = 0; i < cmdTable.size(); i++)
             {
-                args[temp] = (char *)malloc(100*sizeof(char*));
-                strcpy(args[temp],cmdTable[i].args[temp-1].c_str());
+                // Create a an array of arguments using what we have
+                char ** args;
+
+                // Allocating Space for new args array
+                args = (char **)malloc(100*sizeof(char*));
+                args[0] = (char *)malloc(100*sizeof(char*));
+
+                // Copy over command name
+                strcpy(args[0], cmdTable[i].commandName.c_str());
+
+                for (int temp = 1; temp <= cmdTable[i].args.size(); temp++)
+                {
+                    args[temp] = (char *)malloc(100*sizeof(char*));
+                    strcpy(args[temp],cmdTable[i].args[temp-1].c_str());
+                }
+
+                // Call execute command
+                executeCommand(args[0], args);
+
+                // Free Dynamic memory
+                free(args);
             }
-
-            args[cmdTable[i].args.size() + 1] = NULL;
-
-            printf("ARGS LIST\n");
-
-
-            for (int i = 0; i < cmdTable[i].args.size(); i++)
-            {
-                printf("%s\n", args[i]);
-            }
-            std::string tempFile = "/bin/" + cmdTable[i].commandName;
-
-            pid_t p;
-            p = fork();
-            if (p < 0)
-            {
-                perror("Fork Failed");
-            }
-            else if (p == 0)
-            {
-                execv(tempFile.c_str(), args);
-
-                // If it's not an actual command print and exit
-                printf("could not find command: %s\n", tempFile.c_str());
-                exit(0);
-            }
-            else {
-                wait(0);
-            }
-
-            free(args);   
+            cmdTable.clear();
         }
 
-        cmdTable.clear();
-        // const char* word = $1;
-        // printf("FINAL COMMAND: %s\n", word);
-
-        // if (isAlias(word) == true){
-        //     findAliasCommand(word);
-        //     printf("\n");
-        // }
-        // else {
-            // Construct arg tables 
-
-        //     // printf("COMMAND : %s ", word);
-        //     // printf("\n");
-        //     i = i + 1;
-        //     // printf("%i\n", i);
-        //     j = 0;
-
-        // }
         return 1;
     };
 

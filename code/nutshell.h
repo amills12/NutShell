@@ -22,7 +22,7 @@ void addAlias(const char *name, const char *command);
 void removeAlias(const char *name);
 bool isAlias(const char *name);
 void findAliasCommand(const char *name);
-void executeCommand(const char *command, char **args);
+void executeCommand(char *command, char **args);
 
 // Colors 
 void printAlias();
