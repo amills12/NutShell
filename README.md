@@ -38,7 +38,6 @@ environment variables, aliases, pathname searching, wild-carding and tilde expan
   * [Prerequisites](#prerequisites)
   * [Installation](#installation)
   * [Features](#features)
-* [Usage](#usage)
 * [Contact](#contact)
 
 
