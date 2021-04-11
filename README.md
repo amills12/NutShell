@@ -37,6 +37,7 @@ environment variables, aliases, pathname searching, wild-carding and tilde expan
 * [Getting Started](#getting-started)
   * [Prerequisites](#prerequisites)
   * [Installation](#installation)
+  * [Features](#features)
 * [Usage](#usage)
 * [Contact](#contact)
 
@@ -47,11 +48,15 @@ environment variables, aliases, pathname searching, wild-carding and tilde expan
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-ThermoApplication allows you to calculate thermodynamic properties.
+command interpreter for a Korn shell-like command language in C/C++
+using Lex and Yacc running under Unix.
 
 ### Built With
-* [AndroidStudio](https://developer.android.com/)
-* [Java](https://www.oracle.com/java/)
+* [VSCode](https://code.visualstudio.com/)
+* [VMWare](https://www.vmware.com/)
+* [Reptilian](www.cise.ufl.edu/research/reptilian/downloads/Reptilian-latest.ova)
+* [C]()
+* [C++]()
 
 
 
@@ -59,46 +64,49 @@ ThermoApplication allows you to calculate thermodynamic properties.
 <!-- GETTING STARTED -->
 ## Getting Started
 
-Installation should be simple. You install android studio, clone the repo and install the necessary packages. 
+Installation should be simple. You install VMWare, set up Reptilian, Install VSCode and the necessary libraries, clone the repo, run Make to compile and ./nutshell to use the shell. 
 
 ### Prerequisites
-1. Download and install Android Studio
+1. Download and install VMWare'
+2. Download [Reptilian VM Image](www.cise.ufl.edu/research/reptilian/downloads/Reptilian-latest.ova)
+  1) Install VMWare Workstation Pro 15.5 or later
+  2) Double-click on the Reptilian VM image file, then click “Import”.
+  3) Optionally, as a sound card (right-click on VM → Settings → Add → Sound Card → Finish).
+  4) To connect to the VM, you will need its IPv4 address. To get it, start the VM, open
+  the start menu, and go to Settings → System → About Tablet → IP Address. With it,
+  you can connect to the VM through SSH via WSL (replace with your IP address):
+  ```sh
+  finn@BMO:~$ ssh reptilian@192.168.11.130 Password is 'reptilian'
+  ```
+  5) Build a fresh Kernel in the /usr/rep/src directory and clone the kernel repository
+  ```sh
+  reptilian@localhost$ cd /usr/rep/src
+  reptilian@localhost$ git clone https://github.com/uf-cise-os/reptilian-kernel.git
+  reptilian@localhost$ cd reptilian-kernel
+  reptilian@localhost$ make
+  reptilian@localhost$ sudo make install; sudo make modules_install
+  ```
+6. Install VSCode and the necessary plug-ins
+  1) Remote SSH
+  2) Remote SSH: Editing Configuration Files
+  3) Remote WSL
+
 
 ### Installation
 
 1. Clone the repo
 ```sh
-git clone https://github.com/The-Game-Lab/ThermoApplication.git
+git clone https://github.com/amills12/NutShell.git
 ```
-2. Install packages
-```sh
-      1. Start Android Studio.
-      2. To open SDK Manager, do any of the these:
-        - On Android Studio landing page, select Configure > SDK Manager.
-
-        - From your Android Studio application toolbar, select Tools > Android > SDK Manager.
-
-        - From your Android Studio application toolbar, click SDK Manager.
+2. Run Make
+```
+make
 ```
 3. In the Default Settings dialog box, click these tabs to install Android SDK platform packages and developer tools.
 ```sh
-        1. SDK Platforms: Select the latest Android SDK package.
-
-        2. SDK Tools: Select these Android SDK tools:
-
-          - Android SDK Build-Tools
-
-          - NDK (Side by side)
-
-          - Android SDK Platform-Tools
-
-          - Android SDK Tools
+./nutshell        
 ```
-4. Click Apply. 
-```sh
-Android Studio starts installing the selected packages and tools on your computer. After the installation is completed, the Status of the installed packages and tools changes from Not installed to Installed.
-```
-5. Click OK.
+
 
 ### Code Format
 For code formatting use [this](https://github.com/ribot/android-guidelines/blob/master/project_and_code_guidelines.md) as a guide. When refactoring old code update to new guides convention
@@ -167,9 +175,6 @@ Project Link: [https://github.com/amills12/NutShell](https://github.com/amills12
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
 [linkedin-url-alex]: https://linkedin.com/in/alex
 
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
-[linkedin-url-tyler]: https://www.linkedin.com/in/tyler-allen-78bb08158/
-
-[issues-shield]: https://img.shields.io/github/issues/The-Game-Lab/ThermoApplication.svg?style=flat-square
-[issues-url]: https://github.com/The-Game-Lab/ThermoApplication/issues
+[issues-shield]: https://img.shields.io/github/issues/amills12/NutShell/issues.svg?style=flat-square
+[issues-url]: https://github.com/amills12/NutShell/issues
 [product-screenshot]: images/screenshot.png
