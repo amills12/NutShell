@@ -302,15 +302,15 @@ char** generateCArgs(std::vector<std::string> arguments, const char * name)
     char ** args;
     
     // Allocating Space for new args array
-    args = (char **)malloc(100*sizeof(char*));
-    args[0] = (char *)malloc(100*sizeof(char*));
+    args = (char **)malloc((arguments.size() + strlen(name) + 1)*sizeof(char*));
+    args[0] = (char *)malloc(strlen(name) + 1 *sizeof(char*));
 
     // Copy over command name
     strcpy(args[0], name);
 
     for (int temp = 1; temp <= arguments.size(); temp++)
     {
-        args[temp] = (char *)malloc(100*sizeof(char*));
+        args[temp] = (char *)malloc((strlen(arguments[temp-1].c_str())+1)*sizeof(char*));
         strcpy(args[temp],arguments[temp-1].c_str());
     }
 
