@@ -9,7 +9,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/amills12/NutShell.gitn">
-    <img src="READMEIMG/logo.png" alt="Logo" width="300" height="300">
+    <img src="READMEIMG/Logo.png" alt="Logo" width="300" height="300">
   </a>
    <h3 align="center">NUTSHELL</h3>
   <p align="center">
