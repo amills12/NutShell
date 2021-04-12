@@ -190,9 +190,6 @@ Project Link: [https://github.com/amills12/NutShell](https://github.com/amills12
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
 [linkedin-url-joseph]: https://www.linkedin.com/in/josephmorales007/
 
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
-[linkedin-url-alex]: https://linkedin.com/in/alex
-
 [issues-shield]: https://img.shields.io/github/issues/amills12/NutShell/issues.svg?style=flat-square
 [issues-url]: https://github.com/amills12/NutShell/issues
 [product-screenshot]: images/screenshot.png
