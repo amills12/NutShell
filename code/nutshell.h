@@ -19,7 +19,11 @@ extern std::vector<std::string> tmpArgs;
 extern bool appendFlag;
 
 // Global Functions
-void printenv();
+void printEnv();
+void addEnv(const char *variable, const char *word);
+void removeEnv(const char *variable);
+
+void printAlias();
 void addAlias(const char *name, const char *command);
 void removeAlias(const char *name);
 bool isAlias(const char *name);
@@ -29,7 +33,7 @@ void executePipedCommand(char *command, char **args, int pipeFlag);
 void errorPiping();
 
 // Colors 
-void printAlias();
+
 void black();
 void red();
 void green();

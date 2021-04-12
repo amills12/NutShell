@@ -237,15 +237,16 @@ C_SETENV:
         // printf("SETENV -- ");
         const char* variable = $2;
         const char* word = $3;
+        addEnv(variable, word);
         // printf("Environment Variable Set: %s == %s", variable, word);
-        setenv(variable, word, 1);
+        //setenv(variable, word, 1);
         // printf("\n");
         return 1;
     };    
 C_PRINTENV:
     PRINTENV EOFNL{
         // printf("PRINTENV\n");
-        printenv();
+        printEnv();
         // printf("\n");
         return 1;
         // Do they really want all the the environment variables? PS. ITS UGLY
@@ -254,13 +255,14 @@ C_UNSETENV:
     UNSETENV WORD EOFNL{
         // printf("UNSENTENV -- ");    
         const char* variable = $2;
-        unsetenv(variable);
-        if(getenv(variable)==0){
-            printf("Successfully Unset Environment Variable");   
-        }
-        else{
-            printf("Environment Variable Does Not Exist");   
-        }
+        removeEnv(variable);
+        // unsetenv(variable);
+        // if(getenv(variable)==0){
+        //     printf("Successfully Unset Environment Variable");   
+        // }
+        // else{
+        //     printf("Environment Variable Does Not Exist");   
+        // }
         // printf("\n");
         return 1;
     };
