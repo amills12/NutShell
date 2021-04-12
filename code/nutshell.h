@@ -9,10 +9,10 @@ class CommandType {
     public:
         std::string commandName;
         std::vector<std::string> args;
-        std::string outfile;
-        std::string infile;
 };
 
+extern std::string infile;
+extern std::string outfile;
 extern std::vector<CommandType> cmdTable;
 extern std::vector<std::string> tmpArgs;
 

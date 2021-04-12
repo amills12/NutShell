@@ -20,13 +20,15 @@
 
     std::vector<CommandType> cmdTable;
     std::vector<std::string> tmpArgs;
+
+    std::string infile = "";
+    std::string outfile = "";
 %}
 
 //%token WORD
 %token CD 
 %token DOTDOT
-%token LESSTHAN
-%token GREATERTHAN
+
 %token PIPE
 %token BACKSLASH
 %token AMPERSAND
@@ -52,6 +54,8 @@
 %token <str> STRING
 %token <str> WILDCARD 
 %token <str> TILDE_EXPANSION
+%token <str> LESSTHAN
+%token <str> GREATERTHAN
 /* %define parse.error verbose */
 %%
 
@@ -63,22 +67,7 @@ input:
     
 /* ===================================== START META CHARACTER CASE ======================================== */  
 C_META:
-    C_LESSTHAN | C_GREATERTHAN | C_BACKSLASH | C_AMPERSAND;
-
-C_LESSTHAN:
-    LESSTHAN
-    {
-        printf("LESSTHAN");
-        printf("\n");
-        return 1;
-    };
-C_GREATERTHAN:
-    GREATERTHAN
-    {
-        printf("GREATERTHAN");
-        printf("\n");
-        return 1;
-    };
+    C_BACKSLASH | C_AMPERSAND;
 C_BACKSLASH:
     BACKSLASH
     {
@@ -134,24 +123,23 @@ C_CD: /* need to word on "cd .. " implementation */
 /* ========================================= END CD CASE ================================================== */   
 
 C_COMMAND:
-    subcommand piped EOFNL{
+    subcommand piped io_redirect EOFNL{
 
         if (isAlias(cmdTable[0].commandName.c_str()) == true){
             findAliasCommand(cmdTable[0].commandName.c_str());
             printf("\n");
         }
         else {
+            // printf("%d \n", cmdTable.size());
             if(cmdTable.size() == 1)
             {
                 // printf("Size: %lu\n", cmdTable.size());
                 char ** args = generateCArgs(cmdTable[0].args, cmdTable[0].commandName.c_str());
-
                 // Call execute command
                 executeCommand(args[0], args);
 
                 // Free Dynamic memory
                 free(args);
-                cmdTable.clear();
             }
             else if(cmdTable.size() > 1)
             {
@@ -177,12 +165,16 @@ C_COMMAND:
                 
                 //Delete the pipe
                 remove("pipe");
-                cmdTable.clear();
             }
             else
             {
                 yyerror("Table Size Incorrect");
             }
+            
+            // Clean Up
+            cmdTable.clear();
+            infile = "";
+            outfile = "";
         }
         return 1;
     };
@@ -215,6 +207,16 @@ piped:
     
 pipedcommands:
     PIPE subcommand 
+
+io_redirect:
+    | GREATERTHAN WORD {
+        // Set the file to the input
+        infile = $2;
+    };
+    | LESSTHAN WORD {
+        // Set the file to the last output
+        outfile = $2;
+    };
 
 C_SETENV:
     SETENV WORD WORD EOFNL{
@@ -325,7 +327,7 @@ C_BYE:
 
 int yyerror(char *s)
 {
-    printf("An Error has Occured: %s\n", s);
+    fprintf(stderr, "An Error has Occured: %s\n", s);
     yylex_destroy();
     return 0;
 }

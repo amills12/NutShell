@@ -74,6 +74,8 @@ void executeCommand(char *command, char ** args)
     string comPath = "/bin/" + comString;
 
     // printf("COMMAND STRING %s : %s\n", comString.c_str(), comPath.c_str());
+    printf("infile %s\n", infile.c_str());
+    printf("outfile %s\n", outfile.c_str());
 
 
     pid_t p;
@@ -84,6 +86,19 @@ void executeCommand(char *command, char ** args)
     }
     else if (p == 0)
     {
+        if(infile != "")
+        {
+            FILE *f = fopen(infile.c_str(), "r");
+            dup2(fileno(f), 0);
+            fclose(f);
+        }
+        if(outfile != "")
+        {
+            FILE *f = fopen(outfile.c_str(), "w");
+            dup2(fileno(f), 1);
+            fclose(f);
+        }
+
         execv(comPath.c_str(), args);
 
         // If it's not an actual command print and exit
@@ -111,17 +126,45 @@ void executePipedCommand(char *command, char **args, int pipeFlag)
     {
         if (pipeFlag == 0)
         {
-            // Open a file and write standard output
-            FILE *f = fopen("pipe", "w");
-            dup2(fileno(f), 1);
-            fclose(f);
+            // If it's the first command, and no in file then just write out
+            if(infile == "")
+            {
+                // Open a file and write standard output
+                FILE *f = fopen("pipe", "w");
+                dup2(fileno(f), 1);
+                fclose(f);
+            }
+            // If it's the first command and there is an in file
+            else
+            {
+                FILE *f1 = fopen(infile.c_str(), "r");
+                FILE *f2 = fopen("pipe", "w");
+                dup2(fileno(f1), 0);
+                dup2(fileno(f2), 1);
+                fclose(f1);
+                fclose(f2);
+            }
         }
         else if(pipeFlag == 2)
         {
-            //Last command of the pipe only reads
-            FILE *f = fopen("pipe", "r");
-            dup2(fileno(f), 0);
-            fclose(f);
+            // If it's last command and no output file, just read from path
+            if(outfile == "")
+            {
+                //Last command of the pipe only reads
+                FILE *f = fopen("pipe", "r");
+                dup2(fileno(f), 0);
+                fclose(f);
+            }
+            // If it's last command and there is and output file, output to that
+            else
+            {
+                FILE *f1 = fopen("pipe", "r");
+                FILE *f2 = fopen(outfile.c_str(), "w");
+                dup2(fileno(f1), 0);
+                dup2(fileno(f2), 1);
+                fclose(f1);
+                fclose(f2);
+            }
         }
         else
         {
@@ -131,6 +174,7 @@ void executePipedCommand(char *command, char **args, int pipeFlag)
             dup2(fileno(f), 0);
             fclose(f);
         }
+
         execv(comPath.c_str(), args);
 
         // If it's not an actual command print and exit
