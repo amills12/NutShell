@@ -114,33 +114,33 @@ reptilian@localhost$ ./nutshell
 <!-- Features -->
 ## Features
 ### 1. Environment Variables (Completed)
-   **Setenv variable word:** This command sets the value of the variable variable to be word. 
+  - **Setenv variable word:** This command sets the value of the variable variable to be word. 
   
-   **unsetenv variable:** This command will remove the binding of variable. If the variable is
+  - **unsetenv variable:** This command will remove the binding of variable. If the variable is
     unbound, the command is ignored.
 
-   **printenv:** This command prints out the values of all the environment variables, in the format
+  - **printenv:** This command prints out the values of all the environment variables, in the format
     variable=value, one entry per line.
   
 ### 2. Change Directory (Completed)
-   **CD:**  This command changes the directory to Home.
+  - **CD:**  This command changes the directory to Home.
   
-   **CD WORD:**  This command changes the directory to word.
+  - **CD WORD:**  This command changes the directory to word.
   
 ### 3. Aliases (Completed)
-   **Alias Name Command:**  Adds a new alias to the shell.
+  - **Alias Name Command:**  Adds a new alias to the shell.
   
-   **Unalias Name:**   Remove the alias for name.
+  - **Unalias Name:**   Remove the alias for name.
   
-   **Alias:**  lists all available aliases.
+  - **Alias:**  lists all available aliases.
   
 ### 4. Wildcard Matching (Completed)
-   ***.Word :**  The word isreplaced with alphabetically sorted filenames that match the pattern
+  - ***.Word :**  The word isreplaced with alphabetically sorted filenames that match the pattern
 
-   **Word.*:**  The word isreplaced with alphabetically sorted filenames that match the pattern
+  - **Word.*:**  The word isreplaced with alphabetically sorted filenames that match the pattern
 
 ### 5. Command line arguments (Completed)
-   **[linux arg list](https://ss64.com/bash/)**
+  - **[linux arg list](https://ss64.com/bash/)**
  
 ### 6. Pipes (Completed)
 
