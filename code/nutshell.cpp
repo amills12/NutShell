@@ -99,7 +99,7 @@ void executePipedCommand(char *command, char **args, int pipeFlag)
     string comString(command);
     string comPath = "/bin/" + comString;
 
-    printf("COMMAND STRING %s\n", comString.c_str());
+    // printf("COMMAND STRING %s\n", comString.c_str());
 
     pid_t p;
     p = fork();
