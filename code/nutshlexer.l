@@ -35,7 +35,7 @@ alias|ALIAS            return ALIAS;
 bye|Bye|BYE            return BYE;
 ".."                   return DOTDOT;
 "<"                    return LESSTHAN;
-[>]                    return GREATERTHAN;
+">"                    return GREATERTHAN;
 [|]                    return PIPE;
 [\"]                   { BEGIN(string_cond); };
 "${"                   { BEGIN(env_cond); };

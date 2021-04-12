@@ -74,9 +74,8 @@ void executeCommand(char *command, char ** args)
     string comPath = "/bin/" + comString;
 
     // printf("COMMAND STRING %s : %s\n", comString.c_str(), comPath.c_str());
-    printf("infile %s\n", infile.c_str());
-    printf("outfile %s\n", outfile.c_str());
-
+    // printf("infile %s\n", infile.c_str());
+    // printf("outfile %s\n", outfile.c_str());
 
     pid_t p;
     p = fork();
@@ -94,7 +93,7 @@ void executeCommand(char *command, char ** args)
         }
         if(outfile != "")
         {
-            FILE *f = fopen(outfile.c_str(), "w");
+            FILE *f = fopen(outfile.c_str(), appendFlag ? "a" : "w");
             dup2(fileno(f), 1);
             fclose(f);
         }
@@ -159,7 +158,7 @@ void executePipedCommand(char *command, char **args, int pipeFlag)
             else
             {
                 FILE *f1 = fopen("pipe", "r");
-                FILE *f2 = fopen(outfile.c_str(), "w");
+                FILE *f2 = fopen(outfile.c_str(), appendFlag ? "a" : "w");
                 dup2(fileno(f1), 0);
                 dup2(fileno(f2), 1);
                 fclose(f1);

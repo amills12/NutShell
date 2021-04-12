@@ -23,6 +23,7 @@
 
     std::string infile = "";
     std::string outfile = "";
+    bool appendFlag = false;
 %}
 
 //%token WORD
@@ -49,14 +50,12 @@
     char* str;
 }
 
-/* %token <str> VARIABLE */
 %token <str> WORD
 %token <str> STRING
 %token <str> WILDCARD 
 %token <str> TILDE_EXPANSION
 %token <str> LESSTHAN
 %token <str> GREATERTHAN
-/* %define parse.error verbose */
 %%
 
 inputs:
@@ -123,7 +122,7 @@ C_CD: /* need to word on "cd .. " implementation */
 /* ========================================= END CD CASE ================================================== */   
 
 C_COMMAND:
-    subcommand piped io_redirect EOFNL{
+    subcommand piped io_redirect_in io_redirect_out EOFNL{
 
         if (isAlias(cmdTable[0].commandName.c_str()) == true){
             findAliasCommand(cmdTable[0].commandName.c_str());
@@ -172,6 +171,7 @@ C_COMMAND:
             }
             
             // Clean Up
+            appendFlag = false;
             cmdTable.clear();
             infile = "";
             outfile = "";
@@ -208,16 +208,21 @@ piped:
 pipedcommands:
     PIPE subcommand 
 
-io_redirect:
+io_redirect_out:
     | GREATERTHAN WORD {
         // Set the file to the input
-        infile = $2;
-    };
-    | LESSTHAN WORD {
-        // Set the file to the last output
         outfile = $2;
     };
+    | GREATERTHAN GREATERTHAN WORD {
+        outfile = $3;
+        appendFlag = true;
+    }
 
+io_redirect_in:
+    | LESSTHAN WORD {
+        // Set the file to the last output
+        infile = $2;
+    };
 C_SETENV:
     SETENV WORD WORD EOFNL{
         // printf("SETENV -- ");
