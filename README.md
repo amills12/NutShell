@@ -151,7 +151,7 @@ reptilian@localhost$ ./nutshell
 3. Nutshell.h (Joseph/Alex)
 4. Nutshell.cpp (Joseph/Alex)
 6. Environment Variables (Joseph/Alex)
-7. Aliases (Joseph)
+7. Aliases (Joseph/Alex)
 8. Change Directory (Joseph)
 9. Wildcard matching (Joseph)
 10. Tilde Expansion (Joseph)
