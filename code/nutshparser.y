@@ -23,6 +23,8 @@
 
     std::string infile = "";
     std::string outfile = "";
+    std::string errfile = "";
+
     bool appendFlag = false;
 %}
 
@@ -56,6 +58,7 @@
 %token <str> TILDE_EXPANSION
 %token <str> LESSTHAN
 %token <str> GREATERTHAN
+%token <str> ERRORDIRECT
 %%
 
 inputs:
@@ -122,7 +125,7 @@ C_CD: /* need to word on "cd .. " implementation */
 /* ========================================= END CD CASE ================================================== */   
 
 C_COMMAND:
-    subcommand piped io_redirect_in io_redirect_out EOFNL{
+    subcommand piped io_redirect_in io_redirect_out error_redirect EOFNL{
 
         if (isAlias(cmdTable[0].commandName.c_str()) == true){
             findAliasCommand(cmdTable[0].commandName.c_str());
@@ -223,6 +226,12 @@ io_redirect_in:
         // Set the file to the last output
         infile = $2;
     };
+
+error_redirect:
+    | ERRORDIRECT WORD {
+        errfile = $2;
+    };
+
 C_SETENV:
     SETENV WORD WORD EOFNL{
         // printf("SETENV -- ");

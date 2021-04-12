@@ -9,7 +9,7 @@
 %x env_cond
 
 NOTQUOTE [^"]
-WORD     [a-zA-Z\/.0-9\-]
+WORD     [a-zA-Z\/.0-9\-&]
 %%
 <string_cond>{NOTQUOTE}+    { yylval.str = strdup(yytext); return STRING; };
 <string_cond>[\"]           { BEGIN(INITIAL); };
@@ -36,6 +36,7 @@ bye|Bye|BYE            return BYE;
 ".."                   return DOTDOT;
 "<"                    return LESSTHAN;
 ">"                    return GREATERTHAN;
+"2>"                   return ERRORDIRECT;
 [|]                    return PIPE;
 [\"]                   { BEGIN(string_cond); };
 "${"                   { BEGIN(env_cond); };

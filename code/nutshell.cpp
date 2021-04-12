@@ -85,6 +85,8 @@ void executeCommand(char *command, char ** args)
     }
     else if (p == 0)
     {
+        errorPiping();
+
         if(infile != "")
         {
             FILE *f = fopen(infile.c_str(), "r");
@@ -115,6 +117,7 @@ void executePipedCommand(char *command, char **args, int pipeFlag)
 
     // printf("COMMAND STRING %s\n", comString.c_str());
 
+
     pid_t p;
     p = fork();
     if (p < 0)
@@ -123,6 +126,8 @@ void executePipedCommand(char *command, char **args, int pipeFlag)
     }
     else if (p == 0)
     {
+        errorPiping();
+
         if (pipeFlag == 0)
         {
             // If it's the first command, and no in file then just write out
@@ -194,6 +199,23 @@ bool isAlias(const char *name)
     else{
         //printf("ALIAS WAS FOUND: "); 
         return true;
+    }
+}
+
+void errorPiping() 
+{
+    if (errfile != "")
+    {
+        if (errfile == "&1")
+        {
+            dup2(1, 2);
+        }
+        else 
+        {
+            FILE *f = fopen(errfile.c_str(), "a");
+            dup2(fileno(f), 2);
+            fclose(f);
+        }
     }
 }
 

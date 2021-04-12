@@ -13,6 +13,7 @@ class CommandType {
 
 extern std::string infile;
 extern std::string outfile;
+extern std::string errfile;
 extern std::vector<CommandType> cmdTable;
 extern std::vector<std::string> tmpArgs;
 extern bool appendFlag;
@@ -25,6 +26,7 @@ bool isAlias(const char *name);
 void findAliasCommand(const char *name);
 void executeCommand(char *command, char **args);
 void executePipedCommand(char *command, char **args, int pipeFlag);
+void errorPiping();
 
 // Colors 
 void printAlias();
