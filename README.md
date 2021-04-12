@@ -113,34 +113,34 @@ reptilian@localhost$ ./nutshell
 
 <!-- Features -->
 ## Features
-####1. Environment Variables 
-    **Setenv variable word:** This command sets the value of the variable variable to be word. 
+#### 1. Environment Variables 
+   **Setenv variable word:** This command sets the value of the variable variable to be word. 
   
-    **unsetenv variable:** This command will remove the binding of variable. If the variable is
+   **unsetenv variable:** This command will remove the binding of variable. If the variable is
     unbound, the command is ignored.
 
-    **printenv:** This command prints out the values of all the environment variables, in the format
+   **printenv:** This command prints out the values of all the environment variables, in the format
     variable=value, one entry per line.
   
-####2. Change Directory (Completed)
-    **CD:**  This command changes the directory to Home.
+#### 2. Change Directory (Completed)
+   **CD:**  This command changes the directory to Home.
   
-    **CD WORD:**  This command changes the directory to word.
+   **CD WORD:**  This command changes the directory to word.
   
-####3. Aliases (Completed)
-    **Alias Name Command:**  Adds a new alias to the shell.
+#### 3. Aliases (Completed)
+   **Alias Name Command:**  Adds a new alias to the shell.
   
-    **Unalias Name:**   Remove the alias for name.
+   **Unalias Name:**   Remove the alias for name.
   
-    **Alias:**  lists all available aliases.
+   **Alias:**  lists all available aliases.
   
-####4. Wildcard Matching (Completed)
-    ***.Word :**  The word isreplaced with alphabetically sorted filenames that match the pattern
+#### 4. Wildcard Matching (Completed)
+   ***.Word :**  The word isreplaced with alphabetically sorted filenames that match the pattern
 
-    **Word.*:**  The word isreplaced with alphabetically sorted filenames that match the pattern
+   **Word.*:**  The word isreplaced with alphabetically sorted filenames that match the pattern
 
-####5. Command line arguments (Completed)
-  - **[linux arg list](https://ss64.com/bash/)**
+#### 5. Command line arguments (Completed)
+   **[linux arg list](https://ss64.com/bash/)**
  
 #### 6. Pipes (Completed)
 
@@ -150,7 +150,6 @@ reptilian@localhost$ ./nutshell
 2. Nutshell.y (Joseph/Alex)
 3. Nutshell.h (Joseph/Alex)
 4. Nutshell.cpp (Joseph/Alex)
-5. Automated Testing (Joseph)
 6. Environment Variables (Joseph/Alex)
 7. Aliases (Joseph)
 8. Change Directory (Joseph)
