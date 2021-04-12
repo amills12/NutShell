@@ -73,7 +73,7 @@ void executeCommand(char *command, char ** args)
     string comString(command);
     string comPath = "/bin/" + comString;
 
-    printf("COMMAND STRING %s : %s\n", comString.c_str(), comPath.c_str());
+    // printf("COMMAND STRING %s : %s\n", comString.c_str(), comPath.c_str());
 
 
     pid_t p;

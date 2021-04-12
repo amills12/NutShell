@@ -143,6 +143,7 @@ C_COMMAND:
         else {
             if(cmdTable.size() == 1)
             {
+                // printf("Size: %lu\n", cmdTable.size());
                 char ** args = generateCArgs(cmdTable[0].args, cmdTable[0].commandName.c_str());
 
                 // Call execute command
@@ -151,7 +152,6 @@ C_COMMAND:
                 // Free Dynamic memory
                 free(args);
                 cmdTable.clear();
-
             }
             else if(cmdTable.size() > 1)
             {
@@ -177,13 +177,13 @@ C_COMMAND:
                 
                 //Delete the pipe
                 remove("pipe");
+                cmdTable.clear();
             }
             else
             {
                 yyerror("Table Size Incorrect");
             }
         }
-        cmdTable.clear();
         return 1;
     };
 
@@ -347,6 +347,9 @@ char** generateCArgs(std::vector<std::string> arguments, const char * name)
         args[temp] = (char *)malloc((strlen(arguments[temp-1].c_str()) + 1) * sizeof(char*));
         strcpy(args[temp],arguments[temp-1].c_str());
     }
+
+    // Remember to null terminate
+    args[arguments.size() + 1] = NULL;
 
     return args;
 }
