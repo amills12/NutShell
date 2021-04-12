@@ -38,8 +38,8 @@ environment variables, aliases, pathname searching, wild-carding and tilde expan
   * [Prerequisites](#prerequisites)
   * [Installation](#installation)
   * [Features](#features)
+* [Task List](#tasklist)
 * [Contact](#contact)
-
 
 
 <!-- ABOUT THE PROJECT --> 
@@ -110,7 +110,7 @@ reptilian@localhost$ make
 reptilian@localhost$ ./nutshell        
 ```
 
-<!-- USAGE EXAMPLES -->
+
 ## Features
 #### 1. Environment Variables
     - **Setenv variable word:** This command sets the value of the variable variable to be word.
