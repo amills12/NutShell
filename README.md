@@ -95,6 +95,7 @@ Installation should be simple. You install VMWare, set up Reptilian, Install VSC
   3) Remote WSL
 
 
+<!-- Installation -->
 ### Installation
 
 #### 1. Clone the repo
@@ -110,38 +111,57 @@ reptilian@localhost$ make
 reptilian@localhost$ ./nutshell        
 ```
 
-
+<!-- Features -->
 ## Features
-#### 1. Environment Variables
-    - **Setenv variable word:** This command sets the value of the variable variable to be word.
+####1. Environment Variables 
+    **Setenv variable word:** This command sets the value of the variable variable to be word. 
   
-    - **unsetenv variable:** This command will remove the binding of variable. If the variable is
+    **unsetenv variable:** This command will remove the binding of variable. If the variable is
     unbound, the command is ignored.
 
-    - **printenv:** This command prints out the values of all the environment variables, in the format
+    **printenv:** This command prints out the values of all the environment variables, in the format
     variable=value, one entry per line.
   
-#### 2. Change Directory
-    - **CD:**  This command changes the directory to Home.
+####2. Change Directory (Completed)
+    **CD:**  This command changes the directory to Home.
   
-    - **CD WORD:**  This command changes the directory to word.
+    **CD WORD:**  This command changes the directory to word.
   
-#### 3. Aliases
-    - **Alias Name Command:**  Adds a new alias to the shell.
+####3. Aliases (Completed)
+    **Alias Name Command:**  Adds a new alias to the shell.
   
-    - **Unalias Name:**   Remove the alias for name.
+    **Unalias Name:**   Remove the alias for name.
   
-    - **Alias:**  lists all available aliases.
+    **Alias:**  lists all available aliases.
   
-#### 4. Wildcard Matching
-    - ***.Word :**  The word isreplaced with alphabetically sorted filenames that match the pattern
+####4. Wildcard Matching (Completed)
+    ***.Word :**  The word isreplaced with alphabetically sorted filenames that match the pattern
 
-    - **Word.*:**  The word isreplaced with alphabetically sorted filenames that match the pattern
+    **Word.*:**  The word isreplaced with alphabetically sorted filenames that match the pattern
 
-#### 5. Command line arguments
+####5. Command line arguments (Completed)
   - **[linux arg list](https://ss64.com/bash/)**
  
-#### 6. Pipes
+#### 6. Pipes (Completed)
+
+<!-- Task List -->
+## Task List
+1. Nutshell.l (Joseph/Alex)
+2. Nutshell.y (Joseph/Alex)
+3. Nutshell.h (Joseph/Alex)
+4. Nutshell.cpp (Joseph/Alex)
+5. Automated Testing (Joseph)
+6. Environment Variables (Joseph/Alex)
+7. Aliases (Joseph)
+8. Change Directory (Joseph)
+9. Wildcard matching (Joseph)
+10. Tilde Expansion (Joseph)
+11. Command line arguments (Alex)
+12. Pipes (Alex)
+13. Makefile (Alex)
+14. README (Joseph)
+15. Styling (Joseph/Alex)
+16. Testing (Joseph/Alex)
 
 <!-- CONTACT -->
 ## Contact
@@ -151,7 +171,6 @@ Joseph - JosephMorales007@Yahoo.com
 
 Alex -  Millsalexander97@gmail.com
 [![LinkedIn][linkedin-shield]][linkedin-url-alex]
-
 
 
 Project Link: [https://github.com/amills12/NutShell](https://github.com/amills12/NutShell.git)
