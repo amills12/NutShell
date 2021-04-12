@@ -38,7 +38,7 @@ environment variables, aliases, pathname searching, wild-carding and tilde expan
   * [Prerequisites](#prerequisites)
   * [Installation](#installation)
 * [Features](#features)
-* [Task List](#tasklist)
+* [Task List](#task-list)
 * [Contact](#contact)
 
 
@@ -51,11 +51,11 @@ using Lex and Yacc running under Unix.
 ### Built With
 * [VSCode](https://code.visualstudio.com/)
 * [VMWare](https://www.vmware.com/)
-* [Reptilian](www.cise.ufl.edu/research/reptilian/downloads/Reptilian-latest.ova)
-* [C]()
-* [C++]()
-* [Lex/Flex]()
-* [Yacc/Bison]()
+* Reptilian
+* C
+* C++
+* Lex/Flex
+* Yacc/Bison
 
 
 

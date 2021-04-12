@@ -4,7 +4,11 @@
 #include <string>
 
 // Global Functions
-void printenv();
+void printEnv();
+void addEnv(const char *variable, const char *word);
+void removeEnv(const char *variable);
+
+void printAlias();
 void addAlias(const char *name, const char *command);
 void removeAlias(const char *name);
 bool isAlias(const char *name);
@@ -12,7 +16,7 @@ void findAliasCommand(const char *name);
 void executeCommand(char *command, char **args);
 
 // Colors 
-void printAlias();
+
 void black();
 void red();
 void green();

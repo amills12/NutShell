@@ -26,15 +26,59 @@ extern char **environ;
 
 // Global Variables
 map<string, string> aliasMap;
+map<string, string> envMap;
 
 // Bison Helper Functions
-void printenv()
+void printEnv()
 {
-    int id = 0;
-    while (environ[id] != NULL)
+    // Make an iterator to print through all env
+    map<string, string>::iterator itr;
+
+    for (itr = envMap.begin(); itr != envMap.end(); itr++)
     {
-        printf("%s\n", environ[id++]);
+        if (next(itr) != envMap.end())
+            printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
+        else
+            printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
     }
+    // Older Code
+    // int id = 0;
+    // while (environ[id] != NULL)
+    // {
+    //     printf("%s\n", environ[id++]);
+    // }
+}
+
+void addEnv(const char *variable, const char *word)
+{
+    string envCheck(variable);
+    string pathCheck(word);
+
+    auto itr = envMap.find(variable);
+    if (itr == envMap.end() && envCheck != pathCheck){
+        envMap.insert(pair<string, string>(variable, word));
+        //printf("env Added"); 
+    }
+    else
+    {
+        printf("Add env failed.\n"); 
+    }
+    
+}
+
+void removeEnv(const char *variable)
+{
+    auto itr = envMap.find(variable);
+    if (itr == envMap.end())
+    {
+        printf("env Does Not Exist\n"); 
+    }
+    else
+    {
+        envMap.erase(variable);
+        
+    }
+    
 }
 
 void addAlias(const char *name, const char *command)
