@@ -37,7 +37,7 @@ environment variables, aliases, pathname searching, wild-carding and tilde expan
 * [Getting Started](#getting-started)
   * [Prerequisites](#prerequisites)
   * [Installation](#installation)
-  * [Features](#features)
+* [Features](#features)
 * [Task List](#tasklist)
 * [Contact](#contact)
 
