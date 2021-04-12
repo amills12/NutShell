@@ -54,6 +54,8 @@ using Lex and Yacc running under Unix.
 * [Reptilian](www.cise.ufl.edu/research/reptilian/downloads/Reptilian-latest.ova)
 * [C]()
 * [C++]()
+* [lex/Flex]()
+* [Yacc/Bison]()
 
 
 
