@@ -171,7 +171,7 @@ Joseph - JosephMorales007@Yahoo.com
 [![LinkedIn][linkedin-shield]][linkedin-url-joseph]
 
 Alex -  Millsalexander97@gmail.com
-[![LinkedIn][linkedin-shield]][linkedin-url-alex]
+
 
 
 Project Link: [https://github.com/amills12/NutShell](https://github.com/amills12/NutShell.git)
