@@ -5,10 +5,11 @@
 #include <vector>
 
 //Global Variables
-class CommandType {
-    public:
-        std::string commandName;
-        std::vector<std::string> args;
+class CommandType
+{
+public:
+    std::string commandName;
+    std::vector<std::string> args;
 };
 
 extern std::string infile;
@@ -32,7 +33,7 @@ void executeCommand(char *command, char **args);
 void executePipedCommand(char *command, char **args, int pipeFlag);
 void errorPiping();
 
-// Colors 
+// Colors
 
 void black();
 void red();
@@ -48,4 +49,4 @@ void nutshellTerminalPrint();
 void wildCarding(const char *name);
 void tildeExpansion(const char *name);
 
-int yylex_destroy( void );
+int yylex_destroy(void);
