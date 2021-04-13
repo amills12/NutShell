@@ -344,6 +344,9 @@ void nutshellTerminalPrint()
 // Main Program execution
 int main()
 {
+    
+   
+
     red();
     printf(" /$$   /$$ /$$   /$$ /$$$$$$$$ /$$$$$$  /$$   /$$ /$$$$$$$$ /$$       /$$\n");
     printf("| $$$ | $$| $$  | $$|__  $$__//$$__  $$| $$  | $$| $$_____/| $$      | $$\n");
@@ -354,6 +357,8 @@ int main()
     printf("| $$ \\  $$|  $$$$$$/   | $$  |  $$$$$$/| $$  | $$| $$$$$$$$| $$$$$$$$| $$$$$$$$\n");
     printf("|__/  \\__/ \\______/    |__/   \\______/ |__/  |__/|________/|________/|________/\n");
 
+    addEnv("HOME",getenv("HOME"));
+    addEnv("PATH", getenv("PATH"));
     //printf("**** Welcome to the NUTSHELL ****\n");
     white();
 
