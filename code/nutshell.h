@@ -23,6 +23,7 @@ extern bool appendFlag;
 void printEnv();
 void addEnv(const char *variable, const char *word);
 void removeEnv(const char *variable);
+const char * getEnvVar(const char *variable);
 
 void printAlias();
 bool addAlias(const char *name, const char *command);

@@ -41,12 +41,6 @@ void printEnv()
         else
             printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
     }
-    // Older Code
-    // int id = 0;
-    // while (environ[id] != NULL)
-    // {
-    //     printf("%s\n", environ[id++]);
-    // }
 }
 
 void addEnv(const char *variable, const char *word)
@@ -63,6 +57,19 @@ void addEnv(const char *variable, const char *word)
     else
     {
         printf("Add env failed.\n");
+    }
+}
+
+const char * getEnvVar(const char *variable)
+{
+    auto itr = envMap.find(variable);
+    if (itr == envMap.end())
+    {
+        return NULL;
+    }
+    else
+    {
+        return itr->second.c_str();
     }
 }
 

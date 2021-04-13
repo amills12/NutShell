@@ -2,6 +2,7 @@
     #pragma GCC diagnostic ignored "-Wwrite-strings"
     #include "nutshparser.tab.h"
     void yyerror(char *s);
+    const char * getEnvVar(const char *variable);
 %}
 
 %option noyywrap
@@ -15,8 +16,8 @@ WORD     [a-zA-Z\/.0-9\-&*.?]
 <string_cond>[\"]           { BEGIN(INITIAL); };
 
 <env_cond>{WORD}+           { 
-                                if(getenv(strdup(yytext))){
-                                    yylval.str = getenv(strdup(yytext));
+                                if(getEnvVar(strdup(yytext))){
+                                    yylval.str = strdup(getEnvVar(strdup(yytext)));
                                     return WORD; 
                                 }
                                 else{
