@@ -9,7 +9,7 @@
 %x env_cond
 
 NOTQUOTE [^"]
-WORD     [a-zA-Z\/.0-9\-&]
+WORD     [a-zA-Z\/.0-9\-&*.?]
 %%
 <string_cond>{NOTQUOTE}+    { yylval.str = strdup(yytext); return STRING; };
 <string_cond>[\"]           { BEGIN(INITIAL); };
@@ -49,5 +49,4 @@ bye|Bye|BYE            return BYE;
 
 [ \t\r]                /* do nada */;
 {WORD}+                { yylval.str = strdup(yytext); return WORD; };
-[*.a-zA-Z]+            { yylval.str = strdup(yytext); return WILDCARD; };
 .                      { yyerror("Unexpected character"); return ERROR; };

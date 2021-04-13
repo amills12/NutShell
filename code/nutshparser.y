@@ -54,7 +54,6 @@
 
 %token <str> WORD
 %token <str> STRING
-%token <str> WILDCARD 
 %token <str> TILDE_EXPANSION
 %token <str> LESSTHAN
 %token <str> GREATERTHAN
@@ -65,26 +64,7 @@ inputs:
     | inputs input
 
 input:
-    C_META | C_CD | C_COMMAND | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_STRING | C_HOME | C_ERROR | C_WILDCARD |C_BYE;
-    
-/* ===================================== START META CHARACTER CASE ======================================== */  
-C_META:
-    C_BACKSLASH | C_AMPERSAND;
-C_BACKSLASH:
-    BACKSLASH
-    {
-        printf("BACKSLASH");
-        printf("\n");
-        return 1;
-    };
-C_AMPERSAND:
-    AMPERSAND
-    {
-        printf("AMPERSAND");
-        printf("\n");
-        return 1;
-    };
-/* ===================================== END META CHARACTER CASE ========================================== */  
+    C_CD | C_COMMAND | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_STRING | C_HOME | C_ERROR |C_BYE;
 
 /* ========================================= START CD CASE ================================================ */  
 C_CD: /* need to word on "cd .. " implementation */
@@ -197,8 +177,19 @@ arguments:
 
 argument:
     WORD {
-        // Add args to command table
-        tmpArgs.push_back($1);
+        std::string word($1);
+
+        // If the word contain special characters we need to expand it
+        if ((word.find("*") != std::string::npos) || (word.find("?") != std::string::npos))
+        {
+            // printf("EXPAND\n");
+            globExpand($1, tmpArgs);
+        }
+        else
+        {
+            // Add args to command table
+            tmpArgs.push_back($1);
+        }
     };
     | STRING {
         // Add args but with strings
@@ -300,12 +291,12 @@ C_ALIAS:
         // printf("\n");
         return 1;
     };
-C_WILDCARD:
+/* C_WILDCARD:
     WILDCARD EOFNL{
         const char *fileExt = $1;   
         wildCarding(fileExt);
         return 1;
-    };
+    }; */
 
 C_STRING:
     STRING EOFNL

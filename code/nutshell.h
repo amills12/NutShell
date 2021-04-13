@@ -31,6 +31,7 @@ bool isAlias(const char *name);
 void findAliasCommand(const char *name);
 void executeCommand(char *command, char **args);
 void executePipedCommand(char *command, char **args, int pipeFlag);
+void globExpand(char * name, std::vector<std::string> &args);
 void errorPiping();
 
 // Colors

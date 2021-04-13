@@ -273,13 +273,14 @@ void findAliasCommand(const char *name)
     yylex_destroy();
 }
 
-void wildCarding(const char *name)
+void globExpand(char * name, vector<string> &args)
 {
     glob_t globbuf = {0};
     glob(name, GLOB_DOOFFS, NULL, &globbuf);
     for (size_t i = 0; i != globbuf.gl_pathc; ++i)
     {
-        printf("%s\n", globbuf.gl_pathv[i]);
+        // printf("%s\n", globbuf.gl_pathv[i]);
+        args.push_back(globbuf.gl_pathv[i]);
     }
     globfree(&globbuf);
 }
