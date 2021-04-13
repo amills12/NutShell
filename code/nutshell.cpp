@@ -79,21 +79,29 @@ void removeEnv(const char *variable)
     }
 }
 
-void addAlias(const char *name, const char *command)
+bool addAlias(const char *name, const char *command)
 {
     string nameCheck(name);
     string commandCheck(command);
 
-    auto itr = aliasMap.find(name);
-    if (itr == aliasMap.end() && nameCheck != commandCheck)
+    auto itr = aliasMap.find(command);
+
+    if(nameCheck.compare(commandCheck) == 0)
     {
-        aliasMap.insert(pair<string, string>(name, command));
-        //printf("Alias Added");
+        return false;
     }
-    else
+
+    while (itr != aliasMap.end())
     {
-        printf("Add alias failed.\n");
+        if(itr->second == nameCheck)
+        {
+            return false;
+        }
+        itr = aliasMap.find(itr->second);
     }
+
+    aliasMap.insert(pair<string, string>(name, command));
+    return true;
 }
 
 void removeAlias(const char *name)
@@ -113,6 +121,9 @@ void executeCommand(char *command, char **args)
 {
     string comString(command);
     string comPath = "/bin/" + comString;
+    // string comPath(getenv("PATH"));
+    // printf("PATH: %s", comPath.c_str());
+    // comPath = comPath + "/" + comString;
 
     // printf("COMMAND STRING %s : %s\n", comString.c_str(), comPath.c_str());
     // printf("infile %s\n", infile.c_str());
@@ -273,13 +284,14 @@ void findAliasCommand(const char *name)
     yylex_destroy();
 }
 
-void wildCarding(const char *name)
+void globExpand(char * name, vector<string> &args)
 {
     glob_t globbuf = {0};
     glob(name, GLOB_DOOFFS, NULL, &globbuf);
     for (size_t i = 0; i != globbuf.gl_pathc; ++i)
     {
-        printf("%s\n", globbuf.gl_pathv[i]);
+        // printf("%s\n", globbuf.gl_pathv[i]);
+        args.push_back(globbuf.gl_pathv[i]);
     }
     globfree(&globbuf);
 }

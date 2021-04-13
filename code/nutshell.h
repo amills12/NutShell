@@ -25,12 +25,13 @@ void addEnv(const char *variable, const char *word);
 void removeEnv(const char *variable);
 
 void printAlias();
-void addAlias(const char *name, const char *command);
+bool addAlias(const char *name, const char *command);
 void removeAlias(const char *name);
 bool isAlias(const char *name);
 void findAliasCommand(const char *name);
 void executeCommand(char *command, char **args);
 void executePipedCommand(char *command, char **args, int pipeFlag);
+void globExpand(char * name, std::vector<std::string> &args);
 void errorPiping();
 
 // Colors
