@@ -25,7 +25,7 @@ void addEnv(const char *variable, const char *word);
 void removeEnv(const char *variable);
 
 void printAlias();
-void addAlias(const char *name, const char *command);
+bool addAlias(const char *name, const char *command);
 void removeAlias(const char *name);
 bool isAlias(const char *name);
 void findAliasCommand(const char *name);

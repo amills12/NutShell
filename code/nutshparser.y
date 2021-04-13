@@ -109,7 +109,6 @@ C_COMMAND:
 
         if (isAlias(cmdTable[0].commandName.c_str()) == true){
             findAliasCommand(cmdTable[0].commandName.c_str());
-            printf("\n");
         }
         else {
             // printf("%d \n", cmdTable.size());
@@ -278,8 +277,10 @@ C_ALIAS:
         const char *aliasedCommand = $3;
         // printf("ALIAS ADD -- ");
         // printf("Added: %s = %s", aliasName, aliasedCommand);
-        addAlias(aliasName, aliasedCommand);
-        // printf("\n");
+        if (addAlias(aliasName, aliasedCommand)){}
+        else
+            printf("Cannot add alias: %s = %s as it would lead to infinite loop.\n", $2, $3);
+
         return 1;
     };
     | ALIAS WORD STRING EOFNL{        
