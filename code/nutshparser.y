@@ -8,25 +8,30 @@
     #include <sys/wait.h>
     #include "nutshell.h"
 
+    // Funciton Headers
     int yylex();
     int yyparse();
     int yyerror(char *s);
+    char ** generateCArgs(std::vector<std::string> arguments, const char* name);
 
     typedef struct yy_buffer_state *YY_BUFFER_STATE;
     extern int yyparse();
     extern YY_BUFFER_STATE yy_scan_string(const char *str);
 
-    // Global Variables
-    char * cmdTable[100][100];
-    int i = 0;
-    int j = 0;
+    std::vector<CommandType> cmdTable;
+    std::vector<std::string> tmpArgs;
+
+    std::string infile = "";
+    std::string outfile = "";
+    std::string errfile = "";
+
+    bool appendFlag = false;
 %}
 
 //%token WORD
 %token CD 
 %token DOTDOT
-%token LESSTHAN
-%token GREATERTHAN
+
 %token PIPE
 %token BACKSLASH
 %token AMPERSAND
@@ -47,45 +52,24 @@
     char* str;
 }
 
-/* %token <str> VARIABLE */
 %token <str> WORD
 %token <str> STRING
 %token <str> WILDCARD 
 %token <str> TILDE_EXPANSION
-
+%token <str> LESSTHAN
+%token <str> GREATERTHAN
+%token <str> ERRORDIRECT
 %%
 
 inputs:
     | inputs input
 
 input:
-    C_META | C_CD | C_WORD | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_EOLN | C_STRING | C_HOME | C_ERROR | C_WILDCARD |C_BYE;
+    C_META | C_CD | C_COMMAND | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_STRING | C_HOME | C_ERROR | C_WILDCARD |C_BYE;
     
 /* ===================================== START META CHARACTER CASE ======================================== */  
 C_META:
-    C_LESSTHAN | C_GREATERTHAN | C_BACKSLASH | C_AMPERSAND;
-
-C_LESSTHAN:
-    LESSTHAN
-    {
-        printf("LESSTHAN");
-        printf("\n");
-        return 1;
-    };
-C_GREATERTHAN:
-    GREATERTHAN
-    {
-        printf("GREATERTHAN");
-        printf("\n");
-        return 1;
-    };
-/* C_PIPE:
-    PIPE
-    {
-        printf("PIPE");
-        printf("\n");
-        return 1;
-    }; */
+    C_BACKSLASH | C_AMPERSAND;
 C_BACKSLASH:
     BACKSLASH
     {
@@ -129,7 +113,6 @@ C_CD: /* need to word on "cd .. " implementation */
         return 1;
     };
     | CD WORD EOFNL{
-        
         // printf("CD WORD -- "); 
         const char* dir = $2;
         // printf("Current Working Directory Is: %s ", getcwd(NULL,0));
@@ -141,57 +124,114 @@ C_CD: /* need to word on "cd .. " implementation */
     | CD ERROR{ return 0;};
 /* ========================================= END CD CASE ================================================== */   
 
-C_WORD:
-    WORD args EOFNL{
-        const char* word = $1;
+C_COMMAND:
+    subcommand piped io_redirect_in io_redirect_out error_redirect EOFNL{
 
-        if (isAlias(word) == true){
-            findAliasCommand(word);
+        if (isAlias(cmdTable[0].commandName.c_str()) == true){
+            findAliasCommand(cmdTable[0].commandName.c_str());
             printf("\n");
         }
         else {
-            // Construct arg tables 
-            char ** args;
-            args =(char **)malloc(100*sizeof(char*));
-            args[0] = $1;
-
-            for (int temp = 1; temp <= j; temp++)
+            // printf("%d \n", cmdTable.size());
+            if(cmdTable.size() == 1)
             {
-                args[temp] = cmdTable[i][temp-1];
+                // printf("Size: %lu\n", cmdTable.size());
+                char ** args = generateCArgs(cmdTable[0].args, cmdTable[0].commandName.c_str());
+                // Call execute command
+                executeCommand(args[0], args);
+
+                // Free Dynamic memory
+                free(args);
             }
+            else if(cmdTable.size() > 1)
+            {
+                //We can assume that these are piped commands
+                for (int i = 0; i < cmdTable.size(); i++)
+                {
+                    char ** args = generateCArgs(cmdTable[i].args, cmdTable[i].commandName.c_str());
+                    int argFlag;
 
-            executeCommand($1, args);
-            // printf("COMMAND : %s ", word);
-            // printf("\n");
-            i = i + 1;
-            // printf("%i\n", i);
-            j = 0;
+                    if(i == 0) 
+                        argFlag = 0;
+                    else if(i == cmdTable.size() - 1)
+                        argFlag = 2;
+                    else
+                        argFlag = 1;
 
-            free(args);
+                    // Call execute command
+                    executePipedCommand(args[0], args, argFlag);
+
+                    // Free Dynamic memory
+                    free(args);
+                }
+                
+                //Delete the pipe
+                remove("pipe");
+            }
+            else
+            {
+                yyerror("Table Size Incorrect");
+            }
+            
+            // Clean Up
+            appendFlag = false;
+            cmdTable.clear();
+            infile = "";
+            outfile = "";
         }
         return 1;
     };
 
-args: 
-    | args arg
 
-arg:
-    WORD{
-        // printf("ARG %s, ", word);
+subcommand:
+    | WORD arguments {
+        CommandType tmpCmdType;
+        tmpCmdType.commandName = $1;
+        tmpCmdType.args = tmpArgs;
+        cmdTable.push_back(tmpCmdType);
+        tmpArgs.clear();
+    }
 
-        // Add args to string
-        cmdTable[i][j] = $1;
-        j++;
+arguments: 
+    | arguments argument
+
+argument:
+    WORD {
+        // Add args to command table
+        tmpArgs.push_back($1);
     };
-    | STRING{
-        const char* word = $1;
-        printf("STRING ARG %s, ", word);
+    | STRING {
+        // Add args but with strings
+        tmpArgs.push_back($1);
     };
-    | PIPE WORD{
-        const char* word = $2;
-        printf("PIPE COMMAND: %s ", word);
-    };
+
+piped:
+    | piped pipedcommands
     
+pipedcommands:
+    PIPE subcommand 
+
+io_redirect_out:
+    | GREATERTHAN WORD {
+        // Set the file to the input
+        outfile = $2;
+    };
+    | GREATERTHAN GREATERTHAN WORD {
+        outfile = $3;
+        appendFlag = true;
+    }
+
+io_redirect_in:
+    | LESSTHAN WORD {
+        // Set the file to the last output
+        infile = $2;
+    };
+
+error_redirect:
+    | ERRORDIRECT WORD {
+        errfile = $2;
+    };
+
 C_SETENV:
     SETENV WORD WORD EOFNL{
         // printf("SETENV -- ");
@@ -266,10 +306,6 @@ C_WILDCARD:
         wildCarding(fileExt);
         return 1;
     };
-C_EOLN:
-    EOFNL{
-        return 1;
-    };
 
 C_STRING:
     STRING EOFNL
@@ -307,8 +343,32 @@ C_BYE:
 
 int yyerror(char *s)
 {
-    printf("An Error has Occured: %s\n", s);
+    fprintf(stderr, "An Error has Occured: %s\n", s);
     yylex_destroy();
     return 0;
+}
+
+char** generateCArgs(std::vector<std::string> arguments, const char * name)
+{
+    // Create a an array of arguments using what we have
+    char ** args;
+    
+    // Allocating Space for new args array
+    args = (char **)malloc((arguments.size() + strlen(name) + 1) * sizeof(char*));
+    args[0] = (char *)malloc(strlen(name) + 1 *sizeof(char*));
+
+    // Copy over command name
+    strcpy(args[0], name);
+
+    for (int temp = 1; temp <= arguments.size(); temp++)
+    {
+        args[temp] = (char *)malloc((strlen(arguments[temp-1].c_str()) + 1) * sizeof(char*));
+        strcpy(args[temp],arguments[temp-1].c_str());
+    }
+
+    // Remember to null terminate
+    args[arguments.size() + 1] = NULL;
+
+    return args;
 }
 
