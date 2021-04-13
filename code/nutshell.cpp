@@ -68,14 +68,19 @@ void addEnv(const char *variable, const char *word)
 
 void removeEnv(const char *variable)
 {
+    string homeOrPath(variable);
     auto itr = envMap.find(variable);
     if (itr == envMap.end())
     {
         printf("env Does Not Exist\n");
     }
-    else
+    else if(homeOrPath != "HOME" && homeOrPath != "PATH")
     {
         envMap.erase(variable);
+    }
+    else
+    {
+        printf("Cannot unset HOME or PATH env\n");
     }
 }
 
