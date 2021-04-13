@@ -171,7 +171,7 @@ Joseph - JosephMorales007@Yahoo.com
 [![LinkedIn][linkedin-shield]][linkedin-url-joseph]
 
 Alex -  Millsalexander97@gmail.com
-[![LinkedIn][linkedin-shield]][linkedin-url-alex]
+
 
 
 Project Link: [https://github.com/amills12/NutShell](https://github.com/amills12/NutShell.git)
@@ -189,9 +189,6 @@ Project Link: [https://github.com/amills12/NutShell](https://github.com/amills12
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
 [linkedin-url-joseph]: https://www.linkedin.com/in/josephmorales007/
-
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
-[linkedin-url-alex]: https://linkedin.com/in/alex
 
 [issues-shield]: https://img.shields.io/github/issues/amills12/NutShell/issues.svg?style=flat-square
 [issues-url]: https://github.com/amills12/NutShell/issues
