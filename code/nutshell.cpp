@@ -55,15 +55,15 @@ void addEnv(const char *variable, const char *word)
     string pathCheck(word);
 
     auto itr = envMap.find(variable);
-    if (itr == envMap.end() && envCheck != pathCheck){
+    if (itr == envMap.end() && envCheck != pathCheck)
+    {
         envMap.insert(pair<string, string>(variable, word));
-        //printf("env Added"); 
+        //printf("env Added");
     }
     else
     {
-        printf("Add env failed.\n"); 
+        printf("Add env failed.\n");
     }
-    
 }
 
 void removeEnv(const char *variable)
@@ -71,14 +71,12 @@ void removeEnv(const char *variable)
     auto itr = envMap.find(variable);
     if (itr == envMap.end())
     {
-        printf("env Does Not Exist\n"); 
+        printf("env Does Not Exist\n");
     }
     else
     {
         envMap.erase(variable);
-        
     }
-    
 }
 
 void addAlias(const char *name, const char *command)
@@ -87,15 +85,15 @@ void addAlias(const char *name, const char *command)
     string commandCheck(command);
 
     auto itr = aliasMap.find(name);
-    if (itr == aliasMap.end() && nameCheck != commandCheck){
+    if (itr == aliasMap.end() && nameCheck != commandCheck)
+    {
         aliasMap.insert(pair<string, string>(name, command));
-        //printf("Alias Added"); 
+        //printf("Alias Added");
     }
     else
     {
-        printf("Add alias failed.\n"); 
+        printf("Add alias failed.\n");
     }
-    
 }
 
 void removeAlias(const char *name)
@@ -103,17 +101,15 @@ void removeAlias(const char *name)
     auto itr = aliasMap.find(name);
     if (itr == aliasMap.end())
     {
-        printf("Alias Does Not Exist\n"); 
+        printf("Alias Does Not Exist\n");
     }
     else
     {
         aliasMap.erase(name);
-        
     }
-    
 }
 
-void executeCommand(char *command, char ** args)
+void executeCommand(char *command, char **args)
 {
     string comString(command);
     string comPath = "/bin/" + comString;
@@ -132,13 +128,13 @@ void executeCommand(char *command, char ** args)
     {
         errorPiping();
 
-        if(infile != "")
+        if (infile != "")
         {
             FILE *f = fopen(infile.c_str(), "r");
             dup2(fileno(f), 0);
             fclose(f);
         }
-        if(outfile != "")
+        if (outfile != "")
         {
             FILE *f = fopen(outfile.c_str(), appendFlag ? "a" : "w");
             dup2(fileno(f), 1);
@@ -162,7 +158,6 @@ void executePipedCommand(char *command, char **args, int pipeFlag)
 
     // printf("COMMAND STRING %s\n", comString.c_str());
 
-
     pid_t p;
     p = fork();
     if (p < 0)
@@ -176,7 +171,7 @@ void executePipedCommand(char *command, char **args, int pipeFlag)
         if (pipeFlag == 0)
         {
             // If it's the first command, and no in file then just write out
-            if(infile == "")
+            if (infile == "")
             {
                 // Open a file and write standard output
                 FILE *f = fopen("pipe", "w");
@@ -194,10 +189,10 @@ void executePipedCommand(char *command, char **args, int pipeFlag)
                 fclose(f2);
             }
         }
-        else if(pipeFlag == 2)
+        else if (pipeFlag == 2)
         {
             // If it's last command and no output file, just read from path
-            if(outfile == "")
+            if (outfile == "")
             {
                 //Last command of the pipe only reads
                 FILE *f = fopen("pipe", "r");
@@ -237,17 +232,19 @@ void executePipedCommand(char *command, char **args, int pipeFlag)
 bool isAlias(const char *name)
 {
     auto itr = aliasMap.find(name);
-    if (itr == aliasMap.end()){
-        //printf("ALIAS NOT FOUND: "); 
+    if (itr == aliasMap.end())
+    {
+        //printf("ALIAS NOT FOUND: ");
         return false;
     }
-    else{
-        //printf("ALIAS WAS FOUND: "); 
+    else
+    {
+        //printf("ALIAS WAS FOUND: ");
         return true;
     }
 }
 
-void errorPiping() 
+void errorPiping()
 {
     if (errfile != "")
     {
@@ -255,7 +252,7 @@ void errorPiping()
         {
             dup2(1, 2);
         }
-        else 
+        else
         {
             FILE *f = fopen(errfile.c_str(), "a");
             dup2(fileno(f), 2);
@@ -278,24 +275,24 @@ void findAliasCommand(const char *name)
 
 void wildCarding(const char *name)
 {
-        glob_t globbuf = {0};
-        glob(name, GLOB_DOOFFS, NULL, &globbuf);
-        for (size_t i = 0; i != globbuf.gl_pathc; ++i)
-        {
-            printf("%s\n", globbuf.gl_pathv[i]);
-        }
-        globfree(&globbuf);
+    glob_t globbuf = {0};
+    glob(name, GLOB_DOOFFS, NULL, &globbuf);
+    for (size_t i = 0; i != globbuf.gl_pathc; ++i)
+    {
+        printf("%s\n", globbuf.gl_pathv[i]);
+    }
+    globfree(&globbuf);
 }
 
 void tildeExpansion(const char *name)
 {
-        glob_t globbuf = {0};
-        glob(name, GLOB_TILDE, NULL, &globbuf);
-        for (size_t i = 0; i != globbuf.gl_pathc; ++i)
-        {
-            printf("%s\n", globbuf.gl_pathv[i]);
-        }
-        globfree(&globbuf);
+    glob_t globbuf = {0};
+    glob(name, GLOB_TILDE, NULL, &globbuf);
+    for (size_t i = 0; i != globbuf.gl_pathc; ++i)
+    {
+        printf("%s\n", globbuf.gl_pathv[i]);
+    }
+    globfree(&globbuf);
 }
 
 void printAlias()
@@ -336,26 +333,26 @@ void nutshellTerminalPrint()
 int main()
 {
     red();
-    printf(" /$$   /$$ /$$   /$$ /$$$$$$$$ /$$$$$$  /$$   /$$ /$$$$$$$$ /$$       /$$\n");     
-    printf("| $$$ | $$| $$  | $$|__  $$__//$$__  $$| $$  | $$| $$_____/| $$      | $$\n");       
-    printf("| $$$$| $$| $$  | $$   | $$  | $$  \\__/| $$  | $$| $$      | $$      | $$\n");      
-    printf("| $$ $$ $$| $$  | $$   | $$  |  $$$$$$ | $$$$$$$$| $$$$$   | $$      | $$\n");       
-    printf("| $$  $$$$| $$  | $$   | $$   \\____  $$| $$__  $$| $$__/   | $$      | $$\n");       
-    printf("| $$\\  $$$| $$  | $$   | $$   /$$  \\ $$| $$  | $$| $$      | $$      | $$\n");       
-    printf("| $$ \\  $$|  $$$$$$/   | $$  |  $$$$$$/| $$  | $$| $$$$$$$$| $$$$$$$$| $$$$$$$$\n"); 
-    printf("|__/  \\__/ \\______/    |__/   \\______/ |__/  |__/|________/|________/|________/\n");                                                                          
+    printf(" /$$   /$$ /$$   /$$ /$$$$$$$$ /$$$$$$  /$$   /$$ /$$$$$$$$ /$$       /$$\n");
+    printf("| $$$ | $$| $$  | $$|__  $$__//$$__  $$| $$  | $$| $$_____/| $$      | $$\n");
+    printf("| $$$$| $$| $$  | $$   | $$  | $$  \\__/| $$  | $$| $$      | $$      | $$\n");
+    printf("| $$ $$ $$| $$  | $$   | $$  |  $$$$$$ | $$$$$$$$| $$$$$   | $$      | $$\n");
+    printf("| $$  $$$$| $$  | $$   | $$   \\____  $$| $$__  $$| $$__/   | $$      | $$\n");
+    printf("| $$\\  $$$| $$  | $$   | $$   /$$  \\ $$| $$  | $$| $$      | $$      | $$\n");
+    printf("| $$ \\  $$|  $$$$$$/   | $$  |  $$$$$$/| $$  | $$| $$$$$$$$| $$$$$$$$| $$$$$$$$\n");
+    printf("|__/  \\__/ \\______/    |__/   \\______/ |__/  |__/|________/|________/|________/\n");
 
     //printf("**** Welcome to the NUTSHELL ****\n");
     white();
 
 #if AUTO //If AUTO is 1 this code will run
-    string testArr[] = { "alias beetle \"beetle juice\"", "alias ya yeet", "alias test \"cd ..\"", "alias", "unalias beetle", "alias",
-                        "beetle","test", "cd", "cd ..","ls", "*.c", "*.h", "cd /NutShell/code", "cd ..", "cd ..",
-                       "Yeet", "alias beetle \"beetle juice\"",
-                       "\"nutshell/nutshell/nutshell/nutshell\"" /*This should print quote word quote*/,
-                       "setenv beetle juice", "printenv", "unsetenv beetle", "printenv beetle",
-                       "..", "<", ">", "|", "&", "~", "~/", "cd", "("/*this should throw an error*/,
-                       "ls", "bye"};
+    string testArr[] = {"alias beetle \"beetle juice\"", "alias ya yeet", "alias test \"cd ..\"", "alias", "unalias beetle", "alias",
+                        "beetle", "test", "cd", "cd ..", "ls", "*.c", "*.h", "cd /NutShell/code", "cd ..", "cd ..",
+                        "Yeet", "alias beetle \"beetle juice\"",
+                        "\"nutshell/nutshell/nutshell/nutshell\"" /*This should print quote word quote*/,
+                        "setenv beetle juice", "printenv", "unsetenv beetle", "printenv beetle",
+                        "..", "<", ">", "|", "&", "~", "~/", "cd", "(" /*this should throw an error*/,
+                        "ls", "bye"};
 
     for (int i = 0; i < sizeof(testArr); i++)
     {
