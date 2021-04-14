@@ -33,8 +33,6 @@
 %token DOTDOT
 
 %token PIPE
-%token BACKSLASH
-%token AMPERSAND
 %token EOFNL
 %token ERROR
 %token HOME
@@ -107,7 +105,7 @@ C_CD: /* need to word on "cd .. " implementation */
 C_COMMAND:
     subcommand piped io_redirect_in io_redirect_out error_redirect EOFNL{
 
-        if (isAlias(cmdTable[0].commandName.c_str()) == true){
+        if (cmdTable.size() > 0 && isAlias(cmdTable[0].commandName.c_str()) == true){
             findAliasCommand(cmdTable[0].commandName.c_str());
         }
         else {
@@ -147,11 +145,7 @@ C_COMMAND:
                 //Delete the pipe
                 remove("pipe");
             }
-            else
-            {
-                yyerror("Table Size Incorrect");
-            }
-            
+
             // Clean Up
             appendFlag = false;
             cmdTable.clear();
@@ -292,12 +286,6 @@ C_ALIAS:
         // printf("\n");
         return 1;
     };
-/* C_WILDCARD:
-    WILDCARD EOFNL{
-        const char *fileExt = $1;   
-        wildCarding(fileExt);
-        return 1;
-    }; */
 
 C_STRING:
     STRING EOFNL

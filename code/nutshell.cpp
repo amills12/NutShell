@@ -129,17 +129,26 @@ void removeAlias(const char *name)
     }
 }
 
+vector<string> getPaths(){
+    vector<string> tempVector;
+    string paths(getEnvVar("PATH"));
+    size_t i = 0;
+    string path;
+
+    while((i = paths.find(":")) != std::string::npos)
+    {
+        path = paths.substr(0, i);
+        tempVector.push_back(path);
+        paths.erase(0, i + 1);
+    }
+
+    return tempVector;
+}
+
 void executeCommand(char *command, char **args)
 {
     string comString(command);
-    string comPath = "/bin/" + comString;
-    // string comPath(getenv("PATH"));
-    // printf("PATH: %s", comPath.c_str());
-    // comPath = comPath + "/" + comString;
-
-    // printf("COMMAND STRING %s : %s\n", comString.c_str(), comPath.c_str());
-    // printf("infile %s\n", infile.c_str());
-    // printf("outfile %s\n", outfile.c_str());
+    vector<string> paths = getPaths();
 
     pid_t p;
     p = fork();
@@ -164,7 +173,12 @@ void executeCommand(char *command, char **args)
             fclose(f);
         }
 
-        execv(comPath.c_str(), args);
+        // Loop Paths
+        for (int i = 0; i < paths.size(); i++)
+        {
+            string tempStr = paths[i] + "/" + comString; 
+            execv(tempStr.c_str(), args);
+        }
 
         // If it's not an actual command print and exit
         printf("Could not find command: %s\n", comString.c_str());
@@ -177,9 +191,7 @@ void executeCommand(char *command, char **args)
 void executePipedCommand(char *command, char **args, int pipeFlag)
 {
     string comString(command);
-    string comPath = "/bin/" + comString;
-
-    // printf("COMMAND STRING %s\n", comString.c_str());
+    std::vector<std::string> paths = getPaths();
 
     pid_t p;
     p = fork();
@@ -242,7 +254,12 @@ void executePipedCommand(char *command, char **args, int pipeFlag)
             fclose(f);
         }
 
-        execv(comPath.c_str(), args);
+        // Loop Paths
+        for (int i = 0; i < paths.size(); i++)
+        {
+            string tempStr = paths[i] + "/" + comString; 
+            execv(tempStr.c_str(), args);
+        }
 
         // If it's not an actual command print and exit
         printf("Could not find command: %s\n", comString.c_str());
@@ -370,7 +387,7 @@ int main()
     printf("|__/  \\__/ \\______/    |__/   \\______/ |__/  |__/|________/|________/|________/\n");
 
     addEnv("HOME",getenv("HOME"));
-    addEnv("PATH", getenv("PATH"));
+    addEnv("PATH", ".:/bin:/usr/bin:/usr/local/bin"); // May have to change this later
     //printf("**** Welcome to the NUTSHELL ****\n");
     white();
 

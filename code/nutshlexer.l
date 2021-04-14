@@ -18,7 +18,7 @@ WORD     [a-zA-Z\/.0-9\-&*.?]
 <env_cond>{WORD}+           { 
                                 if(getEnvVar(strdup(yytext))){
                                     yylval.str = strdup(getEnvVar(strdup(yytext)));
-                                    return WORD; 
+                                    return WORD;
                                 }
                                 else{
                                     yyerror("incorrect environment variable");
@@ -41,8 +41,6 @@ bye|Bye|BYE            return BYE;
 [|]                    return PIPE;
 [\"]                   { BEGIN(string_cond); };
 "${"                   { BEGIN(env_cond); };
-[\\]                   return BACKSLASH;
-[&]                    return AMPERSAND;               
 [~]                    return HOME;
 \n                     return EOFNL;
 "~/"                   return HOME_PATH;
