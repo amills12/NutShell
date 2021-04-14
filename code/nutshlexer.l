@@ -3,18 +3,26 @@
     #include "nutshparser.tab.h"
     void yyerror(char *s);
     const char * getEnvVar(const char *variable);
+    char tempStr[100];
 %}
 
 %option noyywrap
 %x string_cond
 %x env_cond
+%x envstring_expand
 
-NOTQUOTE [^"]
-WORD     [a-zA-Z\/.0-9\-&*.?:]
+NOTQUOTE [a-zA-Z\/.0-9\-&*.?: ~]
+WORD     [a-zA-Z\/.0-9\-&*.?:~]
 %%
-<string_cond>{NOTQUOTE}+    { yylval.str = strdup(yytext); return STRING; };
-<string_cond>[\"]           { BEGIN(INITIAL); };
+<string_cond>{NOTQUOTE}+    { strcat(tempStr, yytext);};
+<string_cond>"${"           { BEGIN(envstring_expand);};
+<string_cond>[\"]           { BEGIN(INITIAL); yylval.str = strdup(tempStr); return STRING;};
 
+<envstring_expand>{WORD}+   {
+                                if(getEnvVar(yytext))
+                                    strcat(tempStr, getEnvVar(strdup(yytext)));
+                            };
+<envstring_expand>[}]       { BEGIN(string_cond); };
 <env_cond>{WORD}+           { 
                                 if(getEnvVar(strdup(yytext))){
                                     yylval.str = strdup(getEnvVar(strdup(yytext)));
@@ -39,7 +47,7 @@ bye|Bye|BYE            return BYE;
 ">"                    return GREATERTHAN;
 "2>"                   return ERRORDIRECT;
 [|]                    return PIPE;
-[\"]                   { BEGIN(string_cond); };
+[\"]                   { strcpy(tempStr, ""); BEGIN(string_cond); };
 "${"                   { BEGIN(env_cond); };
 [~]                    return HOME;
 \n                     return EOFNL;
