@@ -11,7 +11,7 @@
     // Funciton Headers
     int yylex();
     int yyparse();
-    int yyerror(char *s);
+    extern int yyerror(char *s);
     char ** generateCArgs(std::vector<std::string> arguments, const char* name);
 
     typedef struct yy_buffer_state *YY_BUFFER_STATE;

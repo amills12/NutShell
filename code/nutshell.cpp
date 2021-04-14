@@ -24,6 +24,8 @@ extern int yyparse();
 extern YY_BUFFER_STATE yy_scan_string(const char *str);
 extern char **environ;
 
+int yyerror(char *s);
+
 // Global Variables
 map<string, string> aliasMap;
 map<string, string> envMap;
@@ -48,15 +50,13 @@ void addEnv(const char *variable, const char *word)
     string envCheck(variable);
     string pathCheck(word);
 
-    auto itr = envMap.find(variable);
-    if (itr == envMap.end() && envCheck != pathCheck)
+    if (envCheck != pathCheck)
     {
-        envMap.insert(pair<string, string>(variable, word));
-        //printf("env Added");
+        envMap[variable] = word;
     }
     else
     {
-        printf("Add env failed.\n");
+        yyerror("Add env failed, this would cause a infinite loop!");
     }
 }
 
@@ -135,13 +135,21 @@ vector<string> getPaths(){
     size_t i = 0;
     string path;
 
-    while((i = paths.find(":")) != std::string::npos)
+    // If there's just one path add it
+    if(paths.find(":") == std::string::npos)
     {
-        path = paths.substr(0, i);
-        tempVector.push_back(path);
-        paths.erase(0, i + 1);
+        tempVector.push_back(paths);
     }
-
+    else
+    {
+        while((i = paths.find(":")) != std::string::npos)
+        {
+            path = paths.substr(0, i);
+            tempVector.push_back(path);
+            paths.erase(0, i + 1);
+        }
+    }
+    
     return tempVector;
 }
 
