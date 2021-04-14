@@ -155,7 +155,6 @@ C_COMMAND:
         return 1;
     };
 
-
 subcommand:
     | WORD arguments {
         CommandType tmpCmdType;
@@ -228,26 +227,37 @@ C_SETENV:
         return 1;
     };    
 C_PRINTENV:
-    PRINTENV EOFNL{
-        // printf("PRINTENV\n");
-        printEnv();
-        // printf("\n");
+    PRINTENV io_redirect_out EOFNL{
+        if(outfile != "")
+        {
+            int temp = dup(1);
+            FILE *f = fopen(outfile.c_str(), appendFlag ? "a" : "w");
+
+            //Open stdout
+            dup2(fileno(f), 1);
+
+            // Print out to file
+            printEnv();
+
+            fclose(f);
+            
+            //Close stdout
+            dup2(temp, 1);
+            close(temp);
+
+            outfile = "";
+        }
+        else
+        {
+            printEnv();
+        }
         return 1;
-        // Do they really want all the the environment variables? PS. ITS UGLY
     };
 C_UNSETENV:
     UNSETENV WORD EOFNL{
         // printf("UNSENTENV -- ");    
         const char* variable = $2;
         removeEnv(variable);
-        // unsetenv(variable);
-        // if(getenv(variable)==0){
-        //     printf("Successfully Unset Environment Variable");   
-        // }
-        // else{
-        //     printf("Environment Variable Does Not Exist");   
-        // }
-        // printf("\n");
         return 1;
     };
 C_UNALIAS:
@@ -260,10 +270,30 @@ C_UNALIAS:
         return 1;
         };
 C_ALIAS:
-    ALIAS EOFNL{
-        // printf("ALIAS PRINT -- Printing...\n");
-        printAlias();
-        // printf("\n");
+    ALIAS io_redirect_out EOFNL{
+        if(outfile != "")
+        {
+            int temp = dup(1);
+            FILE *f = fopen(outfile.c_str(), appendFlag ? "a" : "w");
+
+            //Open stdout
+            dup2(fileno(f), 1);
+
+            // Print out to file
+            printAlias();
+
+            fclose(f);
+            
+            //Close stdout
+            dup2(temp, 1);
+            close(temp);
+
+            outfile = "";
+        }
+        else
+        {
+            printAlias();
+        }
         return 1;
     };
     | ALIAS WORD WORD EOFNL{
