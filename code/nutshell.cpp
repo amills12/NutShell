@@ -91,6 +91,21 @@ void removeEnv(const char *variable)
     }
 }
 
+bool isAlias(const char *name)
+{
+    auto itr = aliasMap.find(name);
+    if (itr == aliasMap.end())
+    {
+        //printf("ALIAS NOT FOUND: ");
+        return false;
+    }
+    else
+    {
+        //printf("ALIAS WAS FOUND: ");
+        return true;
+    }
+}
+
 bool addAlias(const char *name, const char *command)
 {
     string nameCheck(name);
@@ -129,6 +144,32 @@ void removeAlias(const char *name)
     }
 }
 
+void findAliasCommand(const char *name)
+{
+    string aliasCommand(name);
+    aliasCommand = aliasMap.find(name)->second;
+    // printf("ALIAS COMMAND: %s", aliasCommand.c_str());
+    aliasCommand += "\n";
+    cmdTable.clear();
+    yy_scan_string(aliasCommand.c_str());
+    yyparse();
+    yylex_destroy();
+}
+
+void printAlias()
+{
+    // Make an iterator to print through all alias
+    map<string, string>::iterator itr;
+
+    for (itr = aliasMap.begin(); itr != aliasMap.end(); itr++)
+    {
+        if (next(itr) != aliasMap.end())
+            printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
+        else
+            printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
+    }
+}
+
 vector<string> getPaths(){
     vector<string> tempVector;
     string paths(getEnvVar("PATH"));
@@ -158,8 +199,7 @@ void executeCommand(char *command, char **args)
     string comString(command);
     vector<string> paths = getPaths();
 
-    pid_t p;
-    p = fork();
+    pid_t p = fork();
     if (p < 0)
     {
         perror("Fork Failed");
@@ -194,6 +234,26 @@ void executeCommand(char *command, char **args)
     }
     else
         wait(0);
+}
+
+void executeBGCommand(char *command, char **args)
+{
+    pid_t p = fork();
+    if (p < 0)
+    {
+        perror("Fork Failed");
+    }
+    else if (p == 0)
+    {
+        executeCommand(command, args);
+        printf("\nBG Process %s has ended\n", command);
+        nutshellTerminalPrint();
+        exit(0);
+    }
+    else
+    {
+        printf("[1] %d\n", p);
+    }
 }
 
 void executePipedCommand(char *command, char **args, int pipeFlag)
@@ -277,18 +337,49 @@ void executePipedCommand(char *command, char **args, int pipeFlag)
         wait(0);
 }
 
-bool isAlias(const char *name)
+void executePipes()
 {
-    auto itr = aliasMap.find(name);
-    if (itr == aliasMap.end())
+    //We can assume that these are piped commands
+    for (int i = 0; i < cmdTable.size(); i++)
     {
-        //printf("ALIAS NOT FOUND: ");
-        return false;
+        char ** args = generateCArgs(cmdTable[i].args, cmdTable[i].commandName.c_str());
+        int argFlag;
+
+        if(i == 0) 
+            argFlag = 0;
+        else if(i == cmdTable.size() - 1)
+            argFlag = 2;
+        else
+            argFlag = 1;
+
+        // Call execute command
+        executePipedCommand(args[0], args, argFlag);
+
+        // Free Dynamic memory
+        free(args);
+    }
+    
+    //Delete the pipe
+    remove("pipe");
+}
+
+void executeBGPipes()
+{
+    pid_t p = fork();
+    if (p < 0)
+    {
+        perror("Fork Failed");
+    }
+    else if (p == 0)
+    {
+        executePipes();
+        printf("\nBG Process has ended\n");
+        nutshellTerminalPrint();
+        exit(0);
     }
     else
     {
-        //printf("ALIAS WAS FOUND: ");
-        return true;
+        printf("[1] %d\n", p);
     }
 }
 
@@ -309,16 +400,13 @@ void errorPiping()
     }
 }
 
-void findAliasCommand(const char *name)
+void cleanGlobals()
 {
-    string aliasCommand(name);
-    aliasCommand = aliasMap.find(name)->second;
-    // printf("ALIAS COMMAND: %s", aliasCommand.c_str());
-    aliasCommand += "\n";
+    appendFlag = false;
+    backgroundFlag = false;
     cmdTable.clear();
-    yy_scan_string(aliasCommand.c_str());
-    yyparse();
-    yylex_destroy();
+    infile = "";
+    outfile = "";
 }
 
 void globExpand(char * name, vector<string> &args)
@@ -344,20 +432,6 @@ void tildeExpansion(const char *name)
     globfree(&globbuf);
 }
 
-void printAlias()
-{
-    // Make an iterator to print through all alias
-    map<string, string>::iterator itr;
-
-    for (itr = aliasMap.begin(); itr != aliasMap.end(); itr++)
-    {
-        if (next(itr) != aliasMap.end())
-            printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
-        else
-            printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
-    }
-}
-
 void black() { printf("\033[0;30m"); }
 void red() { printf("\033[0;31m"); }
 void green() { printf("\033[0;32m"); }
@@ -381,9 +455,6 @@ void nutshellTerminalPrint()
 // Main Program execution
 int main()
 {
-    
-   
-
     red();
     printf(" /$$   /$$ /$$   /$$ /$$$$$$$$ /$$$$$$  /$$   /$$ /$$$$$$$$ /$$       /$$\n");
     printf("| $$$ | $$| $$  | $$|__  $$__//$$__  $$| $$  | $$| $$_____/| $$      | $$\n");
@@ -394,9 +465,8 @@ int main()
     printf("| $$ \\  $$|  $$$$$$/   | $$  |  $$$$$$/| $$  | $$| $$$$$$$$| $$$$$$$$| $$$$$$$$\n");
     printf("|__/  \\__/ \\______/    |__/   \\______/ |__/  |__/|________/|________/|________/\n");
 
-    addEnv("HOME",getenv("HOME"));
+    addEnv("HOME", getenv("HOME"));
     addEnv("PATH", ".:/bin:/usr/bin:/usr/local/bin"); // May have to change this later
-    //printf("**** Welcome to the NUTSHELL ****\n");
     white();
 
 #if AUTO //If AUTO is 1 this code will run

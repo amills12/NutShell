@@ -11,10 +11,10 @@
 %x env_cond
 %x envstring_expand
 
-NOTQUOTE [a-zA-Z\/.0-9\-&*.?: ~]
+STRING   [a-zA-Z\/.0-9\-&*.?: ~!@#%()]
 WORD     [a-zA-Z\/.0-9\-&*.?:~]
 %%
-<string_cond>{NOTQUOTE}+    { strcat(tempStr, yytext);};
+<string_cond>{STRING}+      { strcat(tempStr, yytext);};
 <string_cond>"${"           { BEGIN(envstring_expand);};
 <string_cond>[\"]           { BEGIN(INITIAL); yylval.str = strdup(tempStr); return STRING;};
 
@@ -46,6 +46,7 @@ bye|Bye|BYE            return BYE;
 "<"                    return LESSTHAN;
 ">"                    return GREATERTHAN;
 "2>"                   return ERRORDIRECT;
+"&"                    return AMPERSAND;
 [|]                    return PIPE;
 [\"]                   { strcpy(tempStr, ""); BEGIN(string_cond); };
 "${"                   { BEGIN(env_cond); };

@@ -26,6 +26,7 @@
     std::string errfile = "";
 
     bool appendFlag = false;
+    bool backgroundFlag = false;
 %}
 
 //%token WORD
@@ -56,6 +57,7 @@
 %token <str> LESSTHAN
 %token <str> GREATERTHAN
 %token <str> ERRORDIRECT
+%token <str> AMPERSAND
 %%
 
 inputs:
@@ -103,7 +105,7 @@ C_CD: /* need to word on "cd .. " implementation */
 /* ========================================= END CD CASE ================================================== */   
 
 C_COMMAND:
-    subcommand piped io_redirect_in io_redirect_out error_redirect EOFNL{
+    subcommand piped io_redirect_in io_redirect_out error_redirect background EOFNL{
 
         if (cmdTable.size() > 0 && isAlias(cmdTable[0].commandName.c_str()) == true){
             findAliasCommand(cmdTable[0].commandName.c_str());
@@ -114,43 +116,19 @@ C_COMMAND:
             {
                 // printf("Size: %lu\n", cmdTable.size());
                 char ** args = generateCArgs(cmdTable[0].args, cmdTable[0].commandName.c_str());
+                
                 // Call execute command
-                executeCommand(args[0], args);
+                backgroundFlag ? executeBGCommand(args[0], args) : executeCommand(args[0], args);
 
                 // Free Dynamic memory
                 free(args);
             }
             else if(cmdTable.size() > 1)
             {
-                //We can assume that these are piped commands
-                for (int i = 0; i < cmdTable.size(); i++)
-                {
-                    char ** args = generateCArgs(cmdTable[i].args, cmdTable[i].commandName.c_str());
-                    int argFlag;
-
-                    if(i == 0) 
-                        argFlag = 0;
-                    else if(i == cmdTable.size() - 1)
-                        argFlag = 2;
-                    else
-                        argFlag = 1;
-
-                    // Call execute command
-                    executePipedCommand(args[0], args, argFlag);
-
-                    // Free Dynamic memory
-                    free(args);
-                }
-                
-                //Delete the pipe
-                remove("pipe");
+                backgroundFlag ? executeBGPipes() : executePipes();
             }
 
-            // Clean Up
-            appendFlag = false;
-            cmdTable.clear();
-            infile = "";
-            outfile = "";
+            cleanGlobals();
         }
         return 1;
     };
@@ -214,6 +192,11 @@ error_redirect:
     | ERRORDIRECT WORD {
         errfile = $2;
     };
+
+background:
+    | AMPERSAND {
+        backgroundFlag = true;
+    }
 
 C_SETENV:
     SETENV WORD WORD EOFNL{
