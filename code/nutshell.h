@@ -15,6 +15,7 @@ public:
 extern std::string infile;
 extern std::string outfile;
 extern std::string errfile;
+extern std::vector<std::string> ioFiles;
 extern std::vector<CommandType> cmdTable;
 extern std::vector<std::string> tmpArgs;
 extern bool appendFlag;
@@ -36,6 +37,7 @@ void executePipedCommand(char *command, char **args, int pipeFlag);
 void globExpand(char * name, std::vector<std::string> &args);
 void errorPiping();
 void cleanGlobals();
+void cleanIOFiles();
 void executeBGCommand(char *command, char **args);
 char** generateCArgs(std::vector<std::string> arguments, const char * name);
 void executePipes();

@@ -20,6 +20,7 @@
 
     std::vector<CommandType> cmdTable;
     std::vector<std::string> tmpArgs;
+    std::vector<std::string> ioFiles;
 
     std::string infile = "";
     std::string outfile = "";

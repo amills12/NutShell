@@ -261,6 +261,13 @@ void executePipedCommand(char *command, char **args, int pipeFlag)
     string comString(command);
     std::vector<std::string> paths = getPaths();
 
+    
+    // Setting Up Current File
+    string curFile = "t_pipe" + to_string(ioFiles.size());
+    ioFiles.push_back(curFile);
+
+    // printf("CURRENT FILE: %s\n", curFile.c_str());
+
     pid_t p;
     p = fork();
     if (p < 0)
@@ -277,7 +284,7 @@ void executePipedCommand(char *command, char **args, int pipeFlag)
             if (infile == "")
             {
                 // Open a file and write standard output
-                FILE *f = fopen("pipe", "w");
+                FILE *f = fopen(curFile.c_str(), "w");
                 dup2(fileno(f), 1);
                 fclose(f);
             }
@@ -285,7 +292,7 @@ void executePipedCommand(char *command, char **args, int pipeFlag)
             else
             {
                 FILE *f1 = fopen(infile.c_str(), "r");
-                FILE *f2 = fopen("pipe", "w");
+                FILE *f2 = fopen(curFile.c_str(), "w");
                 dup2(fileno(f1), 0);
                 dup2(fileno(f2), 1);
                 fclose(f1);
@@ -298,14 +305,16 @@ void executePipedCommand(char *command, char **args, int pipeFlag)
             if (outfile == "")
             {
                 //Last command of the pipe only reads
-                FILE *f = fopen("pipe", "r");
+                // printf("OUT FILE: %s\n", ioFiles[ioFiles.size()-2].c_str());
+
+                FILE *f = fopen(ioFiles[ioFiles.size()-2].c_str(), "r");
                 dup2(fileno(f), 0);
                 fclose(f);
             }
             // If it's last command and there is and output file, output to that
             else
             {
-                FILE *f1 = fopen("pipe", "r");
+                FILE *f1 = fopen(ioFiles[ioFiles.size()-2].c_str(), "r");
                 FILE *f2 = fopen(outfile.c_str(), appendFlag ? "a" : "w");
                 dup2(fileno(f1), 0);
                 dup2(fileno(f2), 1);
@@ -316,10 +325,12 @@ void executePipedCommand(char *command, char **args, int pipeFlag)
         else
         {
             // Pipe is inbetween
-            FILE *f = fopen("pipe", "rw");
-            dup2(fileno(f), 1);
-            dup2(fileno(f), 0);
-            fclose(f);
+            FILE *f1 = fopen(ioFiles[ioFiles.size()-2].c_str(), "r");
+            FILE *f2 = fopen(curFile.c_str(), "w");
+            dup2(fileno(f2), 1);
+            dup2(fileno(f1), 0);
+            fclose(f1);
+            fclose(f2);
         }
 
         // Loop Paths
@@ -400,11 +411,21 @@ void errorPiping()
     }
 }
 
+void cleanIOFiles()
+{
+    for (int i = 0; i < ioFiles.size(); i++)
+    {
+        remove(ioFiles[i].c_str());
+    }
+    ioFiles.clear();
+}
+
 void cleanGlobals()
 {
     appendFlag = false;
     backgroundFlag = false;
     cmdTable.clear();
+    cleanIOFiles();
     infile = "";
     outfile = "";
 }
