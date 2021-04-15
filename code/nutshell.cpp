@@ -441,10 +441,23 @@ void globExpand(char * name, vector<string> &args)
     globfree(&globbuf);
 }
 
-void tildeExpansion(const char *name)
+void tildeExpansion(const char *name,vector<string> &args)
 {
     glob_t globbuf = {0};
-    glob(name, GLOB_TILDE, NULL, &globbuf);
+    memset(&globbuf, 0, sizeof(globbuf));
+    glob(name, GLOB_TILDE, NULL, &globbuf);    
+    for (size_t i = 0; i != globbuf.gl_pathc; ++i)
+    {
+        args.push_back(globbuf.gl_pathv[i]);
+    }
+    globfree(&globbuf);
+}
+
+void tildeExpansionPrint(const char *name)
+{
+    glob_t globbuf = {0};
+    memset(&globbuf, 0, sizeof(globbuf));
+    glob(name, GLOB_TILDE, NULL, &globbuf);  
     for (size_t i = 0; i != globbuf.gl_pathc; ++i)
     {
         printf("%s\n", globbuf.gl_pathv[i]);

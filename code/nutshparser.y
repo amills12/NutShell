@@ -33,12 +33,9 @@
 //%token WORD
 %token CD 
 %token DOTDOT
-
 %token PIPE
 %token EOFNL
 %token ERROR
-%token HOME
-%token HOME_PATH
 %token SETENV
 %token PRINTENV
 %token UNSETENV
@@ -59,6 +56,8 @@
 %token <str> GREATERTHAN
 %token <str> ERRORDIRECT
 %token <str> AMPERSAND
+%token <str> HOME_PATH
+%token <str> HOME
 %%
 
 inputs:
@@ -114,6 +113,19 @@ C_CD: /* need to word on "cd .. " implementation */
             printf("Error incorrect directory\n");
         
         
+        return 1;
+    };
+    | CD HOME_PATH EOFNL{
+        chdir(getenv("HOME")); 
+        return 1;
+    };    
+    | CD HOME_PATH WORD EOFNL{
+        std::string tildeExpDir($3);
+        std::vector<std::string> temp;
+
+        tildeExpDir = "~/" + tildeExpDir;
+        tildeExpansion(tildeExpDir.c_str(), temp);
+        chdir(temp[0].c_str());
         return 1;
     };
     | CD ERROR{ return 0;};
@@ -323,19 +335,14 @@ C_STRING:
         return 1;
     };
 C_HOME:
-    HOME EOFNL{  
-        tildeExpansion("~");
+    HOME EOFNL{
+        tildeExpansionPrint("~");
         return 1;
     }
     | HOME_PATH EOFNL{
-        tildeExpansion("~/");
+        tildeExpansionPrint("~/");
         return 1;
-    }
-    | TILDE_EXPANSION EOFNL{
-        const char *tildeExp = $1;   
-        tildeExpansion(tildeExp);
-        return 1;
-    }
+    };
 
 C_ERROR:
     ERROR { return 0; };

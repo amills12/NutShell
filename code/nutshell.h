@@ -56,6 +56,7 @@ void white();
 // Terminal color theme
 void nutshellTerminalPrint();
 void wildCarding(const char *name);
-void tildeExpansion(const char *name);
+void tildeExpansionPrint(const char *name);
+void tildeExpansion(const char *name, std::vector<std::string> &args);
 
 int yylex_destroy(void);
