@@ -215,15 +215,15 @@ background:
 
 C_SETENV:
     SETENV WORD WORD EOFNL{
-        // printf("SETENV -- ");
         const char* variable = $2;
         const char* word = $3;
         addEnv(variable, word);
-        // printf("Environment Variable Set: %s == %s", variable, word);
-        //setenv(variable, word, 1);
-        // printf("\n");
         return 1;
-    };    
+    };
+    | SETENV WORD STRING EOFNL{
+        addEnv($2, $3);
+        return 1;
+    }    
 C_PRINTENV:
     PRINTENV io_redirect_out EOFNL{
         if(outfile != "")

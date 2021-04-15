@@ -41,10 +41,7 @@ void printEnv()
 
     for (itr = envMap.begin(); itr != envMap.end(); itr++)
     {
-        if (next(itr) != envMap.end())
-            printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
-        else
-            printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
+        printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
     }
 }
 
@@ -166,10 +163,7 @@ void printAlias()
 
     for (itr = aliasMap.begin(); itr != aliasMap.end(); itr++)
     {
-        if (next(itr) != aliasMap.end())
-            printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
-        else
-            printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
+        printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
     }
 }
 

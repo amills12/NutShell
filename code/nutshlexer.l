@@ -19,8 +19,9 @@ WORD     [a-zA-Z\/.0-9\-&*.?:~]
 <string_cond>[\"]           { BEGIN(INITIAL); yylval.str = strdup(tempStr); return STRING;};
 
 <envstring_expand>{WORD}+   {
-                                if(getEnvVar(yytext))
+                                if(getEnvVar(yytext)){
                                     strcat(tempStr, getEnvVar(strdup(yytext)));
+                                }
                             };
 <envstring_expand>[}]       { BEGIN(string_cond); };
 <env_cond>{WORD}+           { 
