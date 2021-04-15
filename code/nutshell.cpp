@@ -188,6 +188,11 @@ vector<string> getPaths(){
         }
     }
     
+    // Check if base directory is included in paths, if not include it.
+    if(find(tempVector.begin(), tempVector.end(), ".") != tempVector.end())
+    {
+        tempVector.push_back(".");
+    }
     return tempVector;
 }
 
@@ -215,6 +220,8 @@ void executeCommand(char *command, char **args)
         {
             FILE *f = fopen(outfile.c_str(), appendFlag ? "a" : "w");
             dup2(fileno(f), 1);
+            if(outfile == "&1")
+                dup2(fileno(f), 2);
             fclose(f);
         }
 
@@ -284,6 +291,8 @@ void executePipedCommand(char *command, char **args, int pipeFlag)
             // Open a file and write standard output
             FILE *f = fopen(curFile.c_str(), "w");
             dup2(fileno(f), 1);
+            if(outfile == "&1")
+                dup2(fileno(f), 2);
             fclose(f);
         }
         else if (pipeFlag == 2)
@@ -293,6 +302,8 @@ void executePipedCommand(char *command, char **args, int pipeFlag)
             {
                 FILE *f = fopen(outfile.c_str(), appendFlag ? "a" : "w");
                 dup2(fileno(f), 1);
+                if(outfile == "&1")
+                    dup2(fileno(f), 2);
                 fclose(f);
             }
 
@@ -306,6 +317,8 @@ void executePipedCommand(char *command, char **args, int pipeFlag)
             FILE *f1 = fopen(ioFiles[ioFiles.size()-1].c_str(), "r");
             FILE *f2 = fopen(curFile.c_str(), "w");
             dup2(fileno(f2), 1);
+            if(outfile == "&1")
+                dup2(fileno(f2), 2);
             dup2(fileno(f1), 0);
             fclose(f1);
             fclose(f2);
