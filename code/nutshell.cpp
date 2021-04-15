@@ -321,7 +321,6 @@ void executePipedCommand(char *command, char **args, int pipeFlag)
             fclose(f2);
         }
 
-
         // Loop Paths
         for (int i = 0; i < paths.size(); i++)
         {

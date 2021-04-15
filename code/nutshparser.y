@@ -70,11 +70,11 @@ input:
 /* ========================================= START CD CASE ================================================ */  
 C_CD:
     CD EOFNL{
-        chdir(getenv("HOME"));    
+        chdir(getEnvVar("HOME"));    
         return 1;             
     };
     | CD HOME EOFNL{ 
-        chdir(getenv("HOME"));    
+        chdir(getEnvVar("HOME"));    
         return 1;
     };
     | CD DOTDOT EOFNL{ 
