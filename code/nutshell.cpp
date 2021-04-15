@@ -96,12 +96,10 @@ bool isAlias(const char *name)
     auto itr = aliasMap.find(name);
     if (itr == aliasMap.end())
     {
-        //printf("ALIAS NOT FOUND: ");
         return false;
     }
     else
     {
-        //printf("ALIAS WAS FOUND: ");
         return true;
     }
 }
@@ -148,7 +146,6 @@ void findAliasCommand(const char *name)
 {
     string aliasCommand(name);
     aliasCommand = aliasMap.find(name)->second;
-    // printf("ALIAS COMMAND: %s", aliasCommand.c_str());
     aliasCommand += "\n";
     cmdTable.clear();
     yy_scan_string(aliasCommand.c_str());
@@ -434,7 +431,6 @@ void globExpand(char * name, vector<string> &args)
     {
         for (size_t i = 0; i != globbuf.gl_pathc; ++i)
         {
-            // printf("%s\n", globbuf.gl_pathv[i]);
             args.push_back(globbuf.gl_pathv[i]);
         }    
     }
