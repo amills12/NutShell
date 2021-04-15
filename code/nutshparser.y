@@ -95,11 +95,25 @@ C_CD: /* need to word on "cd .. " implementation */
     };
     | CD WORD EOFNL{
         // printf("CD WORD -- "); 
-        const char* dir = $2;
+        std::string word($2);
+        std::string dir;       
+        std::vector<std::string> temp;
+        
         // printf("Current Working Directory Is: %s ", getcwd(NULL,0));
-        chdir(dir);
+        if((word.find("*") != std::string::npos) || (word.find("?") != std::string::npos))
+        {   
+            globExpand($2, temp);
+            dir = temp[0].c_str();
+        }
+        else
+        {
+           dir = $2;
+        }
         // printf("-- Switching To: %s", getcwd(NULL,0));
-        // printf("\n");
+        if(chdir(dir.c_str()) != 0)
+            printf("Error incorrect directory\n");
+        
+        
         return 1;
     };
     | CD ERROR{ return 0;};

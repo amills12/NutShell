@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <glob.h>
+#include <cstring>
 #include <sys/wait.h>
 
 #include "nutshparser.tab.h"
@@ -15,6 +16,8 @@
 #include <map>
 #include <iterator>
 #include <fstream>
+#include <iostream>
+#include <algorithm>
 #include "nutshell.h"
 using namespace std;
 
@@ -417,13 +420,24 @@ void cleanGlobals()
 
 void globExpand(char * name, vector<string> &args)
 {
+    string nameStr(name);
     glob_t globbuf = {0};
-    glob(name, GLOB_DOOFFS, NULL, &globbuf);
-    for (size_t i = 0; i != globbuf.gl_pathc; ++i)
+    memset(&globbuf, 0, sizeof(globbuf));
+    if(glob(name, GLOB_DOOFFS, NULL, &globbuf) == 0)
     {
-        // printf("%s\n", globbuf.gl_pathv[i]);
-        args.push_back(globbuf.gl_pathv[i]);
+        for (size_t i = 0; i != globbuf.gl_pathc; ++i)
+        {
+            // printf("%s\n", globbuf.gl_pathv[i]);
+            args.push_back(globbuf.gl_pathv[i]);
+        }    
     }
+    else
+    {
+        nameStr.erase(remove(nameStr.begin(), nameStr.end(), '?' ), nameStr.end());
+        nameStr.erase(remove(nameStr.begin(), nameStr.end(), '*' ), nameStr.end());      
+        args.push_back(nameStr.c_str());
+    }
+
     globfree(&globbuf);
 }
 
