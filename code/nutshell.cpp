@@ -366,7 +366,7 @@ void executePipes()
     }
     
     //Delete the pipe
-    remove("pipe");
+    cleanIOFiles();
 }
 
 void executeBGPipes()
