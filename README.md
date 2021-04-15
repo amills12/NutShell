@@ -31,17 +31,77 @@ environment variables, aliases, pathname searching, wild-carding and tilde expan
 
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
-
+* [Task List](#task-list)
+  * [complete](#complete)
+  * [incomplete](#incomplete)
 * [About the Project](#about-the-project)
   * [Built With](#built-with)
 * [Getting Started](#getting-started)
   * [Prerequisites](#prerequisites)
   * [Installation](#installation)
 * [Features](#features)
-* [Task List](#task-list)
 * [Contact](#contact)
 
+<!-- Task List -->
+## Task List
+1. Nutshell.l (Joseph/Alex)
+2. Nutshell.y (Joseph/Alex)
+3. Nutshell.h (Joseph/Alex)
+4. Nutshell.cpp (Joseph/Alex)
+5. Environment Variables (Joseph/Alex)
+6. Aliases (Joseph/Alex)
+7. Change Directory (Joseph)
+8. Wildcard matching (Joseph)
+9. Tilde Expansion (Joseph)
+10. Command line arguments (Alex)
+11. Pipes (Alex)
+12. File IO Redirection (Alex)
+13. Error Redirection (Alex)
+14. Makefile (Alex)
+15. README (Joseph)
+16. Styling (Joseph/Alex)
+17. Testing (Joseph/Alex)
 
+<!-- Complete -->
+### Complete
+#### 1. Environment Variables
+  - **Setenv variable word** - Working   
+  - **unsetenv variable** - Working
+  - **printenv** - Working
+  
+#### 2. Change Directory
+  - **CD** - Working 
+  - **CD WORD** - Working
+
+#### 3. Aliases
+  - **Alias Name Command** - Working    
+  - **Unalias Name** -  Working  
+  - **Alias** - Working
+  
+#### 4. Wildcard Matching
+  - ***.Word** - Working
+  - **Word.*** - Working
+
+#### 5. Command line arguments
+  - **[linux arg list](https://ss64.com/bash/)** - Working
+ 
+#### 6. Pipes
+  - **&** - Working
+  - **I/O Redirection** - Working
+  - **Error Redirection** - Working
+
+
+<!-- Incomplete -->
+### Incomplete
+#### 1. Tilde Expansion (Partially):
+  - **~** - Working
+  - **cd ~** - Working
+  - **~/** - Working
+  - **cd ~/** - Working
+  - **cd ~user** - Untested
+  - **cd ~/dir** - Not working
+  - **cd ~/ dir** - Working (needs a space between the "/"  and "dir" to expand the tilde)
+  - **setenv char ~** - Not Working
 <!-- ABOUT THE PROJECT --> 
 ## About The Project
 
@@ -56,9 +116,6 @@ using Lex and Yacc running under Unix.
 * C++
 * Lex/Flex
 * Yacc/Bison
-
-
-
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -115,7 +172,7 @@ reptilian@localhost$ ./nutshell
 
 <!-- Features -->
 ## Features
-### 1. Environment Variables (Completed)
+### 1. Environment Variables
   - **Setenv variable word:** This command sets the value of the variable variable to be word. 
   
   - **unsetenv variable:** This command will remove the binding of variable. If the variable is
@@ -124,47 +181,29 @@ reptilian@localhost$ ./nutshell
   - **printenv:** This command prints out the values of all the environment variables, in the format
     variable=value, one entry per line.
   
-### 2. Change Directory (Completed)
+### 2. Change Directory
   - **CD:**  This command changes the directory to Home.
   
   - **CD WORD:**  This command changes the directory to word.
   
-### 3. Aliases (Completed)
+### 3. Aliases
   - **Alias Name Command:**  Adds a new alias to the shell.
   
   - **Unalias Name:**   Remove the alias for name.
   
   - **Alias:**  lists all available aliases.
   
-### 4. Wildcard Matching (Completed)
+### 4. Wildcard Matching
   - ***.Word :**  The word isreplaced with alphabetically sorted filenames that match the pattern
 
   - **Word.*:**  The word isreplaced with alphabetically sorted filenames that match the pattern
 
-### 5. Command line arguments (Completed)
+### 5. Command line arguments
   - **[linux arg list](https://ss64.com/bash/)**
  
-### 6. Pipes (Completed)
+### 6. Pipes
 
-<!-- Task List -->
-## Task List
-1. Nutshell.l (Joseph/Alex)
-2. Nutshell.y (Joseph/Alex)
-3. Nutshell.h (Joseph/Alex)
-4. Nutshell.cpp (Joseph/Alex)
-5. Environment Variables (Joseph/Alex)
-6. Aliases (Joseph/Alex)
-7. Change Directory (Joseph)
-8. Wildcard matching (Joseph)
-9. Tilde Expansion (Joseph)
-10. Command line arguments (Alex)
-11. Pipes (Alex)
-12. File IO Redirection (Alex)
-13. Error Redirection (Alex)
-14. Makefile (Alex)
-15. README (Joseph)
-16. Styling (Joseph/Alex)
-17. Testing (Joseph/Alex)
+### 7. Tilde Expansion (Partially)
 
 <!-- CONTACT -->
 ## Contact
