@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <glob.h>
+#include <cstring>
 #include <sys/wait.h>
 
 #include "nutshparser.tab.h"
@@ -15,6 +16,8 @@
 #include <map>
 #include <iterator>
 #include <fstream>
+#include <iostream>
+#include <algorithm>
 #include "nutshell.h"
 using namespace std;
 
@@ -23,6 +26,8 @@ typedef struct yy_buffer_state *YY_BUFFER_STATE;
 extern int yyparse();
 extern YY_BUFFER_STATE yy_scan_string(const char *str);
 extern char **environ;
+
+int yyerror(char *s);
 
 // Global Variables
 map<string, string> aliasMap;
@@ -41,12 +46,6 @@ void printEnv()
         else
             printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
     }
-    // Older Code
-    // int id = 0;
-    // while (environ[id] != NULL)
-    // {
-    //     printf("%s\n", environ[id++]);
-    // }
 }
 
 void addEnv(const char *variable, const char *word)
@@ -54,28 +53,59 @@ void addEnv(const char *variable, const char *word)
     string envCheck(variable);
     string pathCheck(word);
 
-    auto itr = envMap.find(variable);
-    if (itr == envMap.end() && envCheck != pathCheck)
+    if (envCheck != pathCheck)
     {
-        envMap.insert(pair<string, string>(variable, word));
-        //printf("env Added");
+        envMap[variable] = word;
     }
     else
     {
-        printf("Add env failed.\n");
+        yyerror("Add env failed, this would cause a infinite loop!");
+    }
+}
+
+const char * getEnvVar(const char *variable)
+{
+    auto itr = envMap.find(variable);
+    if (itr == envMap.end())
+    {
+        return NULL;
+    }
+    else
+    {
+        return itr->second.c_str();
     }
 }
 
 void removeEnv(const char *variable)
 {
+    string homeOrPath(variable);
     auto itr = envMap.find(variable);
     if (itr == envMap.end())
     {
         printf("env Does Not Exist\n");
     }
-    else
+    else if(homeOrPath != "HOME" && homeOrPath != "PATH")
     {
         envMap.erase(variable);
+    }
+    else
+    {
+        printf("Cannot unset HOME or PATH env\n");
+    }
+}
+
+bool isAlias(const char *name)
+{
+    auto itr = aliasMap.find(name);
+    if (itr == aliasMap.end())
+    {
+        //printf("ALIAS NOT FOUND: ");
+        return false;
+    }
+    else
+    {
+        //printf("ALIAS WAS FOUND: ");
+        return true;
     }
 }
 
@@ -117,20 +147,62 @@ void removeAlias(const char *name)
     }
 }
 
+void findAliasCommand(const char *name)
+{
+    string aliasCommand(name);
+    aliasCommand = aliasMap.find(name)->second;
+    // printf("ALIAS COMMAND: %s", aliasCommand.c_str());
+    aliasCommand += "\n";
+    cmdTable.clear();
+    yy_scan_string(aliasCommand.c_str());
+    yyparse();
+    yylex_destroy();
+}
+
+void printAlias()
+{
+    // Make an iterator to print through all alias
+    map<string, string>::iterator itr;
+
+    for (itr = aliasMap.begin(); itr != aliasMap.end(); itr++)
+    {
+        if (next(itr) != aliasMap.end())
+            printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
+        else
+            printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
+    }
+}
+
+vector<string> getPaths(){
+    vector<string> tempVector;
+    string paths(getEnvVar("PATH"));
+    size_t i = 0;
+    string path;
+
+    // If there's just one path add it
+    if(paths.find(":") == std::string::npos)
+    {
+        tempVector.push_back(paths);
+    }
+    else
+    {
+        while((i = paths.find(":")) != std::string::npos)
+        {
+            path = paths.substr(0, i);
+            tempVector.push_back(path);
+            paths.erase(0, i + 1);
+        }
+    }
+    
+    return tempVector;
+}
+
 void executeCommand(char *command, char **args)
 {
     string comString(command);
-    string comPath = "/bin/" + comString;
-    // string comPath(getenv("PATH"));
-    // printf("PATH: %s", comPath.c_str());
-    // comPath = comPath + "/" + comString;
+    vector<string> paths = getPaths();
 
-    // printf("COMMAND STRING %s : %s\n", comString.c_str(), comPath.c_str());
-    // printf("infile %s\n", infile.c_str());
-    // printf("outfile %s\n", outfile.c_str());
-
-    pid_t p;
-    p = fork();
+    pid_t p = fork();
     if (p < 0)
     {
         perror("Fork Failed");
@@ -152,7 +224,12 @@ void executeCommand(char *command, char **args)
             fclose(f);
         }
 
-        execv(comPath.c_str(), args);
+        // Loop Paths
+        for (int i = 0; i < paths.size(); i++)
+        {
+            string tempStr = paths[i] + "/" + comString; 
+            execv(tempStr.c_str(), args);
+        }
 
         // If it's not an actual command print and exit
         printf("Could not find command: %s\n", comString.c_str());
@@ -162,12 +239,33 @@ void executeCommand(char *command, char **args)
         wait(0);
 }
 
+void executeBGCommand(char *command, char **args)
+{
+    pid_t p = fork();
+    if (p < 0)
+    {
+        perror("Fork Failed");
+    }
+    else if (p == 0)
+    {
+        executeCommand(command, args);
+        printf("\nBG Process %s has ended\n", command);
+        nutshellTerminalPrint();
+        exit(0);
+    }
+    else
+    {
+        printf("[1] %d\n", p);
+    }
+}
+
 void executePipedCommand(char *command, char **args, int pipeFlag)
 {
     string comString(command);
-    string comPath = "/bin/" + comString;
-
-    // printf("COMMAND STRING %s\n", comString.c_str());
+    std::vector<std::string> paths = getPaths();
+    
+    // Setting Up Current File
+    string curFile = "t_pipe" + to_string(ioFiles.size());
 
     pid_t p;
     p = fork();
@@ -181,77 +279,106 @@ void executePipedCommand(char *command, char **args, int pipeFlag)
 
         if (pipeFlag == 0)
         {
-            // If it's the first command, and no in file then just write out
-            if (infile == "")
+            // If there's an infile connect to input of command
+            if (infile != "")
             {
-                // Open a file and write standard output
-                FILE *f = fopen("pipe", "w");
-                dup2(fileno(f), 1);
-                fclose(f);
-            }
-            // If it's the first command and there is an in file
-            else
-            {
-                FILE *f1 = fopen(infile.c_str(), "r");
-                FILE *f2 = fopen("pipe", "w");
-                dup2(fileno(f1), 0);
-                dup2(fileno(f2), 1);
-                fclose(f1);
-                fclose(f2);
-            }
-        }
-        else if (pipeFlag == 2)
-        {
-            // If it's last command and no output file, just read from path
-            if (outfile == "")
-            {
-                //Last command of the pipe only reads
-                FILE *f = fopen("pipe", "r");
+                FILE *f = fopen(infile.c_str(), "r");
                 dup2(fileno(f), 0);
                 fclose(f);
             }
-            // If it's last command and there is and output file, output to that
-            else
+
+            // Open a file and write standard output
+            FILE *f = fopen(curFile.c_str(), "w");
+            dup2(fileno(f), 1);
+            fclose(f);
+        }
+        else if (pipeFlag == 2)
+        {
+            // If there's and outfile connect to last command output
+            if (outfile != "")
             {
-                FILE *f1 = fopen("pipe", "r");
-                FILE *f2 = fopen(outfile.c_str(), appendFlag ? "a" : "w");
-                dup2(fileno(f1), 0);
-                dup2(fileno(f2), 1);
-                fclose(f1);
-                fclose(f2);
+                FILE *f = fopen(outfile.c_str(), appendFlag ? "a" : "w");
+                dup2(fileno(f), 1);
+                fclose(f);
             }
+
+            FILE *f = fopen(ioFiles[ioFiles.size()-1].c_str(), "r");
+            dup2(fileno(f), 0);
+            fclose(f);
         }
         else
         {
             // Pipe is inbetween
-            FILE *f = fopen("pipe", "rw");
-            dup2(fileno(f), 1);
-            dup2(fileno(f), 0);
-            fclose(f);
+            FILE *f1 = fopen(ioFiles[ioFiles.size()-1].c_str(), "r");
+            FILE *f2 = fopen(curFile.c_str(), "w");
+            dup2(fileno(f2), 1);
+            dup2(fileno(f1), 0);
+            fclose(f1);
+            fclose(f2);
         }
 
-        execv(comPath.c_str(), args);
+
+        // Loop Paths
+        for (int i = 0; i < paths.size(); i++)
+        {
+            string tempStr = paths[i] + "/" + comString; 
+            execv(tempStr.c_str(), args);
+        }
 
         // If it's not an actual command print and exit
         printf("Could not find command: %s\n", comString.c_str());
         exit(0);
     }
     else
+    {
         wait(0);
+        ioFiles.push_back(curFile); // Add file name to list for cleaning
+    }
 }
 
-bool isAlias(const char *name)
+void executePipes()
 {
-    auto itr = aliasMap.find(name);
-    if (itr == aliasMap.end())
+    //We can assume that these are piped commands
+    for (int i = 0; i < cmdTable.size(); i++)
     {
-        //printf("ALIAS NOT FOUND: ");
-        return false;
+        char ** args = generateCArgs(cmdTable[i].args, cmdTable[i].commandName.c_str());
+        int argFlag;
+
+        if(i == 0) 
+            argFlag = 0;
+        else if(i == cmdTable.size() - 1)
+            argFlag = 2;
+        else
+            argFlag = 1;
+
+        // Call execute command
+        executePipedCommand(args[0], args, argFlag);
+
+        // Free Dynamic memory
+        free(args);
+    }
+    
+    //Delete the pipe
+    remove("pipe");
+}
+
+void executeBGPipes()
+{
+    pid_t p = fork();
+    if (p < 0)
+    {
+        perror("Fork Failed");
+    }
+    else if (p == 0)
+    {
+        executePipes();
+        printf("\nBG Process has ended\n");
+        nutshellTerminalPrint();
+        exit(0);
     }
     else
     {
-        //printf("ALIAS WAS FOUND: ");
-        return true;
+        printf("[1] %d\n", p);
     }
 }
 
@@ -272,27 +399,45 @@ void errorPiping()
     }
 }
 
-void findAliasCommand(const char *name)
+void cleanIOFiles()
 {
-    string aliasCommand(name);
-    aliasCommand = aliasMap.find(name)->second;
-    // printf("ALIAS COMMAND: %s", aliasCommand.c_str());
-    aliasCommand += "\n";
+    for (int i = 0; i < ioFiles.size(); i++)
+    {
+        remove(ioFiles[i].c_str());
+    }
+    ioFiles.clear();
+}
+
+void cleanGlobals()
+{
+    appendFlag = false;
+    backgroundFlag = false;
     cmdTable.clear();
-    yy_scan_string(aliasCommand.c_str());
-    yyparse();
-    yylex_destroy();
+    cleanIOFiles();
+    infile = "";
+    outfile = "";
 }
 
 void globExpand(char * name, vector<string> &args)
 {
+    string nameStr(name);
     glob_t globbuf = {0};
-    glob(name, GLOB_DOOFFS, NULL, &globbuf);
-    for (size_t i = 0; i != globbuf.gl_pathc; ++i)
+    memset(&globbuf, 0, sizeof(globbuf));
+    if(glob(name, GLOB_DOOFFS, NULL, &globbuf) == 0)
     {
-        // printf("%s\n", globbuf.gl_pathv[i]);
-        args.push_back(globbuf.gl_pathv[i]);
+        for (size_t i = 0; i != globbuf.gl_pathc; ++i)
+        {
+            // printf("%s\n", globbuf.gl_pathv[i]);
+            args.push_back(globbuf.gl_pathv[i]);
+        }    
     }
+    else
+    {
+        nameStr.erase(remove(nameStr.begin(), nameStr.end(), '?' ), nameStr.end());
+        nameStr.erase(remove(nameStr.begin(), nameStr.end(), '*' ), nameStr.end());      
+        args.push_back(nameStr.c_str());
+    }
+
     globfree(&globbuf);
 }
 
@@ -305,20 +450,6 @@ void tildeExpansion(const char *name)
         printf("%s\n", globbuf.gl_pathv[i]);
     }
     globfree(&globbuf);
-}
-
-void printAlias()
-{
-    // Make an iterator to print through all alias
-    map<string, string>::iterator itr;
-
-    for (itr = aliasMap.begin(); itr != aliasMap.end(); itr++)
-    {
-        if (next(itr) != aliasMap.end())
-            printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
-        else
-            printf("%s = %s\n", itr->first.c_str(), itr->second.c_str());
-    }
 }
 
 void black() { printf("\033[0;30m"); }
@@ -354,7 +485,8 @@ int main()
     printf("| $$ \\  $$|  $$$$$$/   | $$  |  $$$$$$/| $$  | $$| $$$$$$$$| $$$$$$$$| $$$$$$$$\n");
     printf("|__/  \\__/ \\______/    |__/   \\______/ |__/  |__/|________/|________/|________/\n");
 
-    //printf("**** Welcome to the NUTSHELL ****\n");
+    addEnv("HOME", getenv("HOME"));
+    addEnv("PATH", ".:/bin:/usr/bin:/usr/local/bin"); // May have to change this later
     white();
 
 #if AUTO //If AUTO is 1 this code will run

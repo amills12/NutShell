@@ -2,22 +2,31 @@
     #pragma GCC diagnostic ignored "-Wwrite-strings"
     #include "nutshparser.tab.h"
     void yyerror(char *s);
+    const char * getEnvVar(const char *variable);
+    char tempStr[100];
 %}
 
 %option noyywrap
 %x string_cond
 %x env_cond
+%x envstring_expand
 
-NOTQUOTE [^"]
-WORD     [a-zA-Z\/.0-9\-&*.?]
+STRING   [a-zA-Z\/.0-9\-&*.?: ~!@#%()]
+WORD     [a-zA-Z\/.0-9\-&*.?:~]
 %%
-<string_cond>{NOTQUOTE}+    { yylval.str = strdup(yytext); return STRING; };
-<string_cond>[\"]           { BEGIN(INITIAL); };
+<string_cond>{STRING}+      { strcat(tempStr, yytext);};
+<string_cond>"${"           { BEGIN(envstring_expand);};
+<string_cond>[\"]           { BEGIN(INITIAL); yylval.str = strdup(tempStr); return STRING;};
 
+<envstring_expand>{WORD}+   {
+                                if(getEnvVar(yytext))
+                                    strcat(tempStr, getEnvVar(strdup(yytext)));
+                            };
+<envstring_expand>[}]       { BEGIN(string_cond); };
 <env_cond>{WORD}+           { 
-                                if(getenv(strdup(yytext))){
-                                    yylval.str = getenv(strdup(yytext));
-                                    return WORD; 
+                                if(getEnvVar(strdup(yytext))){
+                                    yylval.str = strdup(getEnvVar(strdup(yytext)));
+                                    return WORD;
                                 }
                                 else{
                                     yyerror("incorrect environment variable");
@@ -37,16 +46,15 @@ bye|Bye|BYE            return BYE;
 "<"                    return LESSTHAN;
 ">"                    return GREATERTHAN;
 "2>"                   return ERRORDIRECT;
+"&"                    return AMPERSAND;
 [|]                    return PIPE;
-[\"]                   { BEGIN(string_cond); };
+[\"]                   { strcpy(tempStr, ""); BEGIN(string_cond); };
 "${"                   { BEGIN(env_cond); };
-[\\]                   return BACKSLASH;
-[&]                    return AMPERSAND;               
 [~]                    return HOME;
 \n                     return EOFNL;
 "~/"                   return HOME_PATH;
 [~][a-zA-Z]+           return TILDE_EXPANSION;
 
-[ \t\r]                /* do nada */;
+[ \t\r]+                /* do nada */;
 {WORD}+                { yylval.str = strdup(yytext); return WORD; };
 .                      { yyerror("Unexpected character"); return ERROR; };

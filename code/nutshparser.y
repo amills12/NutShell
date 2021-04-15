@@ -11,7 +11,7 @@
     // Funciton Headers
     int yylex();
     int yyparse();
-    int yyerror(char *s);
+    extern int yyerror(char *s);
     char ** generateCArgs(std::vector<std::string> arguments, const char* name);
 
     typedef struct yy_buffer_state *YY_BUFFER_STATE;
@@ -20,12 +20,14 @@
 
     std::vector<CommandType> cmdTable;
     std::vector<std::string> tmpArgs;
+    std::vector<std::string> ioFiles;
 
     std::string infile = "";
     std::string outfile = "";
     std::string errfile = "";
 
     bool appendFlag = false;
+    bool backgroundFlag = false;
 %}
 
 //%token WORD
@@ -33,8 +35,6 @@
 %token DOTDOT
 
 %token PIPE
-%token BACKSLASH
-%token AMPERSAND
 %token EOFNL
 %token ERROR
 %token HOME
@@ -58,6 +58,7 @@
 %token <str> LESSTHAN
 %token <str> GREATERTHAN
 %token <str> ERRORDIRECT
+%token <str> AMPERSAND
 %%
 
 inputs:
@@ -94,20 +95,34 @@ C_CD: /* need to word on "cd .. " implementation */
     };
     | CD WORD EOFNL{
         // printf("CD WORD -- "); 
-        const char* dir = $2;
+        std::string word($2);
+        std::string dir;       
+        std::vector<std::string> temp;
+        
         // printf("Current Working Directory Is: %s ", getcwd(NULL,0));
-        chdir(dir);
+        if((word.find("*") != std::string::npos) || (word.find("?") != std::string::npos))
+        {   
+            globExpand($2, temp);
+            dir = temp[0].c_str();
+        }
+        else
+        {
+           dir = $2;
+        }
         // printf("-- Switching To: %s", getcwd(NULL,0));
-        // printf("\n");
+        if(chdir(dir.c_str()) != 0)
+            printf("Error incorrect directory\n");
+        
+        
         return 1;
     };
     | CD ERROR{ return 0;};
 /* ========================================= END CD CASE ================================================== */   
 
 C_COMMAND:
-    subcommand piped io_redirect_in io_redirect_out error_redirect EOFNL{
+    subcommand piped io_redirect_in io_redirect_out error_redirect background EOFNL{
 
-        if (isAlias(cmdTable[0].commandName.c_str()) == true){
+        if (cmdTable.size() > 0 && isAlias(cmdTable[0].commandName.c_str()) == true){
             findAliasCommand(cmdTable[0].commandName.c_str());
         }
         else {
@@ -116,51 +131,22 @@ C_COMMAND:
             {
                 // printf("Size: %lu\n", cmdTable.size());
                 char ** args = generateCArgs(cmdTable[0].args, cmdTable[0].commandName.c_str());
+                
                 // Call execute command
-                executeCommand(args[0], args);
+                backgroundFlag ? executeBGCommand(args[0], args) : executeCommand(args[0], args);
 
                 // Free Dynamic memory
                 free(args);
             }
             else if(cmdTable.size() > 1)
             {
-                //We can assume that these are piped commands
-                for (int i = 0; i < cmdTable.size(); i++)
-                {
-                    char ** args = generateCArgs(cmdTable[i].args, cmdTable[i].commandName.c_str());
-                    int argFlag;
-
-                    if(i == 0) 
-                        argFlag = 0;
-                    else if(i == cmdTable.size() - 1)
-                        argFlag = 2;
-                    else
-                        argFlag = 1;
-
-                    // Call execute command
-                    executePipedCommand(args[0], args, argFlag);
-
-                    // Free Dynamic memory
-                    free(args);
-                }
-                
-                //Delete the pipe
-                remove("pipe");
+                backgroundFlag ? executeBGPipes() : executePipes();
             }
-            else
-            {
-                yyerror("Table Size Incorrect");
-            }
-            
-            // Clean Up
-            appendFlag = false;
-            cmdTable.clear();
-            infile = "";
-            outfile = "";
+
+            cleanGlobals();
         }
         return 1;
     };
-
 
 subcommand:
     | WORD arguments {
@@ -222,6 +208,11 @@ error_redirect:
         errfile = $2;
     };
 
+background:
+    | AMPERSAND {
+        backgroundFlag = true;
+    }
+
 C_SETENV:
     SETENV WORD WORD EOFNL{
         // printf("SETENV -- ");
@@ -234,26 +225,37 @@ C_SETENV:
         return 1;
     };    
 C_PRINTENV:
-    PRINTENV EOFNL{
-        // printf("PRINTENV\n");
-        printEnv();
-        // printf("\n");
+    PRINTENV io_redirect_out EOFNL{
+        if(outfile != "")
+        {
+            int temp = dup(1);
+            FILE *f = fopen(outfile.c_str(), appendFlag ? "a" : "w");
+
+            //Open stdout
+            dup2(fileno(f), 1);
+
+            // Print out to file
+            printEnv();
+
+            fclose(f);
+            
+            //Close stdout
+            dup2(temp, 1);
+            close(temp);
+
+            outfile = "";
+        }
+        else
+        {
+            printEnv();
+        }
         return 1;
-        // Do they really want all the the environment variables? PS. ITS UGLY
     };
 C_UNSETENV:
     UNSETENV WORD EOFNL{
         // printf("UNSENTENV -- ");    
         const char* variable = $2;
         removeEnv(variable);
-        // unsetenv(variable);
-        // if(getenv(variable)==0){
-        //     printf("Successfully Unset Environment Variable");   
-        // }
-        // else{
-        //     printf("Environment Variable Does Not Exist");   
-        // }
-        // printf("\n");
         return 1;
     };
 C_UNALIAS:
@@ -266,10 +268,30 @@ C_UNALIAS:
         return 1;
         };
 C_ALIAS:
-    ALIAS EOFNL{
-        // printf("ALIAS PRINT -- Printing...\n");
-        printAlias();
-        // printf("\n");
+    ALIAS io_redirect_out EOFNL{
+        if(outfile != "")
+        {
+            int temp = dup(1);
+            FILE *f = fopen(outfile.c_str(), appendFlag ? "a" : "w");
+
+            //Open stdout
+            dup2(fileno(f), 1);
+
+            // Print out to file
+            printAlias();
+
+            fclose(f);
+            
+            //Close stdout
+            dup2(temp, 1);
+            close(temp);
+
+            outfile = "";
+        }
+        else
+        {
+            printAlias();
+        }
         return 1;
     };
     | ALIAS WORD WORD EOFNL{
@@ -292,12 +314,6 @@ C_ALIAS:
         // printf("\n");
         return 1;
     };
-/* C_WILDCARD:
-    WILDCARD EOFNL{
-        const char *fileExt = $1;   
-        wildCarding(fileExt);
-        return 1;
-    }; */
 
 C_STRING:
     STRING EOFNL
