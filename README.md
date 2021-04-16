@@ -31,7 +31,7 @@ environment variables, aliases, pathname searching, wild-carding and tilde expan
 
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
-* [Task List](#task-list)
+* [Contribution List](#Contribution-list)
   * [complete](#complete)
   * [incomplete](#incomplete)
 * [About the Project](#about-the-project)
@@ -42,13 +42,13 @@ environment variables, aliases, pathname searching, wild-carding and tilde expan
 * [Features](#features)
 * [Contact](#contact)
 
-<!-- Task List -->
-## Task List
+<!-- Contribution List -->
+## Contribution List
 1. Nutshell.l (Joseph/Alex)
 2. Nutshell.y (Joseph/Alex)
 3. Nutshell.h (Joseph/Alex)
 4. Nutshell.cpp (Joseph/Alex)
-5. Environment Variables (Joseph/Alex)
+5. Environment Variables (Joseph)
 6. Aliases (Joseph/Alex)
 7. Change Directory (Joseph)
 8. Wildcard matching (Joseph)
@@ -86,9 +86,10 @@ environment variables, aliases, pathname searching, wild-carding and tilde expan
   - **[linux arg list](https://ss64.com/bash/)** - Working
  
 #### 6. Pipes
-  - **&** - Working
+  - **&** - Semi-Working (command works properly but breaks formatting for commands entered after)
   - **I/O Redirection** - Working
   - **Error Redirection** - Working
+
 
 
 <!-- Incomplete -->
@@ -97,11 +98,11 @@ environment variables, aliases, pathname searching, wild-carding and tilde expan
   - **~** - Working
   - **cd ~** - Working
   - **~/** - Working
-  - **cd ~/** - Working
+  - **cd ~/** - Not Working
   - **cd ~user** - Untested
   - **cd ~/dir** - Not working
-  - **cd ~/ dir** - Working (needs a space between the "/"  and "dir" to expand the tilde)
   - **setenv char ~** - Not Working
+
 <!-- ABOUT THE PROJECT --> 
 ## About The Project
 
@@ -202,6 +203,11 @@ reptilian@localhost$ ./nutshell
   - **[linux arg list](https://ss64.com/bash/)**
  
 ### 6. Pipes
+  - **&:** - Runs commands in the background.
+
+  - **I/O Redirection:** - Connects file to input and output
+
+  - **Error Redirection:** - Directs standard error to files or stdin
 
 ### 7. Tilde Expansion (Partially)
 
