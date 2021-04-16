@@ -19,14 +19,18 @@ WORD     [a-zA-Z\/.0-9\-&*.?:~]
 <string_cond>[\"]           { BEGIN(INITIAL); yylval.str = strdup(tempStr); return STRING;};
 
 <envstring_expand>{WORD}+   {
-                                if(getEnvVar(yytext))
+                                if(getEnvVar(yytext)){
                                     strcat(tempStr, getEnvVar(strdup(yytext)));
+                                }
                             };
 <envstring_expand>[}]       { BEGIN(string_cond); };
-<env_cond>{WORD}+           { 
+<env_cond>{WORD}*           { 
                                 if(getEnvVar(strdup(yytext))){
-                                    yylval.str = strdup(getEnvVar(strdup(yytext)));
-                                    return WORD;
+                                    char *yycopy = strdup(getEnvVar(yytext));
+                                    for ( int i = strlen(getEnvVar(yytext)) - 1; i >= 0; --i )
+                                        unput( yycopy[i] );
+                                    free(yycopy);
+                                    BEGIN(INITIAL);
                                 }
                                 else{
                                     yyerror("incorrect environment variable");
@@ -57,4 +61,4 @@ bye|Bye|BYE            return BYE;
 
 [ \t\r]+                /* do nada */;
 {WORD}+                { yylval.str = strdup(yytext); return WORD; };
-.                      { yyerror("Unexpected character"); return ERROR; };
+.                      {};

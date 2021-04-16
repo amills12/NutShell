@@ -65,41 +65,27 @@ inputs:
     | inputs input
 
 input:
-    C_CD | C_COMMAND | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_STRING | C_HOME | C_ERROR |C_BYE;
+    C_CD | C_COMMAND | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_HOME | C_ERROR |C_BYE;
 
 /* ========================================= START CD CASE ================================================ */  
-C_CD: /* need to word on "cd .. " implementation */
+C_CD:
     CD EOFNL{
-        // printf("CD -- ");
-        // printf("Current Working Directory Is: %s ", getcwd(NULL,0));
-        chdir(getenv("HOME"));    
-        // printf("-- Switching To: %s", getcwd(NULL,0));
-        // printf("\n");
+        chdir(getEnvVar("HOME"));    
         return 1;             
     };
     | CD HOME EOFNL{ 
-        // printf("CD HOME -- "); 
-        // printf("Current Working Directory Is: %s ", getcwd(NULL,0));
-        chdir(getenv("HOME"));    
-        // printf("-- Switching To: %s", getcwd(NULL,0));
-        // printf("\n");
+        chdir(getEnvVar("HOME"));    
         return 1;
     };
     | CD DOTDOT EOFNL{ 
-        // printf("CD DOTDOT -- "); 
-        // printf("Current Working Directory Is: %s ", getcwd(NULL,0));
         chdir("..");
-        // printf("-- Switching To: %s", getcwd(NULL,0));
-        // printf("\n");
         return 1;
     };
     | CD WORD EOFNL{
-        // printf("CD WORD -- "); 
         std::string word($2);
         std::string dir;       
         std::vector<std::string> temp;
         
-        // printf("Current Working Directory Is: %s ", getcwd(NULL,0));
         if((word.find("*") != std::string::npos) || (word.find("?") != std::string::npos))
         {   
             globExpand($2, temp);
@@ -109,9 +95,10 @@ C_CD: /* need to word on "cd .. " implementation */
         {
            dir = $2;
         }
-        // printf("-- Switching To: %s", getcwd(NULL,0));
         if(chdir(dir.c_str()) != 0)
+        {
             printf("Error incorrect directory\n");
+        }
         
         
         return 1;
@@ -126,10 +113,8 @@ C_COMMAND:
             findAliasCommand(cmdTable[0].commandName.c_str());
         }
         else {
-            // printf("%d \n", cmdTable.size());
             if(cmdTable.size() == 1)
             {
-                // printf("Size: %lu\n", cmdTable.size());
                 char ** args = generateCArgs(cmdTable[0].args, cmdTable[0].commandName.c_str());
                 
                 // Call execute command
@@ -167,7 +152,6 @@ argument:
         // If the word contain special characters we need to expand it
         if ((word.find("*") != std::string::npos) || (word.find("?") != std::string::npos))
         {
-            // printf("EXPAND\n");
             globExpand($1, tmpArgs);
         }
         else
@@ -215,15 +199,15 @@ background:
 
 C_SETENV:
     SETENV WORD WORD EOFNL{
-        // printf("SETENV -- ");
         const char* variable = $2;
         const char* word = $3;
         addEnv(variable, word);
-        // printf("Environment Variable Set: %s == %s", variable, word);
-        //setenv(variable, word, 1);
-        // printf("\n");
         return 1;
-    };    
+    };
+    | SETENV WORD STRING EOFNL{
+        addEnv($2, $3);
+        return 1;
+    }    
 C_PRINTENV:
     PRINTENV io_redirect_out EOFNL{
         if(outfile != "")
@@ -253,7 +237,6 @@ C_PRINTENV:
     };
 C_UNSETENV:
     UNSETENV WORD EOFNL{
-        // printf("UNSENTENV -- ");    
         const char* variable = $2;
         removeEnv(variable);
         return 1;
@@ -261,10 +244,7 @@ C_UNSETENV:
 C_UNALIAS:
     UNALIAS WORD EOFNL{
         const char *aliasName = $2;
-        // printf("UNALIAS -- ");
-        // printf("Deleting: %s", aliasName);
         removeAlias(aliasName);
-        // printf("\n");
         return 1;
         };
 C_ALIAS:
@@ -297,8 +277,6 @@ C_ALIAS:
     | ALIAS WORD WORD EOFNL{
         const char *aliasName = $2;
         const char *aliasedCommand = $3;
-        // printf("ALIAS ADD -- ");
-        // printf("Added: %s = %s", aliasName, aliasedCommand);
         if (addAlias(aliasName, aliasedCommand)){}
         else
             printf("Cannot add alias: %s = %s as it would lead to infinite loop.\n", $2, $3);
@@ -308,20 +286,10 @@ C_ALIAS:
     | ALIAS WORD STRING EOFNL{        
         const char *aliasName = $2;
         const char *aliasedCommand = $3;
-        // printf("ALIAS ADD -- ");
-        // printf("Added: %s = %s", aliasName, aliasedCommand);
         addAlias(aliasName, aliasedCommand);
-        // printf("\n");
         return 1;
     };
 
-C_STRING:
-    STRING EOFNL
-    {
-        printf("STRING");
-        printf("\n");
-        return 1;
-    };
 C_HOME:
     HOME EOFNL{  
         tildeExpansion("~");
