@@ -11,8 +11,8 @@
 %x env_cond
 %x envstring_expand
 
-STRING   [a-zA-Z\/.0-9\-&*.?: ~!@#%()_]
-WORD     [a-zA-Z\/.0-9\-&*.?:~_!@#%()]
+STRING   [a-zA-Z\/.0-9\-&*.?: ~!@#%()_+-=`]
+WORD     [a-zA-Z\/.0-9\-&*.?:~_!@#%()+-=`]
 %%
 <string_cond>{STRING}+      { strcat(tempStr, yytext);};
 <string_cond>"${"           { BEGIN(envstring_expand);};
