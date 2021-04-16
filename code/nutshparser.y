@@ -65,7 +65,7 @@ inputs:
     | inputs input
 
 input:
-    C_CD | C_COMMAND | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_STRING | C_HOME | C_ERROR |C_BYE;
+    C_CD | C_COMMAND | C_SETENV | C_PRINTENV | C_UNSETENV | C_UNALIAS | C_ALIAS | C_HOME | C_ERROR |C_BYE;
 
 /* ========================================= START CD CASE ================================================ */  
 C_CD:
@@ -290,13 +290,6 @@ C_ALIAS:
         return 1;
     };
 
-C_STRING:
-    STRING EOFNL
-    {
-        printf("STRING");
-        printf("\n");
-        return 1;
-    };
 C_HOME:
     HOME EOFNL{  
         tildeExpansion("~");
