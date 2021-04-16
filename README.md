@@ -48,7 +48,7 @@ environment variables, aliases, pathname searching, wild-carding and tilde expan
 2. Nutshell.y (Joseph/Alex)
 3. Nutshell.h (Joseph/Alex)
 4. Nutshell.cpp (Joseph/Alex)
-5. Environment Variables (Joseph/Alex)
+5. Environment Variables (Joseph)
 6. Aliases (Joseph/Alex)
 7. Change Directory (Joseph)
 8. Wildcard matching (Joseph)
@@ -97,10 +97,9 @@ environment variables, aliases, pathname searching, wild-carding and tilde expan
   - **~** - Working
   - **cd ~** - Working
   - **~/** - Working
-  - **cd ~/** - Working
+  - **cd ~/** - Not Working
   - **cd ~user** - Untested
   - **cd ~/dir** - Not working
-  - **cd ~/ dir** - Working (needs a space between the "/"  and "dir" to expand the tilde)
   - **setenv char ~** - Not Working
 <!-- ABOUT THE PROJECT --> 
 ## About The Project
